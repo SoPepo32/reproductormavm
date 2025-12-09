@@ -1,5 +1,7 @@
 requiere mkvtoolnix y mpv como programas externos
 
+link del formato: https://github.com/SoPepo32/mavm
+
 se recomienda python3.10 porque con ese hice las pruebas
 
 uso:
