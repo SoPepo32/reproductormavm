@@ -1,0 +1,13 @@
+{
+    "start":[
+        {"menu":["create","menu2"]},
+        {"menu2": [{"resolution": [1920,1080]}]},
+        {"menu2": [{"video":["create","b", "coordinates",0,0,1920,1080, "video2.mkv"]}]},
+        {"time": ["wait",5,"seconds"]},
+        {"menu2": [{"button":["create","skip1", "coordinates",17200,880,1920,1080, "title","skip", "command",{"teleport":["start.json"]}]}]},
+        {"menu1": [{"button_default": ["skip1"]}]}
+    ],
+    "loop":[
+        {"menu2": [{"video":["edit","b", "restart"]}]}
+    ]
+}
