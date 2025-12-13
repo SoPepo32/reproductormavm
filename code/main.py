@@ -158,9 +158,20 @@ class ventana:
         self.menu(start_menu_json)
 
     def menu(self, menu_json):
+        try:
+            pygame.mixer.pause()
+        except:
+            try:
+                for i in list(self.used_vid.keys()):
+                    try:
+                        self.used_vid[i][3].pause()
+                    except:
+                        pass
+            except:
+                pass
+        self.used_vid = {}
         self.loop_comandos_on = False
         self.objetos_menu = []
-        self.used_vid = {}
         y = True
         for widget in self.reproductor.winfo_children():
             try:
@@ -258,7 +269,7 @@ class ventana:
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
                                 self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
-                                objetos_menu[i]["objeto"].config(text=comando[1]["title"])
+                                self.objetos_menu[i]["objeto"].config(text=comando[1]["title"])
             elif comando[0] == "sound":
                 print("TIPO:", type(comando[1]))
                 print("VALOR:", comando[1])
@@ -294,13 +305,15 @@ class ventana:
                         shutil.rmtree(os.path.join(self.carpeta_temporal_frames),file)
                         os.makedirs(os.path.join(self.carpeta_temporal_frames,file))
                     
-                    subprocess.run(["ffmpeg","-i",self.contenido_dat[comando[1]["video"]],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_frames}/{file}")
-                    subprocess.run(["ffmpeg","-i",self.contenido_dat[comando[1]["video"]],"-vn","-c:a","liboups",f"{file}.opus"], cwd=f"{self.carpeta_temporal_frames}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_frames}/{file}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_frames}")
                 
                 if "create" in comando[1].keys():
                     self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.contenido_dat[comando[1]["video"]]})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                     print(self.objetos_menu[len(self.objetos_menu)-1])
+
+                    self.used_vid[file] = [False,0]
 
                     fps = self.get_fps(self.objetos_menu[len(self.objetos_menu)-1]["video_path"])
 
@@ -326,8 +339,7 @@ class ventana:
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
             return t
 
-
-    def teleport(self, paths, paths_b=None):
+    def _teleport(self, paths, paths_b=None):
         print("h")
         print(paths)
         if type(paths) == type([]):
@@ -353,26 +365,66 @@ class ventana:
                 time.sleep(16/1000)
                 self.menu(menu_j)
 
-    def _teleport(self, paths, paths_b=None):
+    def teleport(self, paths, paths_b=None):
         print("h")
         print(paths)
         if type(paths) == type([]):
-            for path_num in range(0,len(paths)-1):
-                nombre, extension = os.path.splitext(paths[path_num])
+            if 0 == len(paths)-1:
+                nombre, extension = os.path.splitext(paths[0])
                 if extension == ".mkv":
-                    if len(paths)-1>=path_num+1:
-                        self.teleport(paths[path_num], paths[path_num+1:])
-                        break
-                    else:
-                        self.teleport(paths[path_num],[])
-                        break
-                else:
-                    self.teleport(paths[path_num])
+                    self.menu_r = True
+                    self.video_repr = True
+                    self.video(self.contenido_dat[paths[0]], [])
+                    #while self.video_repr:
+                     #   if not(self.video_repr):
+                      #      break
+                elif extension == ".json":
+                    print("path_menu",self.contenido_dat[paths[0]])
+                    menu_f = open(self.contenido_dat[paths[0]])
+                    menu_t = menu_f.read()
+                    menu_j = json.loads(menu_t)
+                    menu_f.close()
+                    print("menu:",menu_j)
+                    time.sleep(16/1000)
+                    self.menu(menu_j)
+                    self.reproductor.update_idletasks()
+                    self.espacio_mv.update_idletasks()
+            else:
+                for path_num in range(0,len(paths)-1):
+                    nombre, extension = os.path.splitext(paths[path_num])
+                    if extension == ".mkv":
+                        if len(paths)-1>=path_num+1:
+                            self.menu_r = True
+                            self.video_repr = True
+                            self.video(self.contenido_dat[paths[path_num]], paths[path_num+1:])
+                            #while self.video_repr:
+                            #   if not(self.video_repr):
+                            #      break
+                            break
+                        else:
+                            self.menu_r = True
+                            self.video_repr = True
+                            self.video(self.contenido_dat[paths[path_num]], [])
+                            #while self.video_repr:
+                            #   if not(self.video_repr):
+                            #      break
+                            break
+                    elif extension == ".json":
+                        print("path_menu",self.contenido_dat[paths[path_num]])
+                        menu_f = open(self.contenido_dat[paths[path_num]])
+                        menu_t = menu_f.read()
+                        menu_j = json.loads(menu_t)
+                        menu_f.close()
+                        print("menu:",menu_j)
+                        time.sleep(16/1000)
+                        self.menu(menu_j)
+                        self.reproductor.update_idletasks()
+                        self.espacio_mv.update_idletasks()
         else:
             self.loop_comandos_on = False
             nombre, extension = os.path.splitext(paths)
             if extension == ".mkv":
-                self.menu_r = False
+                self.menu_r = True
                 self.video_repr = True
                 self.video(self.contenido_dat[paths], paths_b)
                 #while self.video_repr:
@@ -387,22 +439,27 @@ class ventana:
                 print("menu:",menu_j)
                 time.sleep(16/1000)
                 self.menu(menu_j)
+                self.reproductor.update_idletasks()
+                self.espacio_mv.update_idletasks()
 
     def video_r(self, vid, file_name, fps, video_path):
         print("video-r1")
         print(f"{self.carpeta_temporal_frames}/{file_name}")
         frames = sorted(os.listdir(f"{self.carpeta_temporal_frames}/{file_name}"))
         print("ff", frames)
-        self.used_vid[file_name] = [False,0]
-        try:
-            self.used_vid[file_name][2] = pygame.mixer.Sound(f"{self.carpeta_temporal_frames}/{video_path}.opus")
-            self.used_vid[file_name][2].play()
-        except:
-            pass
-        print("vp", video_path)
-        self.used_vid[file_name] = [True,0]
-        video_hilo = threading.Thread(target=lambda: self.update_frame_vid(frames,fps,file_name,video_path,vid))
-        video_hilo.start()
+        self.used_vid[file_name][1] = 0
+        if self.used_vid[file_name][0] == False:
+            try:
+                print("sound")
+                self.used_vid[file_name].append(pygame.mixer.Sound(f"{self.carpeta_temporal_frames}/{file_name}.opus"))
+                self.used_vid[file_name].append(self.used_vid[file_name][2].play())
+                #self.used_vid[file_name][2].volume(50)
+            except Exception as e:
+                print(e)
+            print("vp", video_path)
+            self.used_vid[file_name] = [True,0]
+            video_hilo = threading.Thread(target=lambda: self.update_frame_vid(frames,fps,file_name,video_path,vid))
+            video_hilo.start()
 
     def update_frame_vid(self, frames, fps, file_name, video_path, vid):
         print("video-r2")
@@ -418,7 +475,7 @@ class ventana:
                     time.sleep(1/fps)
                     print(frame)
                 except:
-                    pass
+                    break
             else:
                 try:
                     self.used_vid[file_name][2].stop()
@@ -551,10 +608,10 @@ class ventana:
             print(archivo)
         self.start()
 
-    def video(self,video_path):
+    def _video(self,video_path):
         subprocess.run(['mpv', video_path])
 
-    def _video(self,video_path,paths):
+    def video(self,video_path,paths):
         self.loop_comandos_on = False
         self.objetos_menu = []
         self.used_vid = {}
@@ -586,27 +643,29 @@ class ventana:
         except:
             os.makedirs(os.path.join(self.carpeta_temporal_frames,file_name))
         
-        subprocess.run(["ffmpeg","-i",video_path,"frame_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_frames,file_name)}")
-        subprocess.run(["ffmpeg","-i",video_path,"-vn","-c:a","liboups",f"{file_name}.opus"], cwd=f"{self.carpeta_temporal_frames}")
+        subprocess.run(["ffmpeg", "-y", "-i",video_path,"frame_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_frames,file_name)}")
+        subprocess.run(["ffmpeg", "-y", "-i",video_path,"-vn","-c:a","libopus",f"{file_name}.opus"], cwd=f"{self.carpeta_temporal_frames}")
         
         #subprocess.run(['mpv', video_path])
 
         fps = self.get_fps(video_path)
 
         try:
-            audio = [True, pygame.mixer.Sound(os.path.join(self.carpeta_temporal_frames,f"{file_name}.opus"))]
+            audio = [True, pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,f"{file_name}.opus"))]
+            pygame.mixer.music.play()
         except:
             audio = [False]
+        print(audio)
         #audi0.set_volume(50/100)
 
         frames = sorted(os.listdir(f"{self.carpeta_temporal_frames}/{file_name}"))
         
         self.used_vid[file_name] = [False,0]
-        try:
-            self.used_vid[file_name][2] = pygame.mixer.Sound(f"{self.carpeta_temporal_frames}/{video_path}.opus")
-            self.used_vid[file_name][2].play()
-        except:
-            pass
+        #try:
+        #    self.used_vid[file_name][2] = pygame.mixer.music(f"{self.carpeta_temporal_frames}/{video_path}.opus")
+        #    self.used_vid[file_name].append(self.used_vid[file_name][2].play())
+        #except:
+        #    pass
         print("vp", video_path)
         
         frame_num = -1
@@ -618,19 +677,41 @@ class ventana:
         self.objetos_menu[vid]["objeto"].place()
 
         if audio[0]:
-            audio[1].play()
+            pygame.mixer.music.play()
         
         self.video_repr = True
-        self.video_b(fps=fps,frames=frames,file_name=file_name,vid=vid,frame_num=frame_num,frames_num=frames_num,audio=audio,play=True,paths=paths)
+        self.video_b(fps=fps,frames=frames,file_name=file_name,vid=vid,frame_num=frame_num,frames_num=frames_num,play=True,paths=paths,audio=audio)
     
-    def video_b(self,fps,frames,file_name,vid,frame_num,frames_num,audio,play,paths):
+    def video_b(self,fps,frames,file_name,vid,frame_num,frames_num,play,paths,audio):
         #play = True
         #while not(frame_num == frames_num):
         #if not(frame_num == frames_num):
         if frame_num == frames_num:
-            print("frame_num == frames_num")
+            for widget in self.reproductor.winfo_children():
+                try:
+                    if widget is self.espacio_mv:
+                        y = False
+                    else: 
+                        widget.destroy()  #elimina cada widget
+                except:
+                    widget.destroy()  #elimina cada widget
+            
+            for widget in self.espacio_mv.winfo_children():
+                try:
+                    if widget is self.espacio_mv:
+                        y = False
+                    else: 
+                        widget.destroy()  #elimina cada widget
+                except:
+                    widget.destroy()  #elimina cada widget
+            
+            self.menu_r = True
             self.video_repr = False
+
             self.teleport(paths)
+
+            #self.menu_resize()
+            #self.actalizar_medidas()
             return
         elif self.video_repr:
             print("not(frame_num == frames_num)")
@@ -647,29 +728,29 @@ class ventana:
 
                     if accion == "stop-play":
                         if audio[0]:
-                            audio[1].pause()
+                            pygame.mixer.music.pause()
                         play = False
                         self.detectar_botones_fun()
                     elif accion == "adelante":
                         if (frame_num+fotogramas_cambio)>frames_num or (frame_num+fotogramas_cambio)==frames_num:
                             frame_num = frames_num
                             if audio[0]:
-                                audio[1].play(start=frame_num/fps)
+                                pygame.mixer.music.play(start=frame_num/fps)
                         else:
                             if audio[0]:
                                 pos_actual = pygame.mixer.music.get_pos() / 1000
-                                audio[1].play(start=pos_actual+segundos_cambio)
+                                pygame.mixer.music.play(start=pos_actual+segundos_cambio)
                             frame_num += fotogramas_cambio
                         self.detectar_botones_fun()
                     elif accion == "atras":
                         if (frame_num-fotogramas_cambio)<0 or (frame_num-fotogramas_cambio)==0:
                             frame_num = 0
                             if audio[0]:
-                                audio[1].play(start=frame_num/fps)
+                                pygame.mixer.music.play(start=frame_num/fps)
                         else:
                             if audio[0]:
                                 pos_actual = pygame.mixer.music.get_pos() / 1000
-                                audio[1].play(start=pos_actual-segundos_cambio)
+                                pygame.mixer.music.play(start=pos_actual-segundos_cambio)
                             frame_num -= fotogramas_cambio
                         self.detectar_botones_fun()
                     else:
@@ -696,12 +777,14 @@ class ventana:
                 if accion == "stop-play":
                     play = True
                     if audio[0]:
-                        audio[1].unpause()
+                        pygame.mixer.music.unpause()
                     self.detectar_botones_fun()
             
             #time.sleep(segundos_por_fotograma)
-            print("self.menu_resize()")
-            self.menu_resize()
+            #print("self.menu_resize()")
+            #self.menu_resize()
+            #print("self.actalizar_medidas()")
+            #self.actalizar_medidas()
             print("self.reproductor.update_idletasks()")
             self.reproductor.update_idletasks()
             print("self.espacio_mv.update_idletasks()")
@@ -710,7 +793,7 @@ class ventana:
             #time.sleep(segundos_por_fotograma)
             #self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play,paths)
             print("self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play,paths))")
-            self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play,paths))
+            self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(fps,frames,file_name,vid,frame_num,frames_num,play,paths,audio))
             
             #self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play)
     
@@ -727,12 +810,6 @@ class ventana:
                     print(frame)
                 except Exception as e:
                     print(e)
-            #else:
-             #   try:
-              #      self.used_vid[file_name][2].stop()
-               # except:
-                #    pass
-                #self.used_vid[file_name][0] = False
 
 def args():
     parser = argparse.ArgumentParser(description="reproductor MaVM")
