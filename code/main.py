@@ -44,7 +44,7 @@ def install_lin(a=None):
 if platform.system() == "Windows":
     intatall_w()
 elif platform.system() == "Darwin":
-    print("el programa no esta hecho para tu sistema operativo")
+    install_w()
 else:
     if shutil.which("ffmpeg") is None:
         install_lin("ffmpeg")
