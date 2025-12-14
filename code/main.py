@@ -7,17 +7,49 @@ import tkinter as tk
 import subprocess
 import threading
 import argparse
+import platform
 import pygame
 import shutil
 import time
 import json
-import vlc
 import cv2
 import os
 
 #scripts para otros procesos
 import menus
 from mavm import MaVM
+
+def install_w():
+    if shutil.which("ffmpeg") is None:
+        print("instale FFmpeg")
+        exit()
+    elif shutil.which("mkvmerge") is None:
+        print("instale MKVTollNix")
+        exit()
+
+def install_lin(a=None):
+    if not(a==None):
+        if os.path.exists("/etc/os-release"):
+            with open("/etc/os-release") as file:
+                data = file.read()
+            if "Ubuntu" in data or "Debian" in data:
+                subprocess.run(["sudo","apt-get","install",a])
+            elif "Fedora" in data or "Red Hat" in data:
+                subprocess.run(["sudo","dnf","install",a])
+            elif "Arch" in data:
+                subprocess.run(["sudo","acman","-S",a])
+        else:
+            exit()
+
+if platform.system() == "Windows":
+    intatall_w()
+elif platform.system() == "Darwin":
+    print("el programa no esta hecho para tu sistema operativo")
+else:
+    if shutil.which("ffmpeg") is None:
+        install_lin("ffmpeg")
+    if shutil.which("mkvmerge") is None:
+        install_lin("mkvtoolnix")
 
 pygame.mixer.init()
 try:
@@ -40,7 +72,7 @@ class ventana:
         self.ventana_tk.geometry("800x450")
         self.ventana_tk.minsize(800,450)
         self.ventana_tk.config(bg='gray')
-        self.ventana_tk.protocol("WM_DELETE_WINDOW", exit)
+        self.ventana_tk.protocol("WM_DELETE_WINDOW", self.exit)
 
 
         #variables
@@ -81,6 +113,9 @@ class ventana:
         if self.file:
             self.repdorucir()
     
+    def exit(self):
+        exit()
+
     def detectar_botones_fun(self):
         self.detectar_botones = ""
 
