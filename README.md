@@ -1,4 +1,28 @@
-<h1>Reproductor MaVM</h1>
+<h1>Reproductor MaVM (MaVM Player)</h1>
+
+## English:
+
+### <h3>Requires</h3>
+- [MKVToolNix](https://mkvtoolnix.org/)
+- [FFmpeg](https://www.ffmpeg.org/)
+<h4>External Programs</h4>
+
+## Format Link: [SoPepo32/MaVM](https://github.com/SoPepo32/mavm)
+
+<h3>Python 3.10 is recommended because that's what I used for testing</h3>
+
+### <h3>Usage:</h3>
+- python3.10 main.py -vdeo_mavm-
+### Or if you want to open the video from the player window:
+- python3.10 main.py
+
+### Version Naming:
+- v.-large_change_version-.-small/medium_change_version-.-bug_fixes--fixes_in_README.md_or_the_example_video-
+
+### Beta naming:
+- v.-large_change_version-.-small/medium_change_version-.-bug_fixes-_beta_-beta_number--fixes_in_README.md_or_the_example_video-
+
+## Español:
 
 ### <h3>requiere</h3>
  - [MKVToolNix](https://mkvtoolnix.org/)
