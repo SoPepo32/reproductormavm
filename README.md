@@ -1,8 +1,8 @@
 <h1>Reproductor MaVM</h1>
 
 ### <h3>requiere</h3>
- - MKVToolNix
- - FFmpeg
+ - [MKVToolNix](https://mkvtoolnix.org/)
+ - [FFmpeg](https://www.ffmpeg.org/)
 <h4>como programas externos</h4>
 
 link del formato: [SoPepo32/MaVM](https://github.com/SoPepo32/mavm)
