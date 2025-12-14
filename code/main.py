@@ -91,7 +91,7 @@ class ventana:
 
         #objetos
         #abrir un archivo
-        archivos = tk.Button(self.ventana_tk, text="archivos", command=self.archivos_ventana)
+        archivos = tk.Button(self.ventana_tk, text="files", command=self.archivos_ventana)
         archivos.place(x=0,y=0,width=80,height=16)
 
         self.reproductor = tk.Frame(self.ventana_tk, bg='black')
