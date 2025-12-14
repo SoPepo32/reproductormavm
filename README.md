@@ -5,7 +5,7 @@
  - [FFmpeg](https://www.ffmpeg.org/)
 <h4>como programas externos</h4>
 
-link del formato: [SoPepo32/MaVM](https://github.com/SoPepo32/mavm)
+## link del formato: [SoPepo32/MaVM](https://github.com/SoPepo32/mavm)
 
 <h3>se recomienda python3.10 porque con ese hice las pruebas</h3>
 
