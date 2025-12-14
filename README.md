@@ -1,4 +1,4 @@
-requiere mkvtoolnix y mpv como programas externos
+requiere mkvtoolnix y FFmpeg como programas externos
 
 link del formato: https://github.com/SoPepo32/mavm
 
