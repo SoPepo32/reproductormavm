@@ -17,10 +17,10 @@
 - python3.10 main.py
 
 ### Version Naming:
-- v.-large_change_version-.-small/medium_change_version-.-bug_fixes--fixes_in_README.md_or_the_example_video-
+- v.-large_change_version-.-small/medium_change_version-.-bug_fixes--fixes_in_README.md_or_"video_de_ejemplo.mavm"-
 
 ### Beta naming:
-- v.-large_change_version-.-small/medium_change_version-.-bug_fixes-_beta_-beta_number--fixes_in_README.md_or_the_example_video-
+- v.-large_change_version-.-small/medium_change_version-.-bug_fixes-_beta_-beta_number--fixes_in_README.md_or_"video_de_ejemplo.mavm"-
 
 ## Español:
 
