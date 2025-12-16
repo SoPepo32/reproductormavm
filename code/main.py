@@ -111,12 +111,12 @@ class ventana:
         self.play_boton = tk.Button(self.ventana_tk, text="play/pause", command=self.detectar_botones_fun_stop)
         self.play_boton.place(x=780,y=430,width=20,height=16)
 
-        self.pista_audio_menu = tk.OptionMenu(self.ventana_tk, self.pista_audio_name, ())
+        self.pista_audio_menu = tk.OptionMenu(self.ventana_tk, self.pista_audio_name, "none")
         self.pista_audio_menu.place(x=780,y=430,width=20,height=16)
 
         self.pista_audio_text = tk.Label(self.ventana_tk, text="audio>")
 
-        self.pista_video_menu = tk.OptionMenu(self.ventana_tk, self.pista_video_name, ())
+        self.pista_video_menu = tk.OptionMenu(self.ventana_tk, self.pista_video_name, "none")
         self.pista_video_menu.place(x=760,y=430,width=20,height=16)
 
         self.pista_video_text = tk.Label(self.ventana_tk, text="video>")
@@ -721,18 +721,21 @@ class ventana:
 
         opciones_audio = video_audios
         for opcion in opciones_audio:
+            def _set_val(v=opcion):
+                print("audio seleccionado", v)
+                self.pista_audio_name.set(v)
             menu_audio.add_command(
                 label=opcion,
-                command=lambda valor=opcion: self.pista_audio_name.set(str(valor))
+                command=_set_val
             )
 
-        for audio_num, audio in enumerate(video_audios):
-            try:
-                shutil.rmtree(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
-                os.makedirs(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
-            except:
-                os.makedirs(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
+        try:
+            shutil.rmtree(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
+            os.makedirs(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
+        except:
+            os.makedirs(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
             
+        for audio_num, audio in enumerate(video_audios):
             subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_frames}/{file_name}")
         
         menu_video = self.pista_video_menu["menu"]
@@ -742,9 +745,12 @@ class ventana:
 
         opciones_video = video_videos
         for opcion in opciones_video:
+            def _set_val_v(v=opcion):
+                print("video seleccionado", v)
+                self.pista_video_name.set(v)
             menu_video.add_command(
                 label=opcion,
-                command=lambda valor=opcion: self.pista_video_name.set(str(valor))
+                command=_set_val_v
             )
 
         for video_num, video in enumerate(video_videos):
@@ -858,8 +864,11 @@ class ventana:
                         frame_num +=1
 
                     if self.pista_audio_name.get() != "none":
-                        if self.pista_audio_name.get() != self.pista_audio:
-                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
+                        #if self.pista_audio_name.get() != self.pista_audio:
+                        #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
+                        pygame.mixer.music.pause()
+                        pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
+                        print(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
                         self.pista_audio = self.pista_audio_name.get()
                         pygame.mixer.music.play(start=frame_num/fps)
 
