@@ -40,9 +40,9 @@
 
 
 ### nombracion de versiones:
- - v.-version_de_cambios_grandes-.-version_de_cambios_pequeños/medianos-.-correccion_de_errores--correciones_del_README.md_o_el_video_de_ejemplo-
+ - v.-version_de_cambios_grandes-.-version_de_cambios_pequeños/medianos-.-correccion_de_errores--correciones_del_README.md_o_el_video_de_ejemplo(video_de_ejemplo.mavm)-
 
 
 ### nombracion de betas:
 
- - v.-version_de_cambios_grandes-.-version_de_cambios_pequeños/medianos-.-correccion_de_errores-_beta_-numero_de_beta--correciones_del_README.md_o_el_video_de_ejemplo-
+ - v.-version_de_cambios_grandes-.-version_de_cambios_pequeños/medianos-.-correccion_de_errores-_beta_-numero_de_beta--correciones_del_README.md_o_el_video_de_ejemplo(video_de_ejemplo.mavm)-
