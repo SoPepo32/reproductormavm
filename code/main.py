@@ -72,7 +72,7 @@ class ventana:
         self.ventana_tk.geometry("800x450")
         self.ventana_tk.minsize(800,450)
         self.ventana_tk.config(bg='gray')
-        self.ventana_tk.protocol("WM_DELETE_WINDOW", self.exit)
+        #self.ventana_tk.protocol("WM_DELETE_WINDOW", self.exit)
 
 
         #variables
@@ -880,12 +880,6 @@ class ventana:
                     self.objetos_menu[vid]["objeto"].image = imagen
                     self.objetos_menu[vid]["imagen"] = imagen_file
                     self.used_vid[file_name][1] += 1
-            
-                    #self.ventana_tk.after(0, lambda: self.update_frame_vid_b(frame=frame,file_name=file_name,vid=vid))
-                    #for i in range(1,40):
-                     #   time.sleep(segundos_por_fotograma/40)
-                      #  accion = self.detectar_botones
-                    #time.sleep(segundos_por_fotograma/40)
                 except Exception as e:
                     print(e)
             else:
@@ -912,20 +906,6 @@ class ventana:
             self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(fps,file_name,vid,frame_num,play,paths,audio))
             
             #self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play)
-    
-    def update_frame_vid_b(self, frame, file_name, vid):
-                print("video-r2")
-            #if self.used_vid[file_name][0] and self.get_frames_num(video_path) > self.used_vid[file_name][1]:
-                try:
-                    frame_file = os.path.join(self.carpeta_temporal_frames,file_name,frame)
-                    imagen_file = Image.open(frame_file)
-                    imagen = ImageTk.PhotoImage(imagen_file)
-                    self.objetos_menu[vid]["objeto"].image = imagen
-                    self.objetos_menu[vid]["imagen"] = imagen_file
-                    self.used_vid[file_name][1] += 1
-                    print(frame)
-                except Exception as e:
-                    print(e)
 
 def args():
     parser = argparse.ArgumentParser(description="reproductor MaVM")
