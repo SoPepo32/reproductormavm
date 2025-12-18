@@ -68,7 +68,7 @@ class ventana:
     def __init__(self, ventana_tk, file):
         #ventana
         self.ventana_tk = ventana_tk
-        self.ventana_tk.title("reproductor MaVM")
+        self.ventana_tk.title("MaVM player")
         self.ventana_tk.geometry("800x450")
         self.ventana_tk.minsize(800,450)
         self.ventana_tk.config(bg='gray')
@@ -197,8 +197,8 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0']):
-            messagebox.showerror("error de version de archivo", "la version de archivo no es compatible. Este programa solo soporta la v.2.1.0")
+        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0']):
+            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 2.2.0")
             exit()
         print(self.video_mavm_version)
 
@@ -293,6 +293,7 @@ class ventana:
             t = 16/1000
             #print("contenido comando:", comando)
             if comando[0] == "image":
+                print(comando[1]["imagen"])
                 imagen_file = Image.open(self.contenido_dat[comando[1]["imagen"]])
                 imagen = ImageTk.PhotoImage(imagen_file)
                 if "create" in comando[1].keys():
@@ -314,14 +315,27 @@ class ventana:
                 self.objetos_menu.append({"objeto": tk.Label(v,text=comando[1]["text"],fg="#808080"), "cordenadas":comando[1]["coordinates"]})
             elif comando[0] == "button":
                 if "create" in comando[1].keys():
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Button(v, text=comando[1]["title"],bg=f'#{comando[1]["color"][0]:02x}{comando[1]["color"][1]:02x}{comando[1]["color"][2]:02x}'), "cordenadas":comando[1]["coordinates"]})
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
-                    if "command" in comando[1].keys():
-                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].config(command=lambda: self.ejecutar_boton(comando[1]["command"]))
-                    if "command4selection" in comando[1].keys():
-                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"]))
-                    if "command4no_selection" in comando[1].keys():
-                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"]))
+                    if "image" in comando[1].keys():
+                        imagen = tk.PhotoImage(file=self.contenido_dat[comando[1]["image"]])
+                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Button(v, image=imagen,bg=f'#{comando[1]["color"][0]:02x}{comando[1]["color"][1]:02x}{comando[1]["color"][2]:02x}'), "cordenadas":comando[1]["coordinates"]})
+                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
+
+                        if "command" in comando[1].keys():
+                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].config(command=lambda: self.ejecutar_boton(comando[1]["command"]))
+                        if "command4selection" in comando[1].keys():
+                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"]))
+                        if "command4no_selection" in comando[1].keys():
+                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"]))
+                    else:
+                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Button(v, text=comando[1]["title"],bg=f'#{comando[1]["color"][0]:02x}{comando[1]["color"][1]:02x}{comando[1]["color"][2]:02x}'), "cordenadas":comando[1]["coordinates"]})
+                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
+
+                        if "command" in comando[1].keys():
+                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].config(command=lambda: self.ejecutar_boton(comando[1]["command"]))
+                        if "command4selection" in comando[1].keys():
+                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"]))
+                        if "command4no_selection" in comando[1].keys():
+                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"]))
                 elif "edit" in comando[1].keys():
                     for i in range(len(self.objetos_menu)):
                         if "id" in self.objetos_menu[i].keys():
