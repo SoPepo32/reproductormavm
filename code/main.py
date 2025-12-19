@@ -21,10 +21,10 @@ from mavm import MaVM
 
 def install_w():
     if shutil.which("ffmpeg") is None:
-        print("instale FFmpeg")
+        print("Install FFmpeg")
         exit()
     elif shutil.which("mkvmerge") is None:
-        print("instale MKVTollNix")
+        print("Install MKVToolNix")
         exit()
 
 def install_lin(a=None):
@@ -37,7 +37,7 @@ def install_lin(a=None):
             elif "Fedora" in data or "Red Hat" in data:
                 subprocess.run(["sudo","dnf","install",a])
             elif "Arch" in data:
-                subprocess.run(["sudo","acman","-S",a])
+                subprocess.run(["sudo","pacman","-S",a])
         else:
             exit()
 
