@@ -295,19 +295,19 @@ class version_formato:
                         if "command_click" == parametro:
                             if type(parametros[parametro_num+1]) == type([]):
                                 coman = []
-                                for com in parametros[12]:
+                                for com in parametros[parametro_num+1]:
                                     coman.append(self.comando_x(com,[]))
                             else:
-                                coman = self.comando_x([parametros[12]],[])
+                                coman = self.comando_x([parametros[parametro_num+1]],[])
                             parametro_num += 1
                             comando_r[1]["command"] = coman
                         elif "command4selection" == parametro:
                             if type(parametros[parametro_num+1]) == type([]):
                                 coman = []
-                                for com in parametros[12]:
+                                for com in parametros[parametro_num+1]:
                                     coman.append(self.comando_x(com,[]))
                             else:
-                                coman = self.comando_x([parametros[12]],[])
+                                coman = self.comando_x([parametros[parametro_num+1]],[])
                             parametro_num += 1
                             comando_r[1]["command4selection"] = coman
                         elif "command4no_selection" == parametro:
@@ -315,10 +315,10 @@ class version_formato:
                             #print(parametros)
                             if type(parametros[parametro_num+1]) == type([]):
                                 coman = []
-                                for com in parametros[12]:
+                                for com in parametros[parametro_num+1]:
                                     coman.append(self.comando_x(com,[]))
                             else:
-                                coman = self.comando_x([parametros[12]],[])
+                                coman = self.comando_x([parametros[parametro_num+1]],[])
                             parametro_num += 1
                             comando_r[1]["command4no_selection"] = coman
                         elif "coordinates" == parametro:
@@ -331,6 +331,7 @@ class version_formato:
                             comando_r[1]["title"] = parametros[parametro_num+1]
                         elif "image" == parametro:
                             comando_r[1]["image"] = parametros[parametro_num+1]
+                            #comando_r[1]["title"] = parametros[parametro_num+1]
                         elif "color" == parametro:
                             comando_r[1]["color"] = parametros[parametro_num+1]
                         elif "create" == parametro:
@@ -360,7 +361,7 @@ class version_formato:
                             comando_r[1]["edit"] = parametros[parametro_num+1]
                             parametro_num += 1
                         elif "create" == parametro:
-                            comando_r[1]["createt"] = parametros[parametro_num+1]
+                            comando_r[1]["create"] = parametros[parametro_num+1]
                             parametro_num += 1
                         elif "video_path" == parametro:
                             comando_r[1]["video"] = parametros[parametro_num+1]
