@@ -1,8 +1,7 @@
 #librerias
-from tkinter import filedialog
-from tkinter import messagebox
-from PIL import Image, ImageTk
-from pymkv import MKVFile
+from tkinter import filedialog,messagebox
+from PIL import Image,ImageTk
+#from pymkv import MKVFile
 import tkinter as tk
 import subprocess
 import threading
