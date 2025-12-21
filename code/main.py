@@ -126,12 +126,12 @@ class ventana:
 
         #codigo
         if self.file:
-            self.repdorucir()
+            self.ventana_tk.after(100, self.repdorucir)
     
     def exit(self):
         exit()
 
-    def detectar_botones_fun(self):
+    def reset_botones_fun(self):
         self.detectar_botones = ""
 
     def detectar_botones_fun_atra(self):
@@ -197,8 +197,8 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0']):
-            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 2.2.0")
+        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0']):
+            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.0.0")
             exit()
         print(self.video_mavm_version)
 
@@ -912,7 +912,6 @@ class ventana:
         frames = sorted(os.listdir(f"{self.carpeta_temporal_frames}/{file_name}/{self.pista_video_name.get()}"))
         frames_num = len(frames)-1
 
-        #play = True
         #while not(frame_num == frames_num):
         #if not(frame_num == frames_num):
         if frame_num >= frames_num:
@@ -948,35 +947,33 @@ class ventana:
             print(f"{file_name}.mkv")
             fps = len(frames)/self.get_seconds(self.contenido_dat[f"{file_name}.mkv"])
 
-            print("not(frame_num == frames_num)")
             segundos_por_fotograma = 1/fps
+            fotogramas_cambio = int(10*fps)
+
+            segundos_cambio = fotogramas_cambio/fps
+
             if play:
+                print(play)
                 try:
                     accion = self.detectar_botones
                     
                     frame = frames[frame_num]
 
                     print(frame)
-                    fotogramas_cambio = int(10*fps)
-                    segundos_cambio = fotogramas_cambio/fps
-
                     if accion == "stop-play":
                         play = False
-                        self.detectar_botones_fun()
+                        self.reset_botones_fun()
                         if self.pista_audio_name.get() != "none":
                             #if self.pista_audio_name.get() != self.pista_audio:
                             #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
                             #pygame.mixer.music.pause()
-                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
-                            print(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
-                            self.pista_audio = self.pista_audio_name.get()
-                        pygame.mixer.music.play(start=frame_num/fps)
+                            pygame.mixer.music.pause()
                     elif accion == "adelante":
                         if (frame_num+fotogramas_cambio)>frames_num or (frame_num+fotogramas_cambio)==frames_num:
                             frame_num = frames_num
                         else:
                             frame_num += fotogramas_cambio
-                        self.detectar_botones_fun()
+                        self.reset_botones_fun()
                         if self.pista_audio_name.get() != "none":
                             #if self.pista_audio_name.get() != self.pista_audio:
                             #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
@@ -990,7 +987,7 @@ class ventana:
                             frame_num = 0
                         else:
                             frame_num -= fotogramas_cambio
-                        self.detectar_botones_fun()
+                        self.reset_botones_fun()
                         if self.pista_audio_name.get() != "none":
                             #if self.pista_audio_name.get() != self.pista_audio:
                             #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
@@ -1024,26 +1021,15 @@ class ventana:
                 accion = self.detectar_botones
                 if accion == "stop-play":
                     play = True
-                    if audio[0]:
-                        pygame.mixer.music.unpause()
-                    self.detectar_botones_fun()
-            
-            #time.sleep(segundos_por_fotograma)
-            #print("self.menu_resize()")
-            #self.menu_resize()
-            #print("self.actalizar_medidas()")
-            #self.actalizar_medidas()
-            print("self.reproductor.update_idletasks()")
+                    self.reset_botones_fun()
+                    if self.pista_audio_name.get() != "none":
+                        pygame.mixer.music.play(start=frame_num/fps)
+                
             self.reproductor.update_idletasks()
-            print("self.espacio_mv.update_idletasks()")
+                
             self.espacio_mv.update_idletasks()
-            print(int(segundos_por_fotograma*1000))
-            #time.sleep(segundos_por_fotograma)
-            #self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play,paths)
-            print("self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play,paths))")
+
             self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(file_name,vid,frame_num,play,paths,audio))
-            
-            #self.video_b(fps,frames,file_name,vid,frame_num,frames_num,audio,play)
 
 def args():
     parser = argparse.ArgumentParser(description="reproductor MaVM")
