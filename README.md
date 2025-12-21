@@ -7,6 +7,14 @@
 - [FFmpeg](https://www.ffmpeg.org/)
 <h4>External Programs</h4>
 
+### How to compile:
+- Linux:
+```bash
+bash compiler.sh
+```
+- Windows:
+Double-click on "compiler.bat"
+
 ## Format Link: [SoPepo32/MaVM](https://github.com/SoPepo32/mavm)
 
 <h3>Python 3.10 is recommended because that's what I used for testing</h3>
@@ -29,6 +37,13 @@
  - [FFmpeg](https://www.ffmpeg.org/)
 <h4>como programas externos</h4>
 
+### Cómo compilar:
+ - Linux:
+```bash
+bash compiler.sh
+```
+ - Windows:
+Haga doble clic en "compiler.bat"
 ## link del formato: [SoPepo32/MaVM](https://github.com/SoPepo32/mavm)
 
 <h3>se recomienda python3.10 porque con ese hice las pruebas</h3>
