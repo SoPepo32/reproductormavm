@@ -11,7 +11,7 @@ import pygame
 import shutil
 import time
 import json
-import cv2
+#import cv2
 import os
 
 #scripts para otros procesos
