@@ -96,12 +96,32 @@ class ventana:
         self.pista_subtitulos_name.set("none")
         self.bucle = tk.StringVar(self.ventana_tk)
         self.bucle.set("none")
+        self.archivos_accion_name = tk.StringVar(self.ventana_tk)
+        self.archivos_accion_name.set("files")
 
 
         #objetos
         #arriba
-        self.archivos = tk.Button(self.ventana_tk, text="files", bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF", command=self.archivos_ventana)
-        self.archivos.place(x=0,y=0,width=80,height=16)
+        self.archivos_menu = tk.OptionMenu(self.ventana_tk, self.archivos_accion_name, "none")
+        archivos_menu = self.archivos_menu["menu"]
+        archivos_menu.delete(0, "end")
+
+        for opcion in ['open file','save settings']:
+            def _set_val(v=opcion):
+                if v != 'files':
+                    {'open file':self.archivos_ventana,'save settings':self.save_settings}[v]()
+                    #{'open file':self.archivos_ventana}[v]()
+                self.archivos_accion_name.set("files")
+            archivos_menu.add_command(
+                label=opcion,
+                command=_set_val
+            )
+
+        self.archivos_menu.config(bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF")
+        self.archivos_menu.place(x=780,y=430,width=20,height=16)
+
+        #self.archivos = tk.Button(self.ventana_tk, text="files", bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF", command=self.archivos_ventana)
+        #self.archivos.place(x=0,y=0,width=80,height=16)
 
         self.pista_audio_text = tk.Label(self.ventana_tk, text="audio>", bg='#404040', fg='#FFFFFF')
 
@@ -141,10 +161,12 @@ class ventana:
         self.volume = tk.Scale(self.ventana_tk, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=0, resolution=.01,tickinterval=1)
         self.volume.set(.37)
 
-        self.ventana_tk.after(50, self.actalizar_medidas)
-
 
         #codigo
+        self.ventana_tk.after(10, self.actalizar_medidas)
+
+        self.ventana_tk.after(10, self.load_settings)
+
         if self.file:
             self.ventana_tk.after(100, self.repdorucir)
     
@@ -162,6 +184,21 @@ class ventana:
 
     def detectar_botones_fun_adel(self):
         self.detectar_botones = "adelante"
+
+    def save_settings(self):
+        config = '{"bucle": '+f'"{self.bucle.get()}"'+'}'
+
+        config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'w')
+        config_file.write(config)
+        config_file.close()
+
+    def load_settings(self):
+        config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'r')
+        config_txt = config_file.read()
+        config_file.close()
+
+        config_json = json.loads(config_txt)
+        self.bucle.set(config_json["bucle"])
 
     def archivos_ventana(self):
         self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
@@ -191,7 +228,7 @@ class ventana:
             self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
             self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
 
-            self.archivos.place(x=0,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.archivos_menu.place(x=0,y=0,width=ancho_ventana/7,height=alto_ventana/25)
 
             self.pista_subtitulos_text.place(x=ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
             self.pista_subtitulos_menu.place(x=2*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
