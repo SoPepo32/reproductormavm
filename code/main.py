@@ -12,6 +12,7 @@ import shutil
 import time
 import json
 #import cv2
+import sys
 import os
 
 #scripts para otros procesos
@@ -52,16 +53,16 @@ else:
 
 pygame.mixer.init()
 try:
-    shutil.rmtree(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp'))   #borra la carpeta completa
+    shutil.rmtree(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp')) #borra la carpeta completa
     os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp'))
 except:
     os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp'))
 
 try:
-    shutil.rmtree(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_frames'))   #borra la carpeta completa
-    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_frames'))
+    shutil.rmtree(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_video')) #borra #borra la carpeta completa
+    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_video'))
 except:
-    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_frames'))
+    os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_video'))
 
 class ventana:
     def __init__(self, ventana_tk, file):
@@ -70,7 +71,7 @@ class ventana:
         self.ventana_tk.title("MaVM player")
         self.ventana_tk.geometry("800x450")
         self.ventana_tk.minsize(800,450)
-        self.ventana_tk.config(bg='gray')
+        self.ventana_tk.config(bg="#404040")
         #self.ventana_tk.protocol("WM_DELETE_WINDOW", self.exit)
 
 
@@ -79,7 +80,7 @@ class ventana:
         self.raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
         print(self.raiz_proyecto)
         self.carpeta_temporal = os.path.join(self.raiz_proyecto, 'temp')
-        self.carpeta_temporal_frames = os.path.join(self.raiz_proyecto, 'temp_frames')
+        self.carpeta_temporal_video = os.path.join(self.raiz_proyecto, 'temp_video')
         self.resolution_menu = [False, None]
         self.detectar_botones = ""
         self.objetos_menu = []
@@ -91,34 +92,54 @@ class ventana:
         self.pista_audio_name.set("none")
         self.pista_video_name = tk.StringVar(self.ventana_tk)
         self.pista_video_name.set("none")
+        self.pista_subtitulos_name = tk.StringVar(self.ventana_tk)
+        self.pista_subtitulos_name.set("none")
+        self.bucle = tk.StringVar(self.ventana_tk)
+        self.bucle.set("none")
 
 
         #objetos
-        #abrir un archivo
-        archivos = tk.Button(self.ventana_tk, text="files", command=self.archivos_ventana)
-        archivos.place(x=0,y=0,width=80,height=16)
+        #arriba
+        self.archivos = tk.Button(self.ventana_tk, text="files", bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF", command=self.archivos_ventana)
+        self.archivos.place(x=0,y=0,width=80,height=16)
 
+        self.pista_audio_text = tk.Label(self.ventana_tk, text="audio>", bg='#404040', fg='#FFFFFF')
+
+        self.pista_audio_menu = tk.OptionMenu(self.ventana_tk, self.pista_audio_name, "none")
+        self.pista_audio_menu.config(bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF")
+        self.pista_audio_menu.place(x=780,y=430,width=20,height=16)
+
+        self.pista_video_text = tk.Label(self.ventana_tk, text="video>", bg='#404040', fg='#FFFFFF')
+
+        self.pista_video_menu = tk.OptionMenu(self.ventana_tk, self.pista_video_name, "none")
+        self.pista_video_menu.config(bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF")
+        self.pista_video_menu.place(x=760,y=430,width=20,height=16)
+
+        self.pista_subtitulos_text = tk.Label(self.ventana_tk, text="subtitles>", bg='#404040', fg='#FFFFFF')
+
+        self.pista_subtitulos_menu = tk.OptionMenu(self.ventana_tk, self.pista_subtitulos_name, "none")
+        self.pista_subtitulos_menu.config(bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF")
+        self.pista_subtitulos_menu.place(x=760,y=430,width=20,height=16)
+
+        #madio
         self.reproductor = tk.Frame(self.ventana_tk, bg='black')
         self.reproductor.place(x=0,y=20)
 
-        self.atras_boton = tk.Button(self.ventana_tk, text="<-10s", command=self.detectar_botones_fun_atra)
+        #abajo
+        self.bucle_boton = tk.Checkbutton(self.ventana_tk, text="loop", bg='#404040', fg='#808080', variable=self.bucle)
+        self.bucle_boton.place(x=0,y=430,width=20,height=16)
+
+        self.atras_boton = tk.Button(self.ventana_tk, text="<-10s", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_atra)
         self.atras_boton.place(x=0,y=430,width=20,height=16)
 
-        self.adelante_boton = tk.Button(self.ventana_tk, text="10s->", command=self.detectar_botones_fun_adel)
+        self.play_boton = tk.Button(self.ventana_tk, text="play/pause", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_stop_play)
+        self.atras_boton.place(x=0,y=430,width=20,height=16)
+
+        self.adelante_boton = tk.Button(self.ventana_tk, text="10s->", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_adel)
         self.adelante_boton.place(x=780,y=430,width=20,height=16)
 
-        self.play_boton = tk.Button(self.ventana_tk, text="play/pause", command=self.detectar_botones_fun_stop)
-        self.play_boton.place(x=780,y=430,width=20,height=16)
-
-        self.pista_audio_menu = tk.OptionMenu(self.ventana_tk, self.pista_audio_name, "none")
-        self.pista_audio_menu.place(x=780,y=430,width=20,height=16)
-
-        self.pista_audio_text = tk.Label(self.ventana_tk, text="audio>")
-
-        self.pista_video_menu = tk.OptionMenu(self.ventana_tk, self.pista_video_name, "none")
-        self.pista_video_menu.place(x=760,y=430,width=20,height=16)
-
-        self.pista_video_text = tk.Label(self.ventana_tk, text="video>")
+        self.volume = tk.Scale(self.ventana_tk, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=0, resolution=.01,tickinterval=1)
+        self.volume.set(.37)
 
         self.ventana_tk.after(50, self.actalizar_medidas)
 
@@ -136,11 +157,11 @@ class ventana:
     def detectar_botones_fun_atra(self):
         self.detectar_botones = "atras"
 
+    def detectar_botones_fun_stop_play(self):
+        self.detectar_botones = "stop-play"
+
     def detectar_botones_fun_adel(self):
         self.detectar_botones = "adelante"
-
-    def detectar_botones_fun_stop(self):
-        self.detectar_botones = "stop-play"
 
     def archivos_ventana(self):
         self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
@@ -151,29 +172,39 @@ class ventana:
         try:
             ancho_ventana = self.ventana_tk.winfo_width()
             alto_ventana = self.ventana_tk.winfo_height()
-            
-            interfaz_alto = max(self.ventana_tk.winfo_height()*.05,16)
-            interfaz_ancho = max(self.ventana_tk.winfo_width()*.0625,50)
-            play_ancho = max(self.ventana_tk.winfo_width()*.1875,150)
 
-            self.reproductor.config(width=ancho_ventana,height=alto_ventana-(20+4+interfaz_alto))
+            interfaz_alto = max(int(self.ventana_tk.winfo_height()/12),35)
+            interfaz_ancho = max(int(self.ventana_tk.winfo_width()/8),18) #/16
+            play_ancho = max(int(self.ventana_tk.winfo_width()/8),56) #*.1875
 
-            self.atras_boton.place(x=int(ancho_ventana/6)-interfaz_ancho/2,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+            self.reproductor.config(width=ancho_ventana,height=alto_ventana-(alto_ventana/25+interfaz_alto))
+            self.reproductor.place(x=0,y=alto_ventana/25)
 
-            self.play_boton.place(x=int(ancho_ventana/3)-play_ancho/2,y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
+            self.bucle_boton.place(x=0,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
-            self.adelante_boton.place(x=int(3*ancho_ventana/6)-interfaz_ancho/2,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+            self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
-            self.pista_audio_menu.place(x=int(ancho_ventana)-interfaz_ancho*2,y=alto_ventana-interfaz_alto,width=interfaz_ancho*2,height=interfaz_alto)
+            self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
 
-            self.pista_audio_text.place(x=int(ancho_ventana)-interfaz_ancho*3,y=alto_ventana-interfaz_alto,width=interfaz_ancho*1,height=interfaz_alto)
+            self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
-            self.pista_video_menu.place(x=int(ancho_ventana)-interfaz_ancho*5,y=alto_ventana-interfaz_alto,width=interfaz_ancho*2,height=interfaz_alto)
+            self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
+            self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
 
-            self.pista_video_text.place(x=int(ancho_ventana)-interfaz_ancho*6,y=alto_ventana-interfaz_alto,width=interfaz_ancho*1,height=interfaz_alto)
+            self.archivos.place(x=0,y=0,width=ancho_ventana/7,height=alto_ventana/25)
 
+            self.pista_subtitulos_text.place(x=ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_subtitulos_menu.place(x=2*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_audio_text.place(x=3*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_audio_menu.place(x=4*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_video_text.place(x=5*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_video_menu.place(x=6*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
             self.reproductor.update_idletasks()
-        except:
+        except Exception as e:
+            print(e)
             pass
         if self.menu_r:
             self.ventana_tk.after(10, self.actalizar_medidas)
@@ -422,18 +453,16 @@ class ventana:
 
                                         self.objetos_menu[i]["objeto"].place()
             elif comando[0] == "sound":
-                print("TIPO:", type(comando[1]))
-                print("VALOR:", comando[1])
                 if "create" in comando[1].keys():
                     self.objetos_menu.append({"id":comando[1]["create"],"objeto":pygame.mixer.Sound(self.contenido_dat[comando[1]["sound"]])})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].play()
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].set_volume(comando[1]["volume"]/100)
+                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
                     print("sonido play")
                 elif "edit" in comando[1].keys():
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
-                                self.objetos_menu[i]["objeto"].set_volume(comando[1]["volume"]/100)
+                                self.objetos_menu[i]["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
             elif comando[0] == "time":
                 if "wait" in comando[1].keys():
                     tiempo = comando[1]["wait"][0]
@@ -452,13 +481,13 @@ class ventana:
                     file, extension = os.path.splitext(comando[1]["video"])
 
                     try:
-                        os.makedirs(os.path.join(self.carpeta_temporal_frames,file))
+                        os.makedirs(os.path.join(self.carpeta_temporal_video,file))
                     except:
-                        shutil.rmtree(os.path.join(self.carpeta_temporal_frames),file)
-                        os.makedirs(os.path.join(self.carpeta_temporal_frames,file))
+                        shutil.rmtree(os.path.join(self.carpeta_temporal_video),file)
+                        os.makedirs(os.path.join(self.carpeta_temporal_video,file))
                     
-                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_frames}/{file}")
-                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_frames}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_video}/{file}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_video}")
                 
                 if "create" in comando[1].keys():
                     print("create")
@@ -597,16 +626,16 @@ class ventana:
 
     def video_r(self, vid, file_name, fps, video_path):
         print("video-r1")
-        print(f"{self.carpeta_temporal_frames}/{file_name}")
-        frames = sorted(os.listdir(f"{self.carpeta_temporal_frames}/{file_name}"))
+        print(f"{self.carpeta_temporal_video}/{file_name}")
+        frames = sorted(os.listdir(f"{self.carpeta_temporal_video}/{file_name}"))
         print("ff", frames)
         self.used_vid[file_name][1] = 0
         if self.used_vid[file_name][0] == False:
             try:
                 print("sound")
-                self.used_vid[file_name].append(pygame.mixer.Sound(f"{self.carpeta_temporal_frames}/{file_name}.opus"))
+                self.used_vid[file_name].append(pygame.mixer.Sound(f"{self.carpeta_temporal_video}/{file_name}.opus"))
+                self.used_vid[file_name][2].volume(self.volume.get())
                 self.used_vid[file_name].append(self.used_vid[file_name][2].play())
-                #self.used_vid[file_name][2].volume(50)
             except Exception as e:
                 print(e)
             print("vp", video_path)
@@ -619,7 +648,7 @@ class ventana:
         for frame in frames:
             if self.used_vid[file_name][0] and self.get_frames_num(video_path) > self.used_vid[file_name][1]:
                 try:
-                    frame_file = os.path.join(self.carpeta_temporal_frames,file_name,frame)
+                    frame_file = os.path.join(self.carpeta_temporal_video,file_name,frame)
                     imagen_file = Image.open(frame_file)
                     imagen = ImageTk.PhotoImage(imagen_file)
                     self.objetos_menu[vid]["objeto"].image = imagen
@@ -683,7 +712,6 @@ class ventana:
                 reproductor_ancho = self.reproductor.winfo_width()
                 reproductor_alto = self.reproductor.winfo_height()
 
-
                 escala_ancho = self.resolution_menu[1][0]
                 escala_alto = self.resolution_menu[1][1]
 
@@ -705,10 +733,14 @@ class ventana:
 
                 diferencia_escala_espacio_mv = [espacio_mv_ancho/escala_ancho,espacio_mv_alto/escala_alto]
                 
-                for objeto in self.objetos_menu:
-                    if "video_r" in objeto.keys():
-                        cordenadas = [0,0,escala_ancho,escala_alto]
-                        
+                for objeto_num, objeto in enumerate(self.objetos_menu):
+                    if isinstance(objeto["objeto"], pygame.mixer.Sound):
+                        objeto["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
+                    elif "video_r" in objeto.keys():
+                        if "video_rr" in objeto.keys():
+                            cordenadas = [0,0,escala_ancho,escala_alto-int(escala_alto/10)]
+                        else:
+                            cordenadas = [0,0,escala_ancho,escala_alto]
                         ancho_imagen=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0])
                         alto_imagen=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1])
 
@@ -762,6 +794,34 @@ class ventana:
             print(archivo)
         self.start()
 
+    def leer_subtitulo(self, subtitulo_path, time_sub_segundos):
+        file = open(subtitulo_path,'r')
+        subtitulo_encode = file.read()
+        file.close()
+
+        subtitulo_list = subtitulo_encode.split('\n\n')
+        subtitulo_decode = []
+        for sub_x in subtitulo_list:
+            try:
+                sub_y = sub_x.split('\n')[1:]
+                times_sub = sub_y[0].split(' --> ')
+                sub = sub_y[1]
+
+                time_sub_x = times_sub[0].replace(',','.').split(':')
+
+                time_sub_y = times_sub[1].replace(',','.').split(':')
+
+                times_sub = [float(f'{(time_sub_x[0]*3600)+(time_sub_x[1]*60)+time_sub_x[2]}'),
+                             float(f'{(time_sub_y[0]*3600)+(time_sub_y[1]*60)+time_sub_y[2]}')]
+                
+                subtitulo_decode.append([times_sub,sub])
+            except:
+                pass
+        
+        for s in subtitulo_decode:
+            if s[0][0] <= time_sub_segundos < s[0][1]:
+                return s[1]
+
     def video(self,video_path,paths):
         self.loop_comandos_on = False
         self.objetos_menu = []
@@ -789,17 +849,20 @@ class ventana:
         file_name, extension = os.path.splitext(archivo)
         
         try:
-            shutil.rmtree(os.path.join(self.carpeta_temporal_frames,file_name))
-            os.makedirs(os.path.join(self.carpeta_temporal_frames,file_name))
+            shutil.rmtree(os.path.join(self.carpeta_temporal_video,file_name))
+            os.makedirs(os.path.join(self.carpeta_temporal_video,file_name))
         except:
-            os.makedirs(os.path.join(self.carpeta_temporal_frames,file_name))
+            os.makedirs(os.path.join(self.carpeta_temporal_video,file_name))
         
         contenido_video = subprocess.run(["ffprobe", "-v", "quiet", "-print_format", "json", "-show_streams", video_path],capture_output=True,text=True)
         
         contenidos_video_json = json.loads(contenido_video.stdout)["streams"]
 
-        video_audios = []
-        video_videos = []
+        print(contenidos_video_json)
+
+        video_subtitulos = ["none"]
+        video_audios     = []
+        video_videos     = []
 
         self.pista_audio_name.set("none")
 
@@ -810,10 +873,15 @@ class ventana:
                     self.pista_audio_name.set("0")
                 elif contenido["codec_type"] == "video":
                     video_videos.append(str(len(video_videos)))
+                elif contenido["codec_long_name"] == "SubRip subtitle":
+                    video_subtitulos.append(str(len(video_subtitulos)-1))
+
+        print(video_subtitulos,'\n',video_audios,'\n',video_videos)
 
         menu_audio = self.pista_audio_menu["menu"]
-
         menu_audio.delete(0, "end")
+
+        self.pista_audio_name.set("0")
 
         opciones_audio = video_audios
         for opcion in opciones_audio:
@@ -826,18 +894,18 @@ class ventana:
             )
 
         try:
-            shutil.rmtree(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
-            os.makedirs(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
+            shutil.rmtree(os.path.join(self.carpeta_temporal_video,f"{self.carpeta_temporal_video}/{file_name}"))
+            os.makedirs(os.path.join(self.carpeta_temporal_video,f"{self.carpeta_temporal_video}/{file_name}"))
         except:
-            os.makedirs(os.path.join(self.carpeta_temporal_frames,f"{self.carpeta_temporal_frames}/{file_name}"))
-            
-        for audio_num, audio in enumerate(video_audios):
-            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_frames}/{file_name}")
+            os.makedirs(os.path.join(self.carpeta_temporal_video,f"{self.carpeta_temporal_video}/{file_name}"))
         
-        menu_video = self.pista_video_menu["menu"]
+        for audio_num, audio in enumerate(video_audios):
+            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
 
-        menu_video.delete(0, "end")
         self.pista_video_name.set("0")
+
+        menu_video = self.pista_video_menu["menu"]
+        menu_video.delete(0, "end")
 
         opciones_video = video_videos
         for opcion in opciones_video:
@@ -851,19 +919,35 @@ class ventana:
 
         for video_num, video in enumerate(video_videos):
             try:
-                shutil.rmtree(os.path.join(self.carpeta_temporal_frames,file_name,str(video_num)))
-                os.makedirs(os.path.join(self.carpeta_temporal_frames,file_name,str(video_num)))
+                shutil.rmtree(os.path.join(self.carpeta_temporal_video,file_name,str(video_num)))
+                os.makedirs(os.path.join(self.carpeta_temporal_video,file_name,str(video_num)))
             except:
-                os.makedirs(os.path.join(self.carpeta_temporal_frames,file_name,str(video_num)))
+                os.makedirs(os.path.join(self.carpeta_temporal_video,file_name,str(video_num)))
             
-            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:v:{video_num}", "fotograma_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_frames,file_name,str(video_num))}")
+            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:v:{video_num}", "fotograma_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_video,file_name,str(video_num))}")
+        
+        menu_subtitulos = self.pista_subtitulos_menu["menu"]
+        menu_subtitulos.delete(0, "end")
+
+        opciones_subtitulos = video_subtitulos
+        for opcion in video_subtitulos:
+            def _set_val_v(v=opcion):
+                print("video seleccionado", v)
+                self.pista_subtitulos_name.set(v)
+            menu_subtitulos.add_command(
+                label=opcion,
+                command=_set_val_v
+            )
+
+        for subtitulo_num, subtitulo in enumerate(video_subtitulos):
+            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:s:{subtitulo_num}", f"{subtitulo_num}.srt"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
         
         #subprocess.run(['mpv', video_path])
 
         fps = self.get_fps(video_path)
 
         try:
-            audio = [True, pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,f"{file_name}.opus"))]
+            audio = [True, pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,f"{file_name}.opus"))]
             pygame.mixer.music.play()
         except:
             audio = [False]
@@ -872,7 +956,7 @@ class ventana:
 
         self.used_vid[file_name] = [False,0]
         #try:
-        #    self.used_vid[file_name][2] = pygame.mixer.music(f"{self.carpeta_temporal_frames}/{video_path}.opus")
+        #    self.used_vid[file_name][2] = pygame.mixer.music(f"{self.carpeta_temporal_video}/{video_path}.opus")
         #    self.used_vid[file_name].append(self.used_vid[file_name][2].play())
         #except:
         #    pass
@@ -891,6 +975,8 @@ class ventana:
         
         self.pista_audio = "none"
 
+        self.objetos_menu.append({"objeto": tk.Label(self.espacio_mv,text='',bg="#000000",fg="#E6E600"), "cordenadas":[0,int(9*self.resolution_menu[1][1]/10),self.resolution_menu[1][0],self.resolution_menu[1][1]],"video_rr":1})
+        
         self.video_repr = True
         self.video_b(file_name=file_name,vid=vid,frame_num=frame_num,play=True,paths=paths,audio=audio)
     
@@ -908,40 +994,50 @@ class ventana:
             return None
 
     def video_b(self,file_name,vid,frame_num,play,paths,audio):
-        frames = sorted(os.listdir(f"{self.carpeta_temporal_frames}/{file_name}/{self.pista_video_name.get()}"))
+        frames = sorted(os.listdir(f"{self.carpeta_temporal_video}/{file_name}/{self.pista_video_name.get()}"))
         frames_num = len(frames)-1
 
         #while not(frame_num == frames_num):
         #if not(frame_num == frames_num):
         if frame_num >= frames_num:
-            if self.pista_audio_name.get() != "none":
-                pygame.mixer.music.pause()
-            for widget in self.reproductor.winfo_children():
-                try:
-                    if widget is self.espacio_mv:
-                        y = False
-                    else: 
-                        widget.destroy()  #elimina cada widget
-                except:
-                    widget.destroy()  #elimina cada widget
-            
-            for widget in self.espacio_mv.winfo_children():
-                try:
-                    if widget is self.espacio_mv:
-                        y = False
-                    else: 
-                        widget.destroy()  #elimina cada widget
-                except:
-                    widget.destroy()  #elimina cada widget
-            
-            self.menu_r = True
-            self.video_repr = False
+            if self.bucle.get() == "1":
+                frame_num = 0
 
-            self.teleport(paths)
+                self.reproductor.update_idletasks()
+                
+                self.espacio_mv.update_idletasks()
 
-            #self.menu_resize()
-            #self.actalizar_medidas()
-            return
+                pygame.mixer.music.play(start=0)
+                self.ventana_tk.after(10, lambda: self.video_b(file_name,vid,frame_num,play,paths,audio))
+            else:
+                if self.pista_audio_name.get() != "none":
+                    pygame.mixer.music.pause()
+                for widget in self.reproductor.winfo_children():
+                    try:
+                        if widget is self.espacio_mv:
+                            y = False
+                        else: 
+                            widget.destroy()  #elimina cada widget
+                    except:
+                        widget.destroy()  #elimina cada widget
+                
+                for widget in self.espacio_mv.winfo_children():
+                    try:
+                        if widget is self.espacio_mv:
+                            y = False
+                        else: 
+                            widget.destroy()  #elimina cada widget
+                    except:
+                        widget.destroy()  #elimina cada widget
+                
+                self.menu_r = True
+                self.video_repr = False
+
+                self.teleport(paths)
+
+                #self.menu_resize()
+                #self.actalizar_medidas()
+                return
         elif self.video_repr:
             print(f"{file_name}.mkv")
             fps = len(frames)/self.get_seconds(self.contenido_dat[f"{file_name}.mkv"])
@@ -952,7 +1048,6 @@ class ventana:
             segundos_cambio = fotogramas_cambio/fps
 
             if play:
-                print(play)
                 try:
                     accion = self.detectar_botones
                     
@@ -964,7 +1059,7 @@ class ventana:
                         self.reset_botones_fun()
                         if self.pista_audio_name.get() != "none":
                             #if self.pista_audio_name.get() != self.pista_audio:
-                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
+                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_video_name.get()}.opus"))
                             #pygame.mixer.music.pause()
                             pygame.mixer.music.pause()
                     elif accion == "adelante":
@@ -975,12 +1070,13 @@ class ventana:
                         self.reset_botones_fun()
                         if self.pista_audio_name.get() != "none":
                             #if self.pista_audio_name.get() != self.pista_audio:
-                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
+                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_video_name.get()}.opus"))
                             #pygame.mixer.music.pause()
-                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
-                            print(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
                             self.pista_audio = self.pista_audio_name.get()
                         pygame.mixer.music.play(start=frame_num/fps)
+
                     elif accion == "atras":
                         if (frame_num-fotogramas_cambio)<0 or (frame_num-fotogramas_cambio)==0:
                             frame_num = 0
@@ -989,10 +1085,10 @@ class ventana:
                         self.reset_botones_fun()
                         if self.pista_audio_name.get() != "none":
                             #if self.pista_audio_name.get() != self.pista_audio:
-                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
+                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_video_name.get()}.opus"))
                             #pygame.mixer.music.pause()
-                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
-                            print(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
                             self.pista_audio = self.pista_audio_name.get()
                         pygame.mixer.music.play(start=frame_num/fps)
                     else:
@@ -1000,15 +1096,22 @@ class ventana:
 
                     if self.pista_audio_name.get() != "none":
                         if self.pista_audio_name.get() != self.pista_audio:
-                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_video_name.get()}.opus"))
+                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_video_name.get()}.opus"))
                             #pygame.mixer.music.pause()
-                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
-                            print(os.path.join(self.carpeta_temporal_frames,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
                             pygame.mixer.music.play(start=frame_num/fps)
                         self.pista_audio = self.pista_audio_name.get()
+                        pygame.mixer.music.set_volume(self.volume.get())
+
+                    if self.pista_subtitulos_name.get() != "none":
+                        sub = self.leer_subtitulo(subtitulo_path=os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_subtitulos_name.get()}.srt"),
+                                                  time_sub_segundos=frame_num/fps)
+                        self.objetos_menu[1]["objeto"].config(text=sub)
+                    
                     print(f"frame_num:{frame_num}\nframes_num:{frames_num}")
                     #os.path.join(
-                    frame_file_path = os.path.join(self.carpeta_temporal_frames,file_name,self.pista_video_name.get(),frame)
+                    frame_file_path = os.path.join(self.carpeta_temporal_video,file_name,self.pista_video_name.get(),frame)
                     imagen_file = Image.open(frame_file_path)
                     imagen = ImageTk.PhotoImage(imagen_file)
                     #self.objetos_menu[vid]["objeto"].image = imagen
