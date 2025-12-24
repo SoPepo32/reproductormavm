@@ -77,10 +77,14 @@ class ventana:
 
         #variables
         self.file = file
-        self.raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
+        if getattr(sys, 'frozen', False):
+            self.raiz_proyecto = os.path.dirname(sys.executable)
+        else:
+            self,raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
+        #self.raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
         print(self.raiz_proyecto)
-        self.carpeta_temporal = os.path.join(self.raiz_proyecto, 'temp')
-        self.carpeta_temporal_video = os.path.join(self.raiz_proyecto, 'temp_video')
+        self.carpeta_temporal = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp')
+        self.carpeta_temporal_video = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_video')
         self.resolution_menu = [False, None]
         self.detectar_botones = ""
         self.objetos_menu = []
@@ -193,12 +197,15 @@ class ventana:
         config_file.close()
 
     def load_settings(self):
-        config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'r')
-        config_txt = config_file.read()
-        config_file.close()
+        try:
+            config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'r')
+            config_txt = config_file.read()
+            config_file.close()
 
-        config_json = json.loads(config_txt)
-        self.bucle.set(config_json["bucle"])
+            config_json = json.loads(config_txt)
+            self.bucle.set(config_json["bucle"])
+        except:
+            pass
 
     def archivos_ventana(self):
         self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
