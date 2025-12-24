@@ -80,7 +80,7 @@ class ventana:
         if getattr(sys, 'frozen', False):
             self.raiz_proyecto = os.path.dirname(sys.executable)
         else:
-            self,raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
+            self.raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
         #self.raiz_proyecto = os.path.dirname(os.path.abspath(__file__))
         print(self.raiz_proyecto)
         self.carpeta_temporal = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp')
