@@ -212,47 +212,6 @@ class ventana:
         print(self.file)
         self.repdorucir()
 
-    def actalizar_medidas(self):
-        try:
-            ancho_ventana = self.ventana_tk.winfo_width()
-            alto_ventana = self.ventana_tk.winfo_height()
-
-            interfaz_alto = max(int(self.ventana_tk.winfo_height()/12),35)
-            interfaz_ancho = max(int(self.ventana_tk.winfo_width()/8),18) #/16
-            play_ancho = max(int(self.ventana_tk.winfo_width()/8),56) #*.1875
-
-            self.reproductor.config(width=ancho_ventana,height=alto_ventana-(alto_ventana/25+interfaz_alto))
-            self.reproductor.place(x=0,y=alto_ventana/25)
-
-            self.bucle_boton.place(x=0,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
-
-            self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
-
-            self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
-
-            self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
-
-            self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
-            self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
-
-            self.archivos_menu.place(x=0,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-
-            self.pista_subtitulos_text.place(x=ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-            self.pista_subtitulos_menu.place(x=2*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-
-            self.pista_audio_text.place(x=3*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-            self.pista_audio_menu.place(x=4*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-
-            self.pista_video_text.place(x=5*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-
-            self.pista_video_menu.place(x=6*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-            self.reproductor.update_idletasks()
-        except Exception as e:
-            print(e)
-            pass
-        if self.menu_r:
-            self.ventana_tk.after(10, self.actalizar_medidas)
-
     def start(self):
         for widget in self.reproductor.winfo_children():
             widget.destroy()  #elimina cada widget
@@ -336,8 +295,8 @@ class ventana:
         for comando in lista_comandos["start"]:
             print("lcc", comando)
             t = self.comnado_ejecutar(comando, self.espacio_mv)
-            #time.sleep(t)
-            time.sleep(16/1000)
+            time.sleep(t)
+            #time.sleep(16/1000)
         
         print(lista_comandos["loop"])
         if 0 == len(lista_comandos["loop"]):
@@ -353,18 +312,18 @@ class ventana:
                 if self.loop_comandos_on:
                     #print("lcc", comando)
                     t = self.comnado_ejecutar(comando, self.espacio_mv)
-                    #time.sleep(t)
                     time.sleep(t)
                     if not(self.loop_comandos_on):
                         break
-            time.sleep(10/1000)
+            #time.sleep(10/1000)
             #threading.Thread(target=lambda: self.menu_loop(lista_comandos)).start()
             self.ventana_tk.after(10, lambda: self.menu_loop(lista_comandos))
         else:
             pass
 
     def comnado_ejecutar(self, comando, v):
-            t = 16/1000
+            #t = 16/1000
+            t = 0
             #print("contenido comando:", comando)
             if comando[0] == "image":
                 print(comando[1]["imagen"])
@@ -749,6 +708,47 @@ class ventana:
         else:
             time.sleep(16/1000)
             self.comnado_ejecutar(comandos,self.espacio_mv)
+
+    def actalizar_medidas(self):
+        try:
+            ancho_ventana = self.ventana_tk.winfo_width()
+            alto_ventana = self.ventana_tk.winfo_height()
+
+            interfaz_alto = max(int(self.ventana_tk.winfo_height()/12),35)
+            interfaz_ancho = max(int(self.ventana_tk.winfo_width()/8),18) #/16
+            play_ancho = max(int(self.ventana_tk.winfo_width()/8),56) #*.1875
+
+            self.reproductor.config(width=ancho_ventana,height=alto_ventana-(alto_ventana/25+interfaz_alto))
+            self.reproductor.place(x=0,y=alto_ventana/25)
+
+            self.bucle_boton.place(x=0,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+
+            self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+
+            self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
+
+            self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+
+            self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
+            self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
+
+            self.archivos_menu.place(x=0,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_subtitulos_text.place(x=ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_subtitulos_menu.place(x=2*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_audio_text.place(x=3*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_audio_menu.place(x=4*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_video_text.place(x=5*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+
+            self.pista_video_menu.place(x=6*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.reproductor.update_idletasks()
+        except Exception as e:
+            print(e)
+            pass
+        if self.menu_r:
+            self.ventana_tk.after(10, self.actalizar_medidas)
 
     def menu_resize(self):
         try:
@@ -1199,5 +1199,6 @@ def args():
         ventana_tk = tk.Tk()
         ventana(ventana_tk, None)
         ventana_tk.mainloop()
+
 
 args()
