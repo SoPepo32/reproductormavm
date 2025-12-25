@@ -6,7 +6,8 @@ class MaVM:
     def extrac_type_all(file, output_folder, content_type=None):
         files_file = open(file,'br')
         files_bits = files_file.read()
-        if b"+--" in files_bits:
+        print(files_bits[:3])
+        if b"-++" == files_bits[:3]:
             files_data = files_bits.split(b"-++")
             files_file.close()
 
