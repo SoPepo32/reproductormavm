@@ -42,7 +42,7 @@ def install_lin(a=None):
             exit()
 
 if platform.system() == "Windows":
-    intatall_w()
+    install_w()
 elif platform.system() == "Darwin":
     install_w()
 else:
