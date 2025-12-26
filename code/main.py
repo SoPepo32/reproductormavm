@@ -565,7 +565,7 @@ class ventana:
                 if extension == ".mkv":
                     self.menu_r = True
                     self.video_repr = True
-                    self.video(self.contenido_dat[paths[0]], [])
+                    self.video(self.contenido_dat[paths[0]], [], mkv_time=None)
                     #while self.video_repr:
                      #   if not(self.video_repr):
                       #      break
@@ -589,9 +589,9 @@ class ventana:
                             self.menu_r = True
                             self.video_repr = True
                             if type(paths[path_num+1]) == type([]):
-                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+2:], paths[path_num+1])
+                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+2:], mkv_time=paths[path_num+1])
                             else:
-                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+1:])
+                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+1:], mkv_time=None)
                             #while self.video_repr:
                             #   if not(self.video_repr):
                             #      break
@@ -623,11 +623,11 @@ class ventana:
                 if mkv_t != None:
                     self.menu_r = True
                     self.video_repr = True
-                    self.video(self.contenido_dat[paths], paths_b, mkv_t)
+                    self.video(self.contenido_dat[paths], paths_b, mkv_time=mkv_t)
                 else:
                     self.menu_r = True
                     self.video_repr = True
-                    self.video(self.contenido_dat[paths], paths_b)
+                    self.video(self.contenido_dat[paths], paths_b, mkv_time=None)
                 #while self.video_repr:
                  #   if not(self.video_repr):
                   #      break
@@ -882,8 +882,11 @@ class ventana:
             if s[0][0] <= time_sub_segundos < s[0][1]:
                 return s[1]
 
-    def video(self,video_path,paths,mkv_time):
-        mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+    def video(self,video_path,paths,mkv_time=None):
+        if mkv_time != None:
+            mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+        else:
+            mkv_t = None
 
         self.loop_comandos_on = False
         self.objetos_menu = []
@@ -962,7 +965,10 @@ class ventana:
             os.makedirs(os.path.join(self.carpeta_temporal_video,f"{self.carpeta_temporal_video}/{file_name}"))
         
         for audio_num, audio in enumerate(video_audios):
-            subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
+            if mkv_t:
+                subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
+            else:
+                subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
 
         self.pista_video_name.set("0")
 
@@ -987,6 +993,8 @@ class ventana:
                 os.makedirs(os.path.join(self.carpeta_temporal_video,file_name,str(video_num)))
             if mkv_t:
                 subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:v:{video_num}", "fotograma_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_video,file_name,str(video_num))}")
+            else:
+                subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:v:{video_num}", "fotograma_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_video,file_name,str(video_num))}")
         
         menu_subtitulos = self.pista_subtitulos_menu["menu"]
         menu_subtitulos.delete(0, "end")
@@ -1004,6 +1012,8 @@ class ventana:
         for subtitulo_num, subtitulo in enumerate(video_subtitulos):
             if mkv_t:
                 subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:s:{subtitulo_num}", "-c:s", "srt", f"{subtitulo_num}.srt"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
+            else:
+                subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:s:{subtitulo_num}", "-c:s", "srt", f"{subtitulo_num}.srt"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
         
         #subprocess.run(['mpv', video_path])
 
