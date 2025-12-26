@@ -167,8 +167,10 @@ class ventana:
         self.adelante_boton = tk.Button(self.ventana_tk, text="10s->", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_adel)
         self.adelante_boton.place(x=780,y=430,width=20,height=16)
 
-        self.volume = tk.Scale(self.ventana_tk, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=0, resolution=.01,tickinterval=1)
-        self.volume.set(.37)
+        #self.volume_text = tk.Label(self.ventana_tk, text="volume>s", bg='#404040', fg='#FFFFFF')
+
+        self.volume = tk.Scale(self.ventana_tk, from_=0, to=100, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.1, tickinterval=0)
+        self.volume.set(37)
 
 
         #codigo
@@ -504,7 +506,7 @@ class ventana:
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
-                                self.objetos_menu[i]["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
+                                self.objetos_menu[i]["objeto"].set_volume(self.volume.get()/100*comando[1]["volume"]/100)
             elif comando[0] == "time":
                 if "wait" in comando[1].keys():
                     tiempo = comando[1]["wait"][0]
@@ -695,7 +697,7 @@ class ventana:
             try:
                 print("sound")
                 self.used_vid[file_name].append(pygame.mixer.Sound(f"{self.carpeta_temporal_video}/{file_name}.opus"))
-                self.used_vid[file_name][2].set_volume(self.volume.get())
+                self.used_vid[file_name][2].set_volume(self.volume.get()/100)
                 self.used_vid[file_name].append(self.used_vid[file_name][2].play())
             except Exception as e:
                 print(e)
@@ -781,11 +783,19 @@ class ventana:
 
             self.bucle_boton.place(x=0,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
+            #self.atras_boton.place(x=int(ancho_ventana/2.5)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+
+            #self.play_boton.place(x=int(ancho_ventana/2.5)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
+
+            #self.adelante_boton.place(x=int(ancho_ventana/2.5)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+
             self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
             self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
 
             self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+
+            #self.volume_text.place(x=ancho_ventana-int(interfaz_ancho+int(interfaz_ancho*3/2)),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho),height=interfaz_alto)
 
             self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
             self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
@@ -837,7 +847,7 @@ class ventana:
                 
                 for objeto_num, objeto in enumerate(self.objetos_menu):
                     if isinstance(objeto["objeto"], pygame.mixer.Sound):
-                        objeto["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
+                        objeto["objeto"].set_volume(self.volume.get()/100*comando[1]["volume"]/100)
                     elif "video_r" in objeto.keys():
                         if "video_rr" in objeto.keys():
                             cordenadas = [0,0,escala_ancho,escala_alto-int(escala_alto/10)]
@@ -1227,7 +1237,7 @@ class ventana:
                             print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
                             pygame.mixer.music.play(start=frame_num/fps)
                         self.pista_audio = self.pista_audio_name.get()
-                        pygame.mixer.music.set_volume(self.volume.get())
+                        pygame.mixer.music.set_volume(self.volume.get()/100)
 
                     if self.pista_subtitulos_name.get() != "none":
                         sub = self.leer_subtitulo(subtitulo_path=os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_subtitulos_name.get()}.srt"),
