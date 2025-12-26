@@ -32,7 +32,7 @@ class version_formato:
                             lista_comandos["start"] = self.comando_x(parametros, lista_comandos["start"])
                     elif comando == "time":
                         lista_comandos["start"].append(["time", {
-                            "wait": [parametros[0],parametros[1]]
+                            "wait": [parametros[1],parametros[2]]
                             }])
             
             loop_comandos = menu["loop"]
@@ -43,7 +43,7 @@ class version_formato:
                         lista_comandos["loop"] = self.comando_x(parametros, lista_comandos["loop"])
                     elif comando == "time":
                         lista_comandos["loop"].append(["time", {
-                            "wait": [parametros[0],parametros[1]]
+                            "wait": [parametros[1],parametros[2]]
                             }])
             self.lista_comandos = lista_comandos
 
@@ -221,7 +221,7 @@ class version_formato:
                             lista_comandos["start"] = self.comando_x(parametros, lista_comandos["start"])
                     elif comando == "time":
                         lista_comandos["start"].append(["time", {
-                            "wait": [parametros[0],parametros[1]]
+                            "wait": [parametros[1],parametros[2]]
                             }])
             
             loop_comandos = menu["loop"]
@@ -232,7 +232,7 @@ class version_formato:
                         lista_comandos["loop"] = self.comando_x(parametros, lista_comandos["loop"])
                     elif comando == "time":
                         lista_comandos["loop"].append(["time", {
-                            "wait": [parametros[0],parametros[1]]
+                            "wait": [parametros[1],parametros[2]]
                             }])
             self.lista_comandos = lista_comandos
 

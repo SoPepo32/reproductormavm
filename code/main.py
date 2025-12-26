@@ -19,13 +19,15 @@ import os
 import menus
 from mavm import MaVM
 
+exit_ = False
+
 def install_w():
     if shutil.which("ffmpeg") is None:
         print("Install FFmpeg")
-        exit()
+        exit_ = True
     elif shutil.which("mkvmerge") is None:
         print("Install MKVToolNix")
-        exit()
+        exit_ = True
 
 def install_lin(a=None):
     if not(a==None):
@@ -295,14 +297,15 @@ class ventana:
         #self.objetos_menu = 
         #comando[1]["imagen"]
         print("start:",lista_comandos["start"])
-        for comando in lista_comandos["start"]:
-            print("lcc", comando)
-            t = self.comnado_ejecutar(comando, self.espacio_mv)
-            print(t)
-            for i in range(t*1000):
-                time.sleep(1/1000)
-                self.menu_resize(self, menu_r=False)
+        #for comando in lista_comandos["start"]:
+         #   print("lcc", comando)
+          #  t = self.comnado_ejecutar(comando, self.espacio_mv)
+           # print("sleep",t)
+            #for i in range(t*1000):
+             #   time.sleep(1/1000)
+              #  self.menu_resize(menu_r_b=False)
             #time.sleep(16/1000)
+        self.menu_comand(lista_comandos["start"])
         
         print(lista_comandos["loop"])
         if 0 == len(lista_comandos["loop"]):
@@ -312,15 +315,45 @@ class ventana:
             self.loop_comandos_on = True
             self.menu_loop(lista_comandos["loop"])
 
+    def menu_comand(self, lista_comandos, time_a=None, i=0):
+        if i <= len(lista_comandos)-1:
+            print(i)
+            #if time_a != None:
+            print(time_a)
+            if time_a:
+                print("time_a",time_a)
+                print("time.time()",time.time())
+                print("time.time() >= time_a",time.time() >= time_a)
+                if time.time() >= time_a:
+                    #print("lcc", comando)
+                    comando = lista_comandos[i+1]
+                    t = self.comnado_ejecutar(comando, self.espacio_mv)
+                    if t != 0:
+                        time_a = time.time()+t
+
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                    else:
+                        time_a = None
+
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                else:
+                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+            else:
+                #print("lcc", comando)
+                comando = lista_comandos[i]
+                t = self.comnado_ejecutar(comando, self.espacio_mv)
+                if t != 0:
+                    time_a = time.time()+t
+
+                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                else:
+                    time_a = None
+
+                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+
     def menu_loop(self, lista_comandos):
         if self.loop_comandos_on:
-            for comando in lista_comandos:
-                if self.loop_comandos_on:
-                    #print("lcc", comando)
-                    t = self.comnado_ejecutar(comando, self.espacio_mv)
-                    time.sleep(t)
-                    if not(self.loop_comandos_on):
-                        break
+            self.menu_comand(lista_comandos)
             #time.sleep(10/1000)
             #threading.Thread(target=lambda: self.menu_loop(lista_comandos)).start()
             self.ventana_tk.after(10, lambda: self.menu_loop(lista_comandos))
@@ -623,6 +656,15 @@ class ventana:
                 if mkv_t != None:
                     self.menu_r = True
                     self.video_repr = True
+
+
+                    self.pista_audio_name.set("0")
+
+                    self.pista_video_name.set("0")
+
+                    self.pista_subtitulos_name.set("none")
+
+
                     self.video(self.contenido_dat[paths], paths_b, mkv_time=mkv_t)
                 else:
                     self.menu_r = True
@@ -766,7 +808,7 @@ class ventana:
         if self.menu_r:
             self.ventana_tk.after(10, self.actalizar_medidas)
 
-    def menu_resize(self, menu_r=True):
+    def menu_resize(self, menu_r_b=True):
         try:
             if self.resolution_menu[0]:
                 reproductor_ancho = self.reproductor.winfo_width()
@@ -840,7 +882,7 @@ class ventana:
             self.espacio_mv.update_idletasks()
         except:
             pass
-        if self.menu_r and menu_r:
+        if self.menu_r and menu_r_b:
             self.ventana_tk.after(10, self.menu_resize)
 
     def repdorucir(self):
@@ -970,10 +1012,10 @@ class ventana:
             else:
                 subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
 
-        self.pista_video_name.set("0")
-
         menu_video = self.pista_video_menu["menu"]
         menu_video.delete(0, "end")
+
+        self.pista_video_name.set("0")
 
         opciones_video = video_videos
         for opcion in opciones_video:
@@ -998,6 +1040,8 @@ class ventana:
         
         menu_subtitulos = self.pista_subtitulos_menu["menu"]
         menu_subtitulos.delete(0, "end")
+
+        self.pista_subtitulos_name.set("none")
 
         opciones_subtitulos = video_subtitulos
         for opcion in video_subtitulos:
@@ -1105,6 +1149,14 @@ class ventana:
                 
                 self.menu_r = True
                 self.video_repr = False
+
+
+                self.pista_audio_name.set("0")
+
+                self.pista_video_name.set("0")
+
+                self.pista_subtitulos_name.set("none")
+
 
                 self.teleport(paths)
 
@@ -1229,5 +1281,5 @@ def args():
         ventana(ventana_tk, None)
         ventana_tk.mainloop()
 
-
-args()
+if not(exit_):
+    args()
