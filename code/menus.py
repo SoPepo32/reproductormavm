@@ -1,9 +1,10 @@
 class version_formato:
     def __new__(cls, version):
-        version_soported = ('v.2.1.0','v.2.2.0','v.3.0.0',)
+        version_soported = ('v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0',)
         interfaz_version = {'v.2.1.0': cls.interfaz_2_1_0,
                             'v.2.2.0': cls.interfaz_2_2_0,
-                            'v.3.0.0': cls.interfaz_2_2_0}
+                            'v.3.0.0': cls.interfaz_2_2_0,
+                            'v.3.1.0': cls.interfaz_2_2_0}
         if version in version_soported:
             return [True, interfaz_version[version]]
         else:

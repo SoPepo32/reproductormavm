@@ -72,6 +72,9 @@ class ventana:
         self.ventana_tk.geometry("800x450")
         self.ventana_tk.minsize(800,450)
         self.ventana_tk.config(bg="#404040")
+
+        icon = tk.PhotoImage(file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon.png"))
+        self.ventana_tk.iconphoto(True, icon)
         #self.ventana_tk.protocol("WM_DELETE_WINDOW", self.exit)
 
 
@@ -230,7 +233,7 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0']):
+        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0']):
             messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.0.0")
             exit()
         print(self.video_mavm_version)
@@ -295,7 +298,10 @@ class ventana:
         for comando in lista_comandos["start"]:
             print("lcc", comando)
             t = self.comnado_ejecutar(comando, self.espacio_mv)
-            time.sleep(t)
+            print(t)
+            for i in range(t*1000):
+                time.sleep(1/1000)
+                self.menu_resize(self, menu_r=False)
             #time.sleep(16/1000)
         
         print(lista_comandos["loop"])
@@ -550,7 +556,7 @@ class ventana:
                 time.sleep(16/1000)
                 self.menu(menu_j)
 
-    def teleport(self, paths, paths_b=None):
+    def teleport(self, paths, paths_b=None, mkv_t=None):
         print("h")
         print(paths)
         if type(paths) == type([]):
@@ -575,13 +581,17 @@ class ventana:
                     self.reproductor.update_idletasks()
                     self.espacio_mv.update_idletasks()
             else:
-                for path_num in range(0,len(paths)-1):
+                path_num = 0
+                while path_num <= len(paths)-1:
                     nombre, extension = os.path.splitext(paths[path_num])
                     if extension == ".mkv":
                         if len(paths)-1>=path_num+1:
                             self.menu_r = True
                             self.video_repr = True
-                            self.video(self.contenido_dat[paths[path_num]], paths[path_num+1:])
+                            if type(paths[path_num+1]) == type([]):
+                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+2:], paths[path_num+1])
+                            else:
+                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+1:])
                             #while self.video_repr:
                             #   if not(self.video_repr):
                             #      break
@@ -605,13 +615,19 @@ class ventana:
                         self.menu(menu_j)
                         self.reproductor.update_idletasks()
                         self.espacio_mv.update_idletasks()
+                    path_num += 1
         else:
             self.loop_comandos_on = False
             nombre, extension = os.path.splitext(paths)
             if extension == ".mkv":
-                self.menu_r = True
-                self.video_repr = True
-                self.video(self.contenido_dat[paths], paths_b)
+                if mkv_t != None:
+                    self.menu_r = True
+                    self.video_repr = True
+                    self.video(self.contenido_dat[paths], paths_b, mkv_t)
+                else:
+                    self.menu_r = True
+                    self.video_repr = True
+                    self.video(self.contenido_dat[paths], paths_b)
                 #while self.video_repr:
                  #   if not(self.video_repr):
                   #      break
@@ -637,7 +653,7 @@ class ventana:
             try:
                 print("sound")
                 self.used_vid[file_name].append(pygame.mixer.Sound(f"{self.carpeta_temporal_video}/{file_name}.opus"))
-                self.used_vid[file_name][2].volume(self.volume.get())
+                self.used_vid[file_name][2].set_volume(self.volume.get())
                 self.used_vid[file_name].append(self.used_vid[file_name][2].play())
             except Exception as e:
                 print(e)
@@ -750,7 +766,7 @@ class ventana:
         if self.menu_r:
             self.ventana_tk.after(10, self.actalizar_medidas)
 
-    def menu_resize(self):
+    def menu_resize(self, menu_r=True):
         try:
             if self.resolution_menu[0]:
                 reproductor_ancho = self.reproductor.winfo_width()
@@ -824,7 +840,7 @@ class ventana:
             self.espacio_mv.update_idletasks()
         except:
             pass
-        if self.menu_r:
+        if self.menu_r and menu_r:
             self.ventana_tk.after(10, self.menu_resize)
 
     def repdorucir(self):
@@ -866,7 +882,9 @@ class ventana:
             if s[0][0] <= time_sub_segundos < s[0][1]:
                 return s[1]
 
-    def video(self,video_path,paths):
+    def video(self,video_path,paths,mkv_time):
+        mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+
         self.loop_comandos_on = False
         self.objetos_menu = []
         self.used_vid = {}
@@ -944,7 +962,7 @@ class ventana:
             os.makedirs(os.path.join(self.carpeta_temporal_video,f"{self.carpeta_temporal_video}/{file_name}"))
         
         for audio_num, audio in enumerate(video_audios):
-            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
+            subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:a:{audio_num}", "-c:a","libopus", f"{audio_num}.opus"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
 
         self.pista_video_name.set("0")
 
@@ -967,8 +985,8 @@ class ventana:
                 os.makedirs(os.path.join(self.carpeta_temporal_video,file_name,str(video_num)))
             except:
                 os.makedirs(os.path.join(self.carpeta_temporal_video,file_name,str(video_num)))
-            
-            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:v:{video_num}", "fotograma_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_video,file_name,str(video_num))}")
+            if mkv_t:
+                subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:v:{video_num}", "fotograma_%04d.png"], cwd=f"{os.path.join(self.carpeta_temporal_video,file_name,str(video_num))}")
         
         menu_subtitulos = self.pista_subtitulos_menu["menu"]
         menu_subtitulos.delete(0, "end")
@@ -984,7 +1002,8 @@ class ventana:
             )
 
         for subtitulo_num, subtitulo in enumerate(video_subtitulos):
-            subprocess.run(["ffmpeg", "-i",video_path, "-map",f"0:s:{subtitulo_num}", f"{subtitulo_num}.srt"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
+            if mkv_t:
+                subprocess.run(["ffmpeg", "-i",video_path, "-ss",mkv_t[0], "-to",mkv_t[1], "-map",f"0:s:{subtitulo_num}", "-c:s", "srt", f"{subtitulo_num}.srt"], cwd=f"{self.carpeta_temporal_video}/{file_name}")
         
         #subprocess.run(['mpv', video_path])
 
