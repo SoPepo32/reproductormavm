@@ -1,5 +1,6 @@
 #librerias
 from tkinter import filedialog,messagebox
+from screeninfo import get_monitors
 from PIL import Image,ImageTk
 #from pymkv import MKVFile
 import tkinter as tk
@@ -75,6 +76,13 @@ class ventana:
         self.ventana_tk.minsize(800,450)
         self.ventana_tk.config(bg="#404040")
 
+        monitor = get_monitors()[0]
+
+        y = (monitor.height // 2) - 225
+        x = (monitor.width // 2) - 400
+
+        self.ventana_tk.geometry(f"800x450+{x}+{y}")
+
         icon = tk.PhotoImage(file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "icon.png"))
         self.ventana_tk.iconphoto(True, icon)
         #self.ventana_tk.protocol("WM_DELETE_WINDOW", self.exit)
@@ -107,6 +115,9 @@ class ventana:
         self.bucle.set("none")
         self.archivos_accion_name = tk.StringVar(self.ventana_tk)
         self.archivos_accion_name.set("files")
+        self.editar_accion_name = tk.StringVar(self.ventana_tk)
+        self.archivos_accion_name.set("edit")
+        self.config_json = {}
 
 
         #objetos
@@ -125,9 +136,32 @@ class ventana:
                 label=opcion,
                 command=_set_val
             )
+        
+        self.archivos_accion_name.set("files")
 
         self.archivos_menu.config(bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF")
         self.archivos_menu.place(x=780,y=430,width=20,height=16)
+
+        self.editar_menu = tk.OptionMenu(self.ventana_tk, self.editar_accion_name, "none")
+        editar_menu = self.editar_menu["menu"]
+        editar_menu.delete(0, "end")
+
+        for opcion in ['settings']:
+            def _set_val(v=opcion):
+                if v != 'files':
+                    #{'settings':self.archivos_ventana,
+                     #'open file':self.window_files}[v]()
+                    {'settings':self.settings_edit}[v]()
+                self.editar_accion_name.set("edit")
+            editar_menu.add_command(
+                label=opcion,
+                command=_set_val
+            )
+
+        self.editar_accion_name.set("edit")
+
+        self.editar_menu.config(bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF")
+        self.editar_menu.place(x=780,y=430,width=20,height=16)
 
         #self.archivos = tk.Button(self.ventana_tk, text="files", bg='#404040', fg='#FFFFFF', activeforeground="#404040", activebackground="#FFFFFF", command=self.archivos_ventana)
         #self.archivos.place(x=0,y=0,width=80,height=16)
@@ -176,7 +210,9 @@ class ventana:
         #codigo
         self.ventana_tk.after(10, self.actalizar_medidas)
 
-        self.ventana_tk.after(10, self.load_settings)
+        self.load_settings()
+
+        self.actualizar_color()
 
         if self.file:
             self.ventana_tk.after(100, self.repdorucir)
@@ -196,8 +232,95 @@ class ventana:
     def detectar_botones_fun_adel(self):
         self.detectar_botones = "adelante"
 
+    def settings_edit(self):
+        self.ventana_tk_config = tk.Tk()
+        self.ventana_tk_config.title("MaVM player configuration")
+        
+        x_ventana_tk = self.ventana_tk.winfo_x()
+        y_ventana_tk = self.ventana_tk.winfo_y()
+        ancho_ventana_tk = self.ventana_tk.winfo_width()
+        alto_ventana_tk = self.ventana_tk.winfo_height()
+
+        x = x_ventana_tk + (ancho_ventana_tk // 2) - 200
+        y = y_ventana_tk + (alto_ventana_tk // 2) - 100
+
+        self.ventana_tk_config.geometry(f"400x200+{x}+{y}")
+        self.ventana_tk_config.minsize(400,200)
+        self.ventana_tk_config.config(bg="#404040")
+
+        self.ventana_tk_config_x = self.ventana_tk_config.winfo_width()
+        self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
+
+        self.modo_color_name = tk.Label(self.ventana_tk_config, text="dark mode", bg='#404040', fg='#FFFFFF')
+        self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+
+        self.modo_color = tk.Scale(self.ventana_tk_config, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+        try:
+            self.modo_color.set(self.config_json['modo_color'])
+        except:
+            self.modo_color.set(1)
+
+        self.menu_r_config = True
+        self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_medias)
+
+        self.ventana_tk_config.after(10, self.actualizar_color)
+
+        self.ventana_tk_config.mainloop()
+    
+    def ventana_tk_config_actualizar_medias(self):
+        self.ventana_tk_config_x = self.ventana_tk_config.winfo_width()
+        self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
+
+        self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+        self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+
+        try:
+            if self.config_json['modo_color'] != self.modo_color.get():
+                self.config_json['modo_color'] = self.modo_color.get()
+                self.ventana_tk.after(10, self.actualizar_color)
+        except:
+            self.config_json['modo_color'] = self.modo_color.get()
+            self.ventana_tk.after(10, self.actualizar_color)
+
+        if self.ventana_tk_config.winfo_viewable():
+            self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_medias)
+
+    def actualizar_color(self):
+        #print("self.config_json['modo_color']",self.config_json['modo_color'])
+        if self.config_json['modo_color'] == 1:
+            self.ventana_tk.config(bg='#404040')
+            
+            for i in self.ventana_tk.winfo_children():
+                if not(i is self.reproductor):
+                    i.config(bg='#404040', fg='#9F9F9F')
+                else:
+                    i.config(bg='#000000')
+            try:
+                if self.ventana_tk_config.winfo_viewable():
+                    self.ventana_tk_config.config(bg='#404040')
+                    for i in self.ventana_tk_config.winfo_children():
+                        i.config(bg='#404040', fg='#9F9F9F')
+            except:
+                pass
+        else:
+            self.ventana_tk.config(bg='#BFBFBF')
+
+            for i in self.ventana_tk.winfo_children():
+                if not(i is self.reproductor):
+                    i.config(bg='#BFBFBF', fg='#404040')
+                else:
+                    i.config(bg='#FFFFFF')
+            try:
+                if self.ventana_tk_config.winfo_viewable():
+                    self.ventana_tk_config.config(bg='#E1E1E1')
+                    for i in self.ventana_tk_config.winfo_children():
+                        i.config(bg='#E1E1E1', fg='#404040')
+            except:
+                pass
+
     def save_settings(self):
-        config = '{"bucle": '+f'"{self.bucle.get()}"'+'}'
+        config = '{'+f'"bucle": "{self.config_json["bucle"]}", "modo_color": {self.config_json["modo_color"]}'+'}'
 
         config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'w')
         config_file.write(config)
@@ -209,10 +332,11 @@ class ventana:
             config_txt = config_file.read()
             config_file.close()
 
-            config_json = json.loads(config_txt)
-            self.bucle.set(config_json["bucle"])
+            self.config_json = json.loads(config_txt)
+            self.bucle.set(self.config_json["bucle"])
+            self.config_json['modo_color'] = self.config_json['modo_color']
         except:
-            pass
+            self.config_json = {"bucle":"0","modo_color":1}
 
     def archivos_ventana(self):
         self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
@@ -800,17 +924,19 @@ class ventana:
             self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
             self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
 
-            self.archivos_menu.place(x=0,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.archivos_menu.place(x=0,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
-            self.pista_subtitulos_text.place(x=ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-            self.pista_subtitulos_menu.place(x=2*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.editar_menu.place(x=ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
-            self.pista_audio_text.place(x=3*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
-            self.pista_audio_menu.place(x=4*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_subtitulos_text.place(x=2*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+            self.pista_subtitulos_menu.place(x=3*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
-            self.pista_video_text.place(x=5*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_audio_text.place(x=4*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+            self.pista_audio_menu.place(x=5*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
-            self.pista_video_menu.place(x=6*ancho_ventana/7,y=0,width=ancho_ventana/7,height=alto_ventana/25)
+            self.pista_video_text.place(x=6*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+
+            self.pista_video_menu.place(x=7*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
             self.reproductor.update_idletasks()
         except Exception as e:
             print(e)
