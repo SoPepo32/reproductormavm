@@ -1395,27 +1395,31 @@ class ventana:
             self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(file_name,vid,frame_num,play,paths,audio))
 
 def args():
-    parser = argparse.ArgumentParser(description="reproductor MaVM")
-    parser.add_argument("file", nargs='?', help="ruta del video .mavm")
+    parser = argparse.ArgumentParser(description="MaVMPlayer")
+    parser.add_argument("file", nargs='?', help="video path with .mavm extension")
+    parser.add_argument('--version',"-v", action="store_true", help="player version number")
     
     args_var = parser.parse_args()
     
-    if args_var.file:
-        if not('.mavm' in args_var.file.lower()):
-            print("el archivo debe ser .mavm")
-            exit()
-        elif not(os.path.exists(args_var.file)):
-            print("el archivo no existe")
-            exit()
-        else:
-            file = os.path.abspath(args_var.file)
-            ventana_tk = tk.Tk()
-            ventana(ventana_tk=ventana_tk, file=file)
-            ventana_tk.mainloop()
+    if args_var.version:
+        print('v.1.15.0')  
     else:
-        ventana_tk = tk.Tk()
-        ventana(ventana_tk, None)
-        ventana_tk.mainloop()
+        if args_var.file:
+            if not('.mavm' in args_var.file.lower()):
+                print("el archivo debe ser .mavm")
+                exit()
+            elif not(os.path.exists(args_var.file)):
+                print("el archivo no existe")
+                exit()
+            else:
+                file = os.path.abspath(args_var.file)
+                ventana_tk = tk.Tk()
+                ventana(ventana_tk=ventana_tk, file=file)
+                ventana_tk.mainloop()
+        else:
+            ventana_tk = tk.Tk()
+            ventana(ventana_tk, None)
+            ventana_tk.mainloop()
 
 if not(exit_):
     args()
