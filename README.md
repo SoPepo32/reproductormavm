@@ -7,6 +7,16 @@
 - [FFmpeg](https://www.ffmpeg.org/)
 <h4>External Programs</h4>
 
+## GUI (graphical user interface)
+ - clear mode
+<img width="853" height="529" alt="MaVMPlayer clear mode2" src="https://github.com/user-attachments/assets/1d815db4-053d-4a6d-9c6e-333c70c2aa40" />
+<img width="842" height="535" alt="MaVMPlayer clear mode" src="https://github.com/user-attachments/assets/3424e6d0-131f-405e-b2a7-503fa80291d5" />
+
+ - dark mode
+<img width="842" height="535" alt="MaVMPlayer dark mode2" src="https://github.com/user-attachments/assets/97f1e9b4-4ef0-4eb1-8e54-f55aae7d7c43" />
+<img width="842" height="535" alt="MaVMPlayer dark mode" src="https://github.com/user-attachments/assets/e7a5f51b-a697-4e15-9657-adb92a8413b6" />
+
+
 ### How to compile:
 - Linux:
 ```bash
@@ -39,6 +49,16 @@ All content in this repository is under GPL-3.0.
  - [MKVToolNix](https://mkvtoolnix.org/)
  - [FFmpeg](https://www.ffmpeg.org/)
 <h4>como programas externos</h4>
+
+## GUI (interfaz gráfica de usuario)
+ - modo claro
+<img width="853" height="529" alt="MaVMPlayer clear mode2" src="https://github.com/user-attachments/assets/1d815db4-053d-4a6d-9c6e-333c70c2aa40" />
+<img width="842" height="535" alt="MaVMPlayer clear mode" src="https://github.com/user-attachments/assets/3424e6d0-131f-405e-b2a7-503fa80291d5" />
+
+ - modo oscuro
+<img width="842" height="535" alt="MaVMPlayer dark mode2" src="https://github.com/user-attachments/assets/97f1e9b4-4ef0-4eb1-8e54-f55aae7d7c43" />
+<img width="842" height="535" alt="MaVMPlayer dark mode" src="https://github.com/user-attachments/assets/e7a5f51b-a697-4e15-9657-adb92a8413b6" />
+
 
 ### Cómo compilar:
  - Linux:
