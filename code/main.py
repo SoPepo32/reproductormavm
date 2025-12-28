@@ -1471,22 +1471,25 @@ def args():
     
     args_var = parser.parse_args()
     
-    if args_var.file:
-        if not('.mavm' in args_var.file.lower()):
-            print("el archivo debe ser .mavm")
-            exit()
-        elif not(os.path.exists(args_var.file)):
-            print("el archivo no existe")
-            exit()
-        else:
-            file = os.path.abspath(args_var.file)
-            ventana_tk = tk.Tk()
-            ventana(ventana_tk=ventana_tk, file=file)
-            ventana_tk.mainloop()
+    if args_var.version:
+        print('v.1.16.0')  
     else:
-        ventana_tk = tk.Tk()
-        ventana(ventana_tk, None)
-        ventana_tk.mainloop()
+        if args_var.file:
+            if not('.mavm' in args_var.file.lower()):
+                print("el archivo debe ser .mavm")
+                exit()
+            elif not(os.path.exists(args_var.file)):
+                print("el archivo no existe")
+                exit()
+            else:
+                file = os.path.abspath(args_var.file)
+                ventana_tk = tk.Tk()
+                ventana(ventana_tk=ventana_tk, file=file)
+                ventana_tk.mainloop()
+        else:
+            ventana_tk = tk.Tk()
+            ventana(ventana_tk, None)
+            ventana_tk.mainloop()
 
 
 if not(exit_):
