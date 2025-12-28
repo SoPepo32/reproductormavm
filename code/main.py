@@ -116,7 +116,7 @@ class ventana:
         self.archivos_accion_name = tk.StringVar(self.ventana_tk)
         self.archivos_accion_name.set("files")
         self.editar_accion_name = tk.StringVar(self.ventana_tk)
-        self.archivos_accion_name.set("edit")
+        self.editar_accion_name.set("edit")
         self.config_json = {}
 
 
@@ -189,17 +189,23 @@ class ventana:
         self.reproductor.place(x=0,y=20)
 
         #abajo
-        self.bucle_boton = tk.Checkbutton(self.ventana_tk, text="loop", bg='#404040', fg='#808080', variable=self.bucle)
+        self.bucle_boton = tk.Checkbutton(self.ventana_tk, text="loop", bg='#404040', fg='#808080', variable=self.bucle, command=self.ventana_tk_config_actualizar_valores)
         self.bucle_boton.place(x=0,y=430,width=20,height=16)
 
-        self.atras_boton = tk.Button(self.ventana_tk, text="<-10s", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_atra)
+        self.atras_boton = tk.Button(self.ventana_tk, text="<-10s", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_atras)
         self.atras_boton.place(x=0,y=430,width=20,height=16)
+
+        self.ventana_tk.bind("<Left>", self.detectar_botones_fun_atras)
 
         self.play_boton = tk.Button(self.ventana_tk, text="play/pause", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_stop_play)
         self.atras_boton.place(x=0,y=430,width=20,height=16)
 
+        self.ventana_tk.bind("<space>", self.detectar_botones_fun_stop_play)
+
         self.adelante_boton = tk.Button(self.ventana_tk, text="10s->", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_adel)
         self.adelante_boton.place(x=780,y=430,width=20,height=16)
+
+        self.ventana_tk.bind("<Right>", self.detectar_botones_fun_adel)
 
         #self.volume_text = tk.Label(self.ventana_tk, text="volume>s", bg='#404040', fg='#FFFFFF')
 
@@ -223,13 +229,13 @@ class ventana:
     def reset_botones_fun(self):
         self.detectar_botones = ""
 
-    def detectar_botones_fun_atra(self):
+    def detectar_botones_fun_atras(self, event=None):
         self.detectar_botones = "atras"
 
-    def detectar_botones_fun_stop_play(self):
+    def detectar_botones_fun_stop_play(self, event=None):
         self.detectar_botones = "stop-play"
 
-    def detectar_botones_fun_adel(self):
+    def detectar_botones_fun_adel(self, event=None):
         self.detectar_botones = "adelante"
 
     def settings_edit(self):
@@ -262,29 +268,38 @@ class ventana:
             self.modo_color.set(1)
 
         self.menu_r_config = True
-        self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_medias)
+        self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_valores)
 
         self.ventana_tk_config.after(10, self.actualizar_color)
 
         self.ventana_tk_config.mainloop()
     
-    def ventana_tk_config_actualizar_medias(self):
-        self.ventana_tk_config_x = self.ventana_tk_config.winfo_width()
-        self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
-
-        self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
-        self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
-
+    def ventana_tk_config_actualizar_valores(self):
         try:
+            if self.config_json['bucle'] != self.modo_color.get():
+                self.config_json['bucle'] = self.bucle.get()
             if self.config_json['modo_color'] != self.modo_color.get():
                 self.config_json['modo_color'] = self.modo_color.get()
                 self.ventana_tk.after(10, self.actualizar_color)
         except:
-            self.config_json['modo_color'] = self.modo_color.get()
+            self.config_json['bucle'] = self.bucle.get()
+            try:
+                self.config_json['modo_color'] = self.modo_color.get()
+            except:
+                pass
             self.ventana_tk.after(10, self.actualizar_color)
+        
+        try:
+            self.ventana_tk_config_x = self.ventana_tk_config.winfo_width()
+            self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
 
-        if self.ventana_tk_config.winfo_viewable():
-            self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_medias)
+            self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+            self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+
+            if self.ventana_tk_config.winfo_viewable():
+                self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_valores)
+        except:
+            pass
 
     def actualizar_color(self):
         #print("self.config_json['modo_color']",self.config_json['modo_color'])
@@ -320,22 +335,41 @@ class ventana:
                 pass
 
     def save_settings(self):
-        config = '{'+f'"bucle": "{self.config_json["bucle"]}", "modo_color": {self.config_json["modo_color"]}'+'}'
+        config = json.dumps(self.config_json)
+        print(config)
 
-        config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'w')
-        config_file.write(config)
-        config_file.close()
+        if os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")):
+            print('os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")))
+            config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'w')
+            config_file.write(config)
+            config_file.close()
+        else:
+            print('os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")))
+                
+            os.mkdir(os.path.join(os.path.expanduser("~"), "mavmplayer"))
+
+            config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'w')
+            config_file.write(config)
+            config_file.close()
 
     def load_settings(self):
         try:
-            config_file = open(os.path.join(self.raiz_proyecto, 'config.json'),'r')
-            config_txt = config_file.read()
-            config_file.close()
+            if os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")):
+                config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'r')
+                config_txt = config_file.read()
+                config_file.close()
+            else:
+                os.mkdir(os.path.join(os.path.expanduser("~"), "mavmplayer"))
 
+                config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'r')
+                config_txt = config_file.read()
+                config_file.close()
+                
             self.config_json = json.loads(config_txt)
             self.bucle.set(self.config_json["bucle"])
             self.config_json['modo_color'] = self.config_json['modo_color']
-        except:
+        except Exception as e:
+            print(e)
             self.config_json = {"bucle":"0","modo_color":1}
 
     def archivos_ventana(self):
@@ -361,7 +395,7 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0']):
+        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0','v.3.2.0']):
             messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.0.0")
             exit()
         print(self.video_mavm_version)
@@ -1062,9 +1096,31 @@ class ventana:
 
     def video(self,video_path,paths,mkv_time=None):
         if mkv_time != None:
-            mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+            if type(mkv_time[0]) == type(""):
+                try:
+                    if type(mkv_t[3]) == type(2):
+                        mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+                        mkv_p = (mkv_time[2],mkv_time[3],mkv_time[4])
+                    else:
+                        mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+                        mkv_p = None
+                except:
+                    mkv_t = (mkv_time[0][:-1],mkv_time[1][:-1])
+                    mkv_p = None
+            else:
+                try:
+                    if type(mkv_time[3]) == type(""):
+                        mkv_t = (mkv_time[3][:-1],mkv_time[4][:-1])
+                        mkv_p = (mkv_time[0],mkv_time[1],mkv_time[2])
+                    else:
+                        mkv_t = None
+                        mkv_p = (mkv_time[0],mkv_time[1])
+                except:
+                    mkv_t = None
+                    mkv_p = (mkv_time[0],mkv_time[1],mkv_time[2])
         else:
             mkv_t = None
+            mkv_p = None
 
         self.loop_comandos_on = False
         self.objetos_menu = []
@@ -1124,7 +1180,13 @@ class ventana:
         menu_audio = self.pista_audio_menu["menu"]
         menu_audio.delete(0, "end")
 
-        self.pista_audio_name.set("0")
+        if mkv_p == None:
+            self.pista_audio_name.set("0")
+        else:
+            if mkv_p[2]:
+                self.pista_audio_name.set(f"{mkv_p[2]}")
+            else:
+                self.pista_audio_name.set("none")
 
         opciones_audio = video_audios
         for opcion in opciones_audio:
@@ -1151,7 +1213,10 @@ class ventana:
         menu_video = self.pista_video_menu["menu"]
         menu_video.delete(0, "end")
 
-        self.pista_video_name.set("0")
+        if mkv_p == None:
+            self.pista_video_name.set("0")
+        else:
+            self.pista_video_name.set(f"{mkv_p[0]}")
 
         opciones_video = video_videos
         for opcion in opciones_video:
@@ -1177,7 +1242,13 @@ class ventana:
         menu_subtitulos = self.pista_subtitulos_menu["menu"]
         menu_subtitulos.delete(0, "end")
 
-        self.pista_subtitulos_name.set("none")
+        if mkv_p == None:
+            self.pista_subtitulos_name.set("none")
+        else:
+            if mkv_p[2]:
+                self.pista_subtitulos_name.set(f"{mkv_p[2]}")
+            else:
+                self.pista_subtitulos_name.set("none")
 
         opciones_subtitulos = video_subtitulos
         for opcion in video_subtitulos:
@@ -1395,31 +1466,28 @@ class ventana:
             self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(file_name,vid,frame_num,play,paths,audio))
 
 def args():
-    parser = argparse.ArgumentParser(description="MaVMPlayer")
-    parser.add_argument("file", nargs='?', help="video path with .mavm extension")
-    parser.add_argument('--version',"-v", action="store_true", help="player version number")
+    parser = argparse.ArgumentParser(description="reproductor MaVM")
+    parser.add_argument("file", nargs='?', help="ruta del video .mavm")
     
     args_var = parser.parse_args()
     
-    if args_var.version:
-        print('v.1.15.0')  
-    else:
-        if args_var.file:
-            if not('.mavm' in args_var.file.lower()):
-                print("el archivo debe ser .mavm")
-                exit()
-            elif not(os.path.exists(args_var.file)):
-                print("el archivo no existe")
-                exit()
-            else:
-                file = os.path.abspath(args_var.file)
-                ventana_tk = tk.Tk()
-                ventana(ventana_tk=ventana_tk, file=file)
-                ventana_tk.mainloop()
+    if args_var.file:
+        if not('.mavm' in args_var.file.lower()):
+            print("el archivo debe ser .mavm")
+            exit()
+        elif not(os.path.exists(args_var.file)):
+            print("el archivo no existe")
+            exit()
         else:
+            file = os.path.abspath(args_var.file)
             ventana_tk = tk.Tk()
-            ventana(ventana_tk, None)
+            ventana(ventana_tk=ventana_tk, file=file)
             ventana_tk.mainloop()
+    else:
+        ventana_tk = tk.Tk()
+        ventana(ventana_tk, None)
+        ventana_tk.mainloop()
+
 
 if not(exit_):
     args()
