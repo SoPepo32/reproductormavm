@@ -1468,11 +1468,12 @@ class ventana:
 def args():
     parser = argparse.ArgumentParser(description="reproductor MaVM")
     parser.add_argument("file", nargs='?', help="ruta del video .mavm")
+    parser.add_argument('--version',"-v", action="store_true", help="player version number")
     
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.16.1')  
+        print('v.1.17.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
