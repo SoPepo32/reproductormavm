@@ -3,13 +3,16 @@ from tkinter import filedialog,messagebox
 from screeninfo import get_monitors
 from PIL import Image,ImageTk
 #from pymkv import MKVFile
+from ebooklib import epub
 import tkinter as tk
 import subprocess
 import threading
 import argparse
 import platform
+import ebooklib
 import pygame
 import shutil
+import imgkit
 import time
 import json
 #import cv2
@@ -26,23 +29,29 @@ def install_w():
     if shutil.which("ffmpeg") is None:
         print("Install FFmpeg")
         exit_ = True
-    elif shutil.which("mkvmerge") is None:
+    if shutil.which("mkvmerge") is None:
         print("Install MKVToolNix")
         exit_ = True
+    if shutil.which("wkhtmltopdf") is None:
+        print("Install wkhtmltopdf")
+        exit_ = True
 
-def install_lin(a=None):
+def install_lin(a=None, exit_=False):
     if not(a==None):
         if os.path.exists("/etc/os-release"):
             with open("/etc/os-release") as file:
                 data = file.read()
             if "Ubuntu" in data or "Debian" in data:
-                subprocess.run(["sudo","apt-get","install",a])
+                print("run in the terminal:\n","sudo","apt-get","install",a)
             elif "Fedora" in data or "Red Hat" in data:
-                subprocess.run(["sudo","dnf","install",a])
+                print("run in the terminal:\n","sudo","dnf","install",a)
             elif "Arch" in data:
-                subprocess.run(["sudo","pacman","-S",a])
-        else:
-            exit()
+                print("run in the terminal:\n","sudo","pacman","-S",a)
+            else:
+                install_w()
+            return True
+    else:
+        return True
 
 if platform.system() == "Windows":
     install_w()
@@ -50,9 +59,11 @@ elif platform.system() == "Darwin":
     install_w()
 else:
     if shutil.which("ffmpeg") is None:
-        install_lin("ffmpeg")
+        exit_ = install_lin("ffmpeg",exit_)
     if shutil.which("mkvmerge") is None:
-        install_lin("mkvtoolnix")
+        exit_ = install_lin("mkvtoolnix",exit_)
+    if shutil.which("wkhtmltopdf") is None:
+        exit_ = install_lin("wkhtmltopdf",exit_)
 
 pygame.mixer.init()
 try:
@@ -395,8 +406,8 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0','v.3.2.0']):
-            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.0.0")
+        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0','v.3.2.0','v.3.3.0']):
+            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.3.0")
             exit()
         print(self.video_mavm_version)
 
@@ -527,6 +538,38 @@ class ventana:
             if comando[0] == "image":
                 print(comando[1]["imagen"])
                 imagen_file = Image.open(self.contenido_dat[comando[1]["imagen"]])
+                imagen = ImageTk.PhotoImage(imagen_file)
+                if "create" in comando[1].keys():
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":comando[1]["coordinates"], "imagen":imagen_file})
+                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
+                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
+                    print(self.objetos_menu[len(self.objetos_menu)-1])
+                elif "edit" in comando[1].keys():
+                    print("Buscando objeto con id:", comando[1]["edit"])
+                    for i in range(len(self.objetos_menu)-1):
+                        if "id" in self.objetos_menu[i].keys():
+                            if self.objetos_menu[i]["id"] == comando[1]["edit"]:
+                                print("Objeto encontrado:", self.objetos_menu[i])
+                                self.objetos_menu[i]["cordenadas"] = comando[1]["coordinates"]
+                                self.objetos_menu[i]["imagen"] = imagen_file
+                                self.objetos_menu[i]["objeto"].place(x=0,y=0)
+                                print(self.objetos_menu[i])
+            elif comando[0] == "ebook":
+                print(comando[1]["epub_path"])
+            
+                book = epub.read_epub(self.contenido_dat[comando[1]["epub_path"]])
+
+                # Obtener todos los documentos (capítulos/secciones)
+                items = list(book.get_items_of_type(ebooklib.ITEM_DOCUMENT))
+
+                # Seleccionar el índice deseado
+                html_content = items[comando[1]['page']].get_content().decode("utf-8")  # por ejemplo, el tercero
+                
+                #HTML(string=html_content).write_png(f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
+                output_path = os.path.join(self.carpeta_temporal,f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
+                imgkit.from_string(html_content, output_path)
+
+                imagen_file = Image.open(f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
                 imagen = ImageTk.PhotoImage(imagen_file)
                 if "create" in comando[1].keys():
                     self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":comando[1]["coordinates"], "imagen":imagen_file})
@@ -1473,7 +1516,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.17.0')
+        print('v.1.18.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
