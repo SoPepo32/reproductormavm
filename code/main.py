@@ -295,8 +295,8 @@ class ventana:
         try:
             self.modo_color.set(self.config_json['modo_color'][0])
             self.modo_color_red.set(self.config_json['modo_color'][1])
-            self.modo_color_blue.set(self.config_json['modo_color'][2])
-            self.modo_color_green.set(self.config_json['modo_color'][3])
+            self.modo_color_blue.set(self.config_json['modo_color'][3])
+            self.modo_color_green.set(self.config_json['modo_color'][2])
         except:
             self.modo_color.set(1)
             self.modo_color_red.set(0)
@@ -366,15 +366,15 @@ class ventana:
         if self.config_json['modo_color'][0] == 1:
             #format(64, '02x')
             bg1 = f"#{format(64+32*self.config_json['modo_color'][1], '02x')}{format(64+32*self.config_json['modo_color'][2], '02x')}{format(64+32*self.config_json['modo_color'][3], '02x')}"
-            self.ventana_tk.config(bg=bg1)
 
             #format(32, '02x')
             bg2 = f"#{format(32+32*self.config_json['modo_color'][1], '02x')}{format(32+32*self.config_json['modo_color'][2], '02x')}{format(32+32*self.config_json['modo_color'][3], '02x')}"
-            self.ventana_tk.config(bg=bg1)
 
             #format(159, '02x')
             
             fg1 = f"#{format(159+32*self.config_json['modo_color'][1], '02x')}{format(159+32*self.config_json['modo_color'][2], '02x')}{format(159+32*self.config_json['modo_color'][3], '02x')}"
+
+            self.ventana_tk.config(bg=bg1)
 
             for i in self.ventana_tk.winfo_children():
                 if not(i is self.reproductor):
@@ -401,7 +401,7 @@ class ventana:
             
             fg1 = f"#{format(64+32*self.config_json['modo_color'][1], '02x')}{format(64+32*self.config_json['modo_color'][2], '02x')}{format(64+32*self.config_json['modo_color'][3], '02x')}"
 
-            self.ventana_tk.config(bg='#BFBFBF')
+            self.ventana_tk.config(bg=bg1)
 
             for i in self.ventana_tk.winfo_children():
                 if not(i is self.reproductor):
@@ -1623,7 +1623,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.18.0')
+        print('v.1.18.1')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
