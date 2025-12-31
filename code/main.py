@@ -277,19 +277,19 @@ class ventana:
         self.modo_color_red_name = tk.Label(self.ventana_tk_config, text="red mode", bg='#404040', fg='#FFFFFF')
         self.modo_color_red_name.place(x=0,y=int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
-        self.modo_color_red = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color_red = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.5, tickinterval=0)
         self.modo_color_red.place(x=self.ventana_tk_config_x/3,y=2*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color_green_name = tk.Label(self.ventana_tk_config, text="green mode", bg='#404040', fg='#FFFFFF')
         self.modo_color_green_name.place(x=0,y=3*int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
-        self.modo_color_green = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color_green = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.5, tickinterval=0)
         self.modo_color_green.place(x=self.ventana_tk_config_x/3,y=4*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
         
         self.modo_color_blue_name = tk.Label(self.ventana_tk_config, text="blue mode", bg='#404040', fg='#FFFFFF')
         self.modo_color_blue_name.place(x=0,y=5*int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
-        self.modo_color_blue = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color_blue = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.5, tickinterval=0)
         self.modo_color_blue.place(x=self.ventana_tk_config_x/3,y=6*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
 
         try:
@@ -365,14 +365,14 @@ class ventana:
         #print("self.config_json['modo_color']",self.config_json['modo_color'])
         if self.config_json['modo_color'][0] == 1:
             #format(64, '02x')
-            bg1 = f"#{format(64+32*self.config_json['modo_color'][1], '02x')}{format(64+32*self.config_json['modo_color'][2], '02x')}{format(64+32*self.config_json['modo_color'][3], '02x')}"
+            bg1 = f"#{format(int(64+32*self.config_json['modo_color'][1]), '02x')}{format(int(64+32*self.config_json['modo_color'][2]), '02x')}{format(int(64+32*self.config_json['modo_color'][3]), '02x')}"
 
             #format(32, '02x')
-            bg2 = f"#{format(32+32*self.config_json['modo_color'][1], '02x')}{format(32+32*self.config_json['modo_color'][2], '02x')}{format(32+32*self.config_json['modo_color'][3], '02x')}"
+            bg2 = f"#{format(int(32+32*self.config_json['modo_color'][1]), '02x')}{format(int(32+32*self.config_json['modo_color'][2]), '02x')}{format(int(32+32*self.config_json['modo_color'][3]), '02x')}"
 
             #format(159, '02x')
             
-            fg1 = f"#{format(159+32*self.config_json['modo_color'][1], '02x')}{format(159+32*self.config_json['modo_color'][2], '02x')}{format(159+32*self.config_json['modo_color'][3], '02x')}"
+            fg1 = f"#{format(int(159+32*self.config_json['modo_color'][1]), '02x')}{format(int(159+32*self.config_json['modo_color'][2]), '02x')}{format(int(159+32*self.config_json['modo_color'][3]), '02x')}"
 
             self.ventana_tk.config(bg=bg1)
 
@@ -390,16 +390,13 @@ class ventana:
                 pass
         else:
             #format(191, '02x')
-            bg1 = f"#{format(191+32*self.config_json['modo_color'][1], '02x')}{format(191+32*self.config_json['modo_color'][2], '02x')}{format(191+32*self.config_json['modo_color'][3], '02x')}"
-            self.ventana_tk.config(bg=bg1)
+            bg1 = f"#{format(int(191+32*self.config_json['modo_color'][1]), '02x')}{format(int(191+32*self.config_json['modo_color'][2]), '02x')}{format(int(191+32*self.config_json['modo_color'][3]), '02x')}"
 
             #format(223, '02x')
-            bg2 = f"#{format(223+32*self.config_json['modo_color'][1], '02x')}{format(223+32*self.config_json['modo_color'][2], '02x')}{format(223+32*self.config_json['modo_color'][3], '02x')}"
-            self.ventana_tk.config(bg=bg1)
+            bg2 = f"#{format(int(223+32*self.config_json['modo_color'][1]), '02x')}{format(int(223+32*self.config_json['modo_color'][2]), '02x')}{format(int(223+32*self.config_json['modo_color'][3]), '02x')}"
 
             #format(64, '02x')
-            
-            fg1 = f"#{format(64+32*self.config_json['modo_color'][1], '02x')}{format(64+32*self.config_json['modo_color'][2], '02x')}{format(64+32*self.config_json['modo_color'][3], '02x')}"
+            fg1 = f"#{format(int(64+32*self.config_json['modo_color'][1]), '02x')}{format(int(64+32*self.config_json['modo_color'][2]), '02x')}{format(int(64+32*self.config_json['modo_color'][3]), '02x')}"
 
             self.ventana_tk.config(bg=bg1)
 
@@ -1624,7 +1621,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.18.2')
+        print('v.1.19.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
