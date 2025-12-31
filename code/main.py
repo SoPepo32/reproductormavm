@@ -40,12 +40,12 @@ def install_lin(a=None, exit_=False):
     if not(a==None):
         if os.path.exists("/etc/os-release"):
             with open("/etc/os-release") as file:
-                data = file.read()
-            if "Ubuntu" in data or "Debian" in data:
+                data = file.read().lower()
+            if "ubuntu" in data or "debian" in data:
                 print("run in the terminal:\n","sudo","apt-get","install",a)
-            elif "Fedora" in data or "Red Hat" in data:
+            elif "fedora" in data or "red hat" in data:
                 print("run in the terminal:\n","sudo","dnf","install",a)
-            elif "Arch" in data:
+            elif "arch" in data:
                 print("run in the terminal:\n","sudo","pacman","-S",a)
             else:
                 install_w()
@@ -273,10 +273,36 @@ class ventana:
 
         self.modo_color = tk.Scale(self.ventana_tk_config, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
         self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+
+        self.modo_color_red_name = tk.Label(self.ventana_tk_config, text="red mode", bg='#404040', fg='#FFFFFF')
+        self.modo_color_red_name.place(x=0,y=int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+
+        self.modo_color_red = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color_red.place(x=self.ventana_tk_config_x/3,y=2*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+
+        self.modo_color_green_name = tk.Label(self.ventana_tk_config, text="green mode", bg='#404040', fg='#FFFFFF')
+        self.modo_color_green_name.place(x=0,y=3*int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+
+        self.modo_color_green = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color_green.place(x=self.ventana_tk_config_x/3,y=4*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+        
+        self.modo_color_blue_name = tk.Label(self.ventana_tk_config, text="blue mode", bg='#404040', fg='#FFFFFF')
+        self.modo_color_blue_name.place(x=0,y=5*int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+
+        self.modo_color_blue = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.modo_color_blue.place(x=self.ventana_tk_config_x/3,y=6*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+
         try:
-            self.modo_color.set(self.config_json['modo_color'])
+            self.modo_color.set(self.config_json['modo_color'][0])
+            self.modo_color_red.set(self.config_json['modo_color'][1])
+            self.modo_color_blue.set(self.config_json['modo_color'][2])
+            self.modo_color_green.set(self.config_json['modo_color'][3])
         except:
             self.modo_color.set(1)
+            self.modo_color_red.set(0)
+            self.modo_color_blue.set(0)
+            self.modo_color_green.set(0)
+            self.config_json['modo_color'] = [1,0,0,0]
 
         self.menu_r_config = True
         self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_valores)
@@ -284,13 +310,22 @@ class ventana:
         self.ventana_tk_config.after(10, self.actualizar_color)
 
         self.ventana_tk_config.mainloop()
-    
+
     def ventana_tk_config_actualizar_valores(self):
         try:
             if self.config_json['bucle'] != self.modo_color.get():
                 self.config_json['bucle'] = self.bucle.get()
-            if self.config_json['modo_color'] != self.modo_color.get():
-                self.config_json['modo_color'] = self.modo_color.get()
+            if self.config_json['modo_color'][0] != self.modo_color.get():
+                self.config_json['modo_color'][0] = self.modo_color.get()
+                self.ventana_tk.after(10, self.actualizar_color)
+            if self.config_json['modo_color'][1] != self.modo_color_red.get():
+                self.config_json['modo_color'][1] = self.modo_color_red.get()
+                self.ventana_tk.after(10, self.actualizar_color)
+            if self.config_json['modo_color'][3] != self.modo_color_blue.get():
+                self.config_json['modo_color'][3] = self.modo_color_blue.get()
+                self.ventana_tk.after(10, self.actualizar_color)
+            if self.config_json['modo_color'][2] != self.modo_color_green.get():
+                self.config_json['modo_color'][2] = self.modo_color_green.get()
                 self.ventana_tk.after(10, self.actualizar_color)
         except:
             self.config_json['bucle'] = self.bucle.get()
@@ -305,7 +340,21 @@ class ventana:
             self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
 
             self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+
             self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+
+            self.modo_color_red_name.place(x=0,y=int(self.ventana_tk_config_y/4.5),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+
+            self.modo_color_red.place(x=self.ventana_tk_config_x/3,y=int(self.ventana_tk_config_y/4.5),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+
+            self.modo_color_green_name.place(x=0,y=2*int(self.ventana_tk_config_y/4.5),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+
+            self.modo_color_green.place(x=self.ventana_tk_config_x/3,y=2*int(self.ventana_tk_config_y/4.5),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+            
+            self.modo_color_blue_name.place(x=0,y=3*int(self.ventana_tk_config_y/4.5),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+
+            self.modo_color_blue.place(x=self.ventana_tk_config_x/3,y=3*int(self.ventana_tk_config_y/4.5),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+
 
             if self.ventana_tk_config.winfo_viewable():
                 self.ventana_tk_config.after(10, self.ventana_tk_config_actualizar_valores)
@@ -314,34 +363,56 @@ class ventana:
 
     def actualizar_color(self):
         #print("self.config_json['modo_color']",self.config_json['modo_color'])
-        if self.config_json['modo_color'] == 1:
-            self.ventana_tk.config(bg='#404040')
+        if self.config_json['modo_color'][0] == 1:
+            #format(64, '02x')
+            bg1 = f"#{format(64+32*self.config_json['modo_color'][1], '02x')}{format(64+32*self.config_json['modo_color'][2], '02x')}{format(64+32*self.config_json['modo_color'][3], '02x')}"
+            self.ventana_tk.config(bg=bg1)
+
+            #format(32, '02x')
+            bg2 = f"#{format(32+32*self.config_json['modo_color'][1], '02x')}{format(32+32*self.config_json['modo_color'][2], '02x')}{format(32+32*self.config_json['modo_color'][3], '02x')}"
+            self.ventana_tk.config(bg=bg1)
+
+            #format(159, '02x')
             
+            fg1 = f"#{format(159+32*self.config_json['modo_color'][1], '02x')}{format(159+32*self.config_json['modo_color'][2], '02x')}{format(159+32*self.config_json['modo_color'][3], '02x')}"
+
             for i in self.ventana_tk.winfo_children():
                 if not(i is self.reproductor):
-                    i.config(bg='#404040', fg='#9F9F9F')
+                    i.config(bg=bg1, fg=fg1)
                 else:
-                    i.config(bg='#000000')
+                    i.config(bg=bg2)
             try:
                 if self.ventana_tk_config.winfo_viewable():
-                    self.ventana_tk_config.config(bg='#404040')
+                    self.ventana_tk_config.config(bg=bg1)
                     for i in self.ventana_tk_config.winfo_children():
-                        i.config(bg='#404040', fg='#9F9F9F')
+                        i.config(bg=bg1, fg=fg1)
             except:
                 pass
         else:
+            #format(191, '02x')
+            bg1 = f"#{format(191+32*self.config_json['modo_color'][1], '02x')}{format(191+32*self.config_json['modo_color'][2], '02x')}{format(191+32*self.config_json['modo_color'][3], '02x')}"
+            self.ventana_tk.config(bg=bg1)
+
+            #format(223, '02x')
+            bg2 = f"#{format(223+32*self.config_json['modo_color'][1], '02x')}{format(223+32*self.config_json['modo_color'][2], '02x')}{format(223+32*self.config_json['modo_color'][3], '02x')}"
+            self.ventana_tk.config(bg=bg1)
+
+            #format(64, '02x')
+            
+            fg1 = f"#{format(64+32*self.config_json['modo_color'][1], '02x')}{format(64+32*self.config_json['modo_color'][2], '02x')}{format(64+32*self.config_json['modo_color'][3], '02x')}"
+
             self.ventana_tk.config(bg='#BFBFBF')
 
             for i in self.ventana_tk.winfo_children():
                 if not(i is self.reproductor):
-                    i.config(bg='#BFBFBF', fg='#404040')
+                    i.config(bg=bg1, fg=fg1)
                 else:
-                    i.config(bg='#FFFFFF')
+                    i.config(bg=bg2)
             try:
                 if self.ventana_tk_config.winfo_viewable():
-                    self.ventana_tk_config.config(bg='#E1E1E1')
+                    self.ventana_tk_config.config(bg=bg1)
                     for i in self.ventana_tk_config.winfo_children():
-                        i.config(bg='#E1E1E1', fg='#404040')
+                        i.config(bg=bg1, fg=fg1)
             except:
                 pass
 
@@ -375,13 +446,23 @@ class ventana:
                 config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'r')
                 config_txt = config_file.read()
                 config_file.close()
-                
-            self.config_json = json.loads(config_txt)
-            self.bucle.set(self.config_json["bucle"])
-            self.config_json['modo_color'] = self.config_json['modo_color']
+
+            if json.loads(config_txt)['modo_color'] == 1 or json.loads(config_txt)['modo_color'] == 0:
+                config_json = json.loads(config_txt)
+                self.bucle.set(config_json["bucle"])
+                self.volume.set(config_json['volume'])
+                self.config_json['modo_color'] = [config_json[modo_color],0,0,0]
+                self.config_json['volume']     = self.config_json['volume']
+                self.config_json["bucle"]      = config_json["bucle"]
+            else:
+                self.config_json = json.loads(config_txt)
+                self.bucle.set(self.config_json["bucle"])
+                self.volume.set(self.config_json['volume'])
+                self.config_json['modo_color'] = [self.config_json['modo_color'][0],self.config_json['modo_color'][1],self.config_json['modo_color'][2],self.config_json['modo_color'][3]]
+                self.config_json['volume']     = self.config_json['volume']
         except Exception as e:
             print(e)
-            self.config_json = {"bucle":"0","modo_color":1}
+            self.config_json = {"bucle":"0","modo_color":[1,0,0,0],"volume":37.0}
 
     def archivos_ventana(self):
         self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
@@ -559,17 +640,42 @@ class ventana:
             
                 book = epub.read_epub(self.contenido_dat[comando[1]["epub_path"]])
 
-                # Obtener todos los documentos (capítulos/secciones)
+                #obtener todos los documentos (capítulos/secciones)
                 items = list(book.get_items_of_type(ebooklib.ITEM_DOCUMENT))
 
-                # Seleccionar el índice deseado
-                html_content = items[comando[1]['page']].get_content().decode("utf-8")  # por ejemplo, el tercero
+                #seleccionar el índice deseado
+                chapter_items = [item for item in items if "section" in item.get_name()]
+                html_content = chapter_items[comando[1]['page']].get_content().decode("utf-8")
+                #html_content = items[comando[1]['page']].get_content().decode("utf-8")  # por ejemplo, el tercero
                 
                 #HTML(string=html_content).write_png(f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
-                output_path = os.path.join(self.carpeta_temporal,f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
-                imgkit.from_string(html_content, output_path)
+                output_file_path = os.path.join(self.carpeta_temporal,f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
+                file_html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"cap_html_temp.html"), 'w')
+                file_html.write(html_content)
+                file_html.close()
 
-                imagen_file = Image.open(f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
+                subprocess.run(['wkhtmltoimage',f'{os.path.join(os.path.dirname(os.path.abspath(__file__)),"cap_html_temp.html")}',f'{output_file_path}'])
+                
+                img  = Image.open(f"{output_file_path}")
+                imgb = img.convert("L")
+                pixels = imgb.load()
+                ancho, alto = imgb.size
+
+                #buscar el borde derecho
+                x_max = 0
+                for x in range(ancho-1, -1, -1):  # derecha a izquierda
+                    for y in range(alto):
+                        if pixels[x, y] < 250:  # píxel no blanco
+                            x_max = x
+                            break
+                    if x_max > 0:
+                        break
+
+                #ajustar con margen y evitar pasarse del ancho
+                margen = 10
+                nuevo_ancho = min(ancho, x_max + margen)
+                imagen_file = img.crop((0, 0, nuevo_ancho, alto))
+
                 imagen = ImageTk.PhotoImage(imagen_file)
                 if "create" in comando[1].keys():
                     self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":comando[1]["coordinates"], "imagen":imagen_file})
@@ -910,16 +1016,17 @@ class ventana:
     def update_frame_vid(self, frames, fps, file_name, video_path, vid):
         print("video-r2")
         for frame in frames:
-            if self.used_vid[file_name][0] and self.get_frames_num(video_path) > self.used_vid[file_name][1]:
+            if self.used_vid[file_name][0] and self.get_frames_num(video_path) > self.used_vid[file_name][1] and self.ventana_tk.winfo_viewable():
                 try:
                     frame_file = os.path.join(self.carpeta_temporal_video,file_name,frame)
                     imagen_file = Image.open(frame_file)
                     imagen = ImageTk.PhotoImage(imagen_file)
-                    self.objetos_menu[vid]["objeto"].image = imagen
+                    #self.objetos_menu[vid]["objeto"].image = imagen
                     self.objetos_menu[vid]["imagen"] = imagen_file
                     self.used_vid[file_name][1] += 1
                     time.sleep(1/fps)
                     print(frame)
+                    self.used_vid[file_name][2].set_volume(self.volume.get()/100)
                 except:
                     break
             else:
