@@ -417,6 +417,7 @@ class ventana:
                 pass
 
     def save_settings(self):
+        self.config_json['volume'] = self.volume.get()
         config = json.dumps(self.config_json)
         print(config)
 
@@ -1623,7 +1624,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.18.1')
+        print('v.1.18.2')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
