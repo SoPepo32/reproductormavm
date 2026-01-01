@@ -258,50 +258,58 @@ class ventana:
         ancho_ventana_tk = self.ventana_tk.winfo_width()
         alto_ventana_tk = self.ventana_tk.winfo_height()
 
-        x = x_ventana_tk + (ancho_ventana_tk // 2) - 200
-        y = y_ventana_tk + (alto_ventana_tk // 2) - 100
+        x = x_ventana_tk + (ancho_ventana_tk // 2) - 150
+        y = y_ventana_tk + (alto_ventana_tk // 2) - 140
 
-        self.ventana_tk_config.geometry(f"400x200+{x}+{y}")
-        self.ventana_tk_config.minsize(400,200)
+        self.ventana_tk_config.geometry(f"400x280+{x}+{y}")
+        self.ventana_tk_config.minsize(300,280)
         self.ventana_tk_config.config(bg="#404040")
 
         self.ventana_tk_config_x = self.ventana_tk_config.winfo_width()
         self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
 
+        self.save_volume_value_name = tk.Label(self.ventana_tk_config, text="save volume value", bg='#404040', fg='#FFFFFF')
+        self.save_volume_value_name.place(x=0,y=0,width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+
+        self.save_volume_value = tk.Scale(self.ventana_tk_config, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
+        self.save_volume_value.place(x=int(2*self.ventana_tk_config_x/3),y=0,width=int(3*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+
         self.modo_color_name = tk.Label(self.ventana_tk_config, text="dark mode", bg='#404040', fg='#FFFFFF')
-        self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_name.place(x=0,y=2*int(self.ventana_tk_config_y/9),width=int(3*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color = tk.Scale(self.ventana_tk_config, from_=0, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=1, tickinterval=0)
-        self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+        self.modo_color.place(x=int(2*self.ventana_tk_config_x/3),y=4*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color_red_name = tk.Label(self.ventana_tk_config, text="red mode", bg='#404040', fg='#FFFFFF')
-        self.modo_color_red_name.place(x=0,y=int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_red_name.place(x=0,y=4*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color_red = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.5, tickinterval=0)
-        self.modo_color_red.place(x=self.ventana_tk_config_x/3,y=2*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_red.place(x=int(2*self.ventana_tk_config_x/3),y=5*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color_green_name = tk.Label(self.ventana_tk_config, text="green mode", bg='#404040', fg='#FFFFFF')
-        self.modo_color_green_name.place(x=0,y=3*int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_green_name.place(x=0,y=4*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color_green = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.5, tickinterval=0)
-        self.modo_color_green.place(x=self.ventana_tk_config_x/3,y=4*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_green.place(x=int(2*self.ventana_tk_config_x/3),y=5*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
         
         self.modo_color_blue_name = tk.Label(self.ventana_tk_config, text="blue mode", bg='#404040', fg='#FFFFFF')
-        self.modo_color_blue_name.place(x=0,y=5*int(self.ventana_tk_config_y/9),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_blue_name.place(x=0,y=6*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/9))
 
         self.modo_color_blue = tk.Scale(self.ventana_tk_config, from_=-1, to=1, orient="horizontal", bg='#404040', fg='#FFFFFF', showvalue=1, resolution=.5, tickinterval=0)
-        self.modo_color_blue.place(x=self.ventana_tk_config_x/3,y=6*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
+        self.modo_color_blue.place(x=int(2*self.ventana_tk_config_x/3),y=6*int(self.ventana_tk_config_y/9),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/9))
 
         try:
             self.modo_color.set(self.config_json['modo_color'][0])
             self.modo_color_red.set(self.config_json['modo_color'][1])
             self.modo_color_blue.set(self.config_json['modo_color'][3])
             self.modo_color_green.set(self.config_json['modo_color'][2])
+            self.save_volume_value.set(self.config_json["save_volume_value"])
         except:
             self.modo_color.set(1)
             self.modo_color_red.set(0)
             self.modo_color_blue.set(0)
             self.modo_color_green.set(0)
+            self.save_volume_value.set(0)
             self.config_json['modo_color'] = [1,0,0,0]
 
         self.menu_r_config = True
@@ -315,6 +323,8 @@ class ventana:
         try:
             if self.config_json['bucle'] != self.modo_color.get():
                 self.config_json['bucle'] = self.bucle.get()
+            if self.config_json['save_volume_value'] != self.save_volume_value.get():
+                self.config_json['save_volume_value'] = self.save_volume_value.get()
             if self.config_json['modo_color'][0] != self.modo_color.get():
                 self.config_json['modo_color'][0] = self.modo_color.get()
                 self.ventana_tk.after(10, self.actualizar_color)
@@ -339,21 +349,29 @@ class ventana:
             self.ventana_tk_config_x = self.ventana_tk_config.winfo_width()
             self.ventana_tk_config_y = self.ventana_tk_config.winfo_height()
 
-            self.modo_color_name.place(x=0,y=0,width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+            self.save_volume_value_name.place(x=0,y=0,width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/7))
 
-            self.modo_color.place(x=self.ventana_tk_config_x/3,y=0,width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+            self.save_volume_value.place(x=int(2*self.ventana_tk_config_x/3),y=0,width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/7))
 
-            self.modo_color_red_name.place(x=0,y=int(self.ventana_tk_config_y/4.5),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
 
-            self.modo_color_red.place(x=self.ventana_tk_config_x/3,y=int(self.ventana_tk_config_y/4.5),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+            self.modo_color_name.place(x=0,y=2*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/7))
 
-            self.modo_color_green_name.place(x=0,y=2*int(self.ventana_tk_config_y/4.5),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
+            self.modo_color.place(x=int(2*self.ventana_tk_config_x/3),y=2*int(self.ventana_tk_config_y/7),width=int(self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/7))
 
-            self.modo_color_green.place(x=self.ventana_tk_config_x/3,y=2*int(self.ventana_tk_config_y/4.5),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+
+            self.modo_color_red_name.place(x=0,y=4*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/7))
+
+            self.modo_color_red.place(x=int(2*self.ventana_tk_config_x/3),y=4*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/7))
+
+
+            self.modo_color_green_name.place(x=0,y=5*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/7))
+
+            self.modo_color_green.place(x=int(2*self.ventana_tk_config_x/3),y=5*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/7))
             
-            self.modo_color_blue_name.place(x=0,y=3*int(self.ventana_tk_config_y/4.5),width=int(self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/4.5))
 
-            self.modo_color_blue.place(x=self.ventana_tk_config_x/3,y=3*int(self.ventana_tk_config_y/4.5),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/4.5))
+            self.modo_color_blue_name.place(x=0,y=6*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/3),height=int(self.ventana_tk_config_y/7))
+
+            self.modo_color_blue.place(x=int(2*self.ventana_tk_config_x/3),y=6*int(self.ventana_tk_config_y/7),width=int(2*self.ventana_tk_config_x/7),height=int(self.ventana_tk_config_y/7))
 
 
             if self.ventana_tk_config.winfo_viewable():
@@ -415,8 +433,22 @@ class ventana:
 
     def save_settings(self):
         self.config_json['volume'] = self.volume.get()
-        config = json.dumps(self.config_json)
-        print(config)
+        if self.config_json['save_volume_value'] == 1:
+            config_json = self.config_json
+
+            config_json['save_volume_value'] = 1
+
+            config = json.dumps(config_json)
+            print(config)
+        else:
+            config_json = self.config_json
+
+            config_json['volume'] = 37.0
+
+            config_json['save_volume_value'] = 0
+
+            config = json.dumps(config_json)
+            print(config)
 
         if os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")):
             print('os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")))
@@ -447,20 +479,28 @@ class ventana:
 
             if json.loads(config_txt)['modo_color'] == 1 or json.loads(config_txt)['modo_color'] == 0:
                 config_json = json.loads(config_txt)
+
                 self.bucle.set(config_json["bucle"])
                 self.volume.set(config_json['volume'])
                 self.config_json['modo_color'] = [config_json[modo_color],0,0,0]
                 self.config_json['volume']     = self.config_json['volume']
                 self.config_json["bucle"]      = config_json["bucle"]
+
+                if not("save_volume_value" in list(config_json.keys())):
+                    self.config_json["save_volume_value"] = 0
             else:
                 self.config_json = json.loads(config_txt)
+
                 self.bucle.set(self.config_json["bucle"])
                 self.volume.set(self.config_json['volume'])
                 self.config_json['modo_color'] = [self.config_json['modo_color'][0],self.config_json['modo_color'][1],self.config_json['modo_color'][2],self.config_json['modo_color'][3]]
                 self.config_json['volume']     = self.config_json['volume']
+
+                if not("save_volume_value" in list(config_json.keys())):
+                    self.config_json["save_volume_value"] = 0
         except Exception as e:
             print(e)
-            self.config_json = {"bucle":"0","modo_color":[1,0,0,0],"volume":37.0}
+            self.config_json = {"bucle":"0","modo_color":[1,0,0,0],"volume":37.0,"save_volume_value":0}
 
     def archivos_ventana(self):
         self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
@@ -1621,7 +1661,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.20.0.0')
+        print('v.1.20.1.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
