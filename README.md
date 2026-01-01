@@ -35,10 +35,10 @@ Double-click on "compiler.bat"
 - python3.10 main.py
 
 ### Version Naming:
-- v.-large_change_version-.-small/medium_change_version-.-bug_fixes--corrections_to_README.md_the_example_video(video_de_ejemplo.mavm)_or_the_pre-compiled-
+- v.-large_change_version-.-version_of_medium_changes-.-version_of_small_changes-.-bug_fixes--corrections_to_README.md_the_example_video(video_de_ejemplo.mavm)_or_the_pre-compiled-
 
 ### Beta naming:
-- v.-large_change_version-.-small/medium_change_version-.-bug_fixes-_beta_-beta_number--corrections_to_README.md_the_example_video(video_de_ejemplo.mavm)_or_the_pre-compiled-
+- v.-large_change_version-.-version_of_medium_changes-.-version_of_small_changes-.-bug_fixes-_beta_-beta_number--corrections_to_README.md_the_example_video(video_de_ejemplo.mavm)_or_the_pre-compiled-
 
 ## License
 All content in this repository is under GPL-3.0.
@@ -78,12 +78,11 @@ Haga doble clic en "compiler.bat"
 
 
 ### nombracion de versiones:
- - v.-version_de_cambios_grandes-.-version_de_cambios_pequeños/medianos-.-correccion_de_errores--correciones_del_README.md_el_video_de_ejemplo(video_de_ejemplo.mavm)_o_el_pre-compilado-
+ - v.-version_de_cambios_grandes-.-version_de_cambios_medianos-.-version_de_cambios_pequeños-.-correccion_de_errores--correciones_del_README.md_el_video_de_ejemplo(video_de_ejemplo.mavm)_o_el_pre-compilado-
 
 
 ### nombracion de betas:
-
- - v.-version_de_cambios_grandes-.-version_de_cambios_pequeños/medianos-.-correccion_de_errores-_beta_-numero_de_beta--correciones_del_README.md_el_video_de_ejemplo(video_de_ejemplo.mavm)_o_el_pre-compilado-
+ - v.-version_de_cambios_grandes-.-version_de_cambios_medianos-.-version_de_cambios_pequeños-.-correccion_de_errores-___beta___-numero_de_beta--correciones_del_README.md_el_video_de_ejemplo(video_de_ejemplo.mavm)_o_el_pre-compilado-
 
 ## Licencia
 Todo el contenido de este repositorio está bajo GPL-3.0.
