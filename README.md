@@ -8,14 +8,12 @@
 <h4>External Programs</h4>
 
 ## GUI (graphical user interface)
- - clear mode
-<img width="853" height="529" alt="MaVMPlayer clear mode2" src="https://github.com/user-attachments/assets/1d815db4-053d-4a6d-9c6e-333c70c2aa40" />
-<img width="842" height="535" alt="MaVMPlayer clear mode" src="https://github.com/user-attachments/assets/3424e6d0-131f-405e-b2a7-503fa80291d5" />
+ - clear mod3
+<img width="845" height="550" alt="Captura desde 2026-01-01 16-00-31" src="https://github.com/user-attachments/assets/6386c6bf-a705-412c-b03b-320b6090e851" />
 
  - dark mode
-<img width="842" height="535" alt="MaVMPlayer dark mode2" src="https://github.com/user-attachments/assets/97f1e9b4-4ef0-4eb1-8e54-f55aae7d7c43" />
-<img width="842" height="535" alt="MaVMPlayer dark mode" src="https://github.com/user-attachments/assets/e7a5f51b-a697-4e15-9657-adb92a8413b6" />
-
+<img width="845" height="550" alt="Captura desde 2026-01-01 16-00-26" src="https://github.com/user-attachments/assets/88f6b851-3fd6-480a-b216-2777c0816f85" />
+ 
 
 ### How to compile:
 - Linux:
