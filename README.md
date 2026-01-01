@@ -82,7 +82,7 @@ Haga doble clic en "compiler.bat"
 
 
 ### nombracion de betas:
- - v.-version_de_cambios_grandes-.-version_de_cambios_medianos-.-version_de_cambios_pequeños-.-correccion_de_errores-___beta___-numero_de_beta--correciones_del_README.md_el_video_de_ejemplo(video_de_ejemplo.mavm)_o_el_pre-compilado-
+ - v.-version_de_cambios_grandes-.-version_de_cambios_medianos-.-version_de_cambios_pequeños-.-correccion_de_errores-_beta_-numero_de_beta--correciones_del_README.md_el_video_de_ejemplo(video_de_ejemplo.mavm)_o_el_pre-compilado-
 
 ## Licencia
 Todo el contenido de este repositorio está bajo GPL-3.0.
