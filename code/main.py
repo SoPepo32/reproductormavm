@@ -483,7 +483,7 @@ class ventana:
 
                 self.bucle.set(config_json["bucle"])
                 self.volume.set(config_json['volume'])
-                self.config_json['modo_color'] = [config_json[modo_color],0,0,0]
+                self.config_json['modo_color'] = [config_json['modo_color'],0,0,0]
                 self.config_json['volume']     = self.config_json['volume']
                 self.config_json["bucle"]      = config_json["bucle"]
 
@@ -497,10 +497,9 @@ class ventana:
                 self.config_json['modo_color'] = [self.config_json['modo_color'][0],self.config_json['modo_color'][1],self.config_json['modo_color'][2],self.config_json['modo_color'][3]]
                 self.config_json['volume']     = self.config_json['volume']
 
-                if not("save_volume_value" in list(config_json.keys())):
+                if not("save_volume_value" in list(self.config_json.keys())):
                     self.config_json["save_volume_value"] = 0
         except Exception as e:
-            print(e)
             self.config_json = {"bucle":"0","modo_color":[1,0,0,0],"volume":37.0,"save_volume_value":0}
 
     def archivos_ventana(self):
@@ -1694,7 +1693,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.21.0.0')
+        print('v.1.21.0.1')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
@@ -1712,6 +1711,7 @@ def args():
             ventana_tk = tk.Tk()
             ventana(ventana_tk, None)
             ventana_tk.mainloop()
+
 
 if not(exit_):
     args()
