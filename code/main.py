@@ -10,6 +10,7 @@ import threading
 import argparse
 import platform
 import ebooklib
+import tarfile
 import pygame
 import shutil
 import imgkit
@@ -525,7 +526,7 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0','v.3.2.0','v.3.3.0']):
+        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0','v.3.2.0','v.3.3.0','v.3.4.0']):
             messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.3.0")
             exit()
         print(self.video_mavm_version)
@@ -650,13 +651,19 @@ class ventana:
         else:
             pass
 
+    def path(self, path):
+        if '.tar:' in path:
+            path = path.replace('.tar:','/')
+        
+        return path
+
     def comnado_ejecutar(self, comando, v):
             #t = 16/1000
             t = 0
             #print("contenido comando:", comando)
             if comando[0] == "image":
                 print(comando[1]["imagen"])
-                imagen_file = Image.open(self.contenido_dat[comando[1]["imagen"]])
+                imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["imagen"])])
                 imagen = ImageTk.PhotoImage(imagen_file)
                 if "create" in comando[1].keys():
                     self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":comando[1]["coordinates"], "imagen":imagen_file})
@@ -675,8 +682,8 @@ class ventana:
                                 print(self.objetos_menu[i])
             elif comando[0] == "ebook":
                 print(comando[1]["epub_path"])
-            
-                book = epub.read_epub(self.contenido_dat[comando[1]["epub_path"]])
+
+                book = epub.read_epub(self.contenido_dat[self.path(comando[1]["epub_path"])])
 
                 #obtener todos los documentos (capítulos/secciones)
                 items = list(book.get_items_of_type(ebooklib.ITEM_DOCUMENT))
@@ -685,9 +692,9 @@ class ventana:
                 chapter_items = [item for item in items if "section" in item.get_name()]
                 html_content = chapter_items[comando[1]['page']].get_content().decode("utf-8")
                 #html_content = items[comando[1]['page']].get_content().decode("utf-8")  # por ejemplo, el tercero
-                
+
                 #HTML(string=html_content).write_png(f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
-                output_file_path = os.path.join(self.carpeta_temporal,f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
+                output_file_path = os.path.join(self.carpeta_temporal,f"{self.path(comando[1]['epub_path'])}_{comando[1]['page']}.png")
                 file_html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"cap_html_temp.html"), 'w')
                 file_html.write(html_content)
                 file_html.close()
@@ -736,9 +743,9 @@ class ventana:
                 if "create" in comando[1].keys():
                     if "image" in comando[1].keys():
                         if "command" in comando[1].keys():
-                            print(comando[1]["image"])
-                            print(self.contenido_dat[comando[1]["image"]])
-                            imagen_file = Image.open(self.contenido_dat[comando[1]["image"]])
+                            print(self.path(comando[1]["image"]))
+                            print(self.contenido_dat[self.path(self.path(comando[1]["image"]))])
+                            imagen_file = Image.open(self.contenido_dat[self.path(self.path(comando[1]["image"]))])
                             imagen = ImageTk.PhotoImage(imagen_file)
 
                             print(comando[1]["coordinates"])
@@ -751,9 +758,9 @@ class ventana:
 
                             self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
                         else:
-                            print(comando[1]["image"])
-                            print(self.contenido_dat[comando[1]["image"]])
-                            imagen_file = Image.open(self.contenido_dat[comando[1]["image"]])
+                            print(self.path(comando[1]["image"]))
+                            print(self.contenido_dat[self.path(comando[1]["image"])])
+                            imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
                             imagen = ImageTk.PhotoImage(imagen_file)
 
                             self.objetos_menu.append({"id":comando[1]["create"],
@@ -783,9 +790,9 @@ class ventana:
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
                                 if "image" in comando[1].keys():
                                     if "command" in comando[1].keys():
-                                        print(comando[1]["image"])
-                                        print(self.contenido_dat[comando[1]["image"]])
-                                        imagen_file = Image.open(self.contenido_dat[comando[1]["image"]])
+                                        print(self.path(comando[1]["image"]))
+                                        print(self.contenido_dat[self.path(comando[1]["image"])])
+                                        imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
                                         imagen = ImageTk.PhotoImage(imagen_file)
 
                                         print(comando[1]["coordinates"])
@@ -797,9 +804,9 @@ class ventana:
 
                                         self.objetos_menu[i]["objeto"].place()
                                     else:
-                                        print(comando[1]["image"])
-                                        print(self.contenido_dat[comando[1]["image"]])
-                                        imagen_file = Image.open(self.contenido_dat[comando[1]["image"]])
+                                        print(self.path(comando[1]["image"]))
+                                        print(self.contenido_dat[self.path(comando[1]["image"])])
+                                        imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
                                         imagen = ImageTk.PhotoImage(imagen_file)
 
                                         print(comando[1]["coordinates"])
@@ -807,9 +814,9 @@ class ventana:
                                         self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"],"imagen":imagen_file}
 
                                         self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
-                                        print(comando[1]["image"])
-                                        print(self.contenido_dat[comando[1]["image"]])
-                                        imagen_file = Image.open(self.contenido_dat[comando[1]["image"]])
+                                        print(self.path(comando[1]["image"]))
+                                        print(self.contenido_dat[self.path(comando[1]["image"])])
+                                        imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
                                         imagen = ImageTk.PhotoImage(imagen_file)
 
                                         self.objetos_menu.append({"id":comando[1]["create"],
@@ -843,7 +850,7 @@ class ventana:
                                         self.objetos_menu[i]["objeto"].place()
             elif comando[0] == "sound":
                 if "create" in comando[1].keys():
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":pygame.mixer.Sound(self.contenido_dat[comando[1]["sound"]])})
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":pygame.mixer.Sound(self.contenido_dat[self.path(comando[1]["sound"])])})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].play()
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
                     print("sonido play")
@@ -863,11 +870,11 @@ class ventana:
                     elif unidad == "hours":
                         t = iempo*3600
             elif comando[0] == "teleport":
-                self.teleport(comando[1]["ubicaciones"])
+                self.teleport(self.path(comando[1]["ubicaciones"]))
             elif comando[0] == "video":
                 print(comando)
                 if not("restart" in comando[1].keys()):
-                    file, extension = os.path.splitext(comando[1]["video"])
+                    file, extension = os.path.splitext(self.path(comando[1]["video"]))
 
                     try:
                         os.makedirs(os.path.join(self.carpeta_temporal_video,file))
@@ -875,12 +882,12 @@ class ventana:
                         shutil.rmtree(os.path.join(self.carpeta_temporal_video),file)
                         os.makedirs(os.path.join(self.carpeta_temporal_video,file))
                     
-                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_video}/{file}")
-                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[comando[1]["video"]],"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_video}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[self.path(comando[1]["video"])],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_video}/{file}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.path(self.contenido_dat[self.path(self.path(comando[1]["video"]))]),"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_video}")
                 
                 if "create" in comando[1].keys():
                     print("create")
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.contenido_dat[comando[1]["video"]], "video_r":file})
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.path(self.contenido_dat[self.path(comando[1]["video"])]), "video_r":file})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                     print(self.objetos_menu[len(self.objetos_menu)-1])
 
@@ -888,7 +895,7 @@ class ventana:
 
                     fps = self.get_fps(self.objetos_menu[len(self.objetos_menu)-1]["video_path"])
 
-                    self.video_r(len(self.objetos_menu)-1, file, fps, self.contenido_dat[comando[1]["video"]])
+                    self.video_r(len(self.objetos_menu)-1, file, fps, self.contenido_dat[self.path(comando[1]["video"])])
                 elif "restart" in comando[1].keys():
                     for i in range(len(self.objetos_menu)):
                         if "id" in self.objetos_menu[i].keys():
@@ -898,14 +905,14 @@ class ventana:
                                     print('not(self.used_vid[self.objetos_menu[i]["video"]][0])', not(self.used_vid[self.objetos_menu[i]["video"]][0]))
                                     self.used_vid[self.objetos_menu[i]["video"]] = [True,0]
                                     
-                                    fps = self.get_fps(self.objetos_menu[i]["video_path"])
+                                    fps = self.get_fps(self.path(self.objetos_menu[i]["video_path"]))
 
-                                    self.video_r(i, self.objetos_menu[i]["video"], fps, self.objetos_menu[i]["video_path"])
+                                    self.video_r(i, self.objetos_menu[i]["video"], fps, self.path(self.objetos_menu[i]["video_path"]))
                 elif "edit" in comando[1].keys():
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
-                                self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.contenido_dat[comando[1]["video"]]})
+                                self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.contenido_dat[self.path(comando[1]["video"])]})
                                 elf.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
             return t
@@ -1243,6 +1250,26 @@ class ventana:
         if self.menu_r and menu_r_b:
             self.ventana_tk.after(10, self.menu_resize)
 
+    def extrac_tar(self,file):
+        with tarfile.open(file, "r") as tar:
+            tar.extractall(path=os.path.join(os.path.dirname(file),os.path.splitext(os.path.basename(file))[0]))
+        return os.path.join(os.path.dirname(file),os.path.splitext(os.path.basename(file))[0])
+
+    def contenido_tar(self, folder):
+        contenido = os.listdir(folder)
+
+        cf = []
+
+        for c in contenido:
+            if os.path.isdir(os.path.join(folder,c)):
+                r = self.contenido_tar(os.path.join(folder,c))
+                for r_b in r:
+                    cf.append([os.path.join(c,r_b[0]), r_b[1]])
+                    print([os.path.join(c,r_b[0]), r_b[1]])
+            else:
+                cf.append([c,os.path.join(folder,c)])
+        return cf
+
     def repdorucir(self):
         paths = MaVM.extrac_type_all(file=self.file, output_folder=self.carpeta_temporal, content_type=None)
         #videos = MaVM.extrac_type_all(file=self.file, output_folder=self.carpeta_temporal, content_type="video/x-matroska")
@@ -1250,8 +1277,14 @@ class ventana:
         self.contenido_dat = {}
         for path in paths:
             directorio, archivo = os.path.split(path)
-            self.contenido_dat[archivo] = path
+            if '.tar' in archivo.lower():
+                path_b = self.contenido_tar(self.extrac_tar(path))
+                for b in path_b:
+                    self.contenido_dat[os.path.join(f"{os.path.splitext(archivo)[0]}",b[0])] = b[1]
+            else:
+                self.contenido_dat[archivo] = path
             print(archivo)
+        print(self.contenido_dat)
         self.start()
 
     def leer_subtitulo(self, subtitulo_path, time_sub_segundos):
@@ -1661,7 +1694,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.20.1.0')
+        print('v.1.21.0.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
@@ -1679,7 +1712,6 @@ def args():
             ventana_tk = tk.Tk()
             ventana(ventana_tk, None)
             ventana_tk.mainloop()
-
 
 if not(exit_):
     args()
