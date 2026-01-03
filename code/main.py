@@ -217,6 +217,12 @@ class ventana:
         self.adelante_boton = tk.Button(self.ventana_tk, text="10s->", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_adel)
         self.adelante_boton.place(x=780,y=430,width=20,height=16)
 
+        self.reiniciar_boton = tk.Button(self.ventana_tk, text="<---", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_reini)
+        self.reiniciar_boton.place(x=780,y=430,width=20,height=16)
+
+        self.saltear_boton = tk.Button(self.ventana_tk, text="--->", bg='#404040', fg='#FFFFFF', command=self.detectar_botones_fun_salt)
+        self.saltear_boton.place(x=780,y=430,width=20,height=16)
+
         self.ventana_tk.bind("<Right>", self.detectar_botones_fun_adel)
 
         #self.volume_text = tk.Label(self.ventana_tk, text="volume>s", bg='#404040', fg='#FFFFFF')
@@ -250,6 +256,12 @@ class ventana:
     def detectar_botones_fun_adel(self, event=None):
         self.detectar_botones = "adelante"
 
+    def detectar_botones_fun_reini(self, event=None):
+        self.detectar_botones = "<-"
+
+    def detectar_botones_fun_salt(self, event=None):
+        self.detectar_botones = "->"
+
     def settings_edit(self):
         self.ventana_tk_config = tk.Tk()
         self.ventana_tk_config.title("MaVM player configuration")
@@ -259,7 +271,7 @@ class ventana:
         ancho_ventana_tk = self.ventana_tk.winfo_width()
         alto_ventana_tk = self.ventana_tk.winfo_height()
 
-        x = x_ventana_tk + (ancho_ventana_tk // 2) - 150
+        x = x_ventana_tk + (ancho_ventana_tk // 2) - 200
         y = y_ventana_tk + (alto_ventana_tk // 2) - 140
 
         self.ventana_tk_config.geometry(f"400x280+{x}+{y}")
@@ -1141,11 +1153,15 @@ class ventana:
 
             #self.adelante_boton.place(x=int(ancho_ventana/2.5)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
-            self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+            self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto/2)
 
-            self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
+            self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto/2)
 
-            self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
+            self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto/2)
+
+            self.reiniciar_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto/2,width=(int(ancho_ventana/2)-int(play_ancho))-interfaz_ancho,height=interfaz_alto/2)
+
+            self.saltear_boton.place(x=int(ancho_ventana/2),y=alto_ventana-interfaz_alto/2,width=(int(ancho_ventana/2)-int(play_ancho))-interfaz_ancho,height=interfaz_alto/2)
 
             #self.volume_text.place(x=ancho_ventana-int(interfaz_ancho+int(interfaz_ancho*3/2)),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho),height=interfaz_alto)
 
@@ -1544,7 +1560,7 @@ class ventana:
         #while not(frame_num == frames_num):
         #if not(frame_num == frames_num):
         if frame_num >= frames_num:
-            if self.bucle.get() == "1":
+            if self.bucle.get() == "1" and self.video_repr:
                 frame_num = 0
 
                 self.reproductor.update_idletasks()
@@ -1643,6 +1659,33 @@ class ventana:
                             print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
                             self.pista_audio = self.pista_audio_name.get()
                         pygame.mixer.music.play(start=frame_num/fps)
+                    elif accion == "<-":
+                        frame_num = 0
+
+                        self.reset_botones_fun()
+
+                        if self.pista_audio_name.get() != "none":
+                            #if self.pista_audio_name.get() != self.pista_audio:
+                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_video_name.get()}.opus"))
+                            #pygame.mixer.music.pause()
+                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            self.pista_audio = self.pista_audio_name.get()
+                        pygame.mixer.music.play(start=frame_num/fps)
+                    elif accion == "->":
+                        frame_num = frames_num
+
+                        self.video_repr = False
+                        self.reset_botones_fun()
+
+                        if self.pista_audio_name.get() != "none":
+                            #if self.pista_audio_name.get() != self.pista_audio:
+                            #   pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_video_name.get()}.opus"))
+                            #pygame.mixer.music.pause()
+                            pygame.mixer.music.load(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            print(os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_audio_name.get()}.opus"))
+                            self.pista_audio = self.pista_audio_name.get()
+                        pygame.mixer.music.play(start=frame_num/fps)
                     else:
                         frame_num +=1
 
@@ -1693,7 +1736,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.21.0.1')
+        print('v.1.21.1.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
