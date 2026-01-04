@@ -1,6 +1,7 @@
 #librerias
 from tkinter import filedialog,messagebox
 from screeninfo import get_monitors
+import tkinter.font as tkFont
 from PIL import Image,ImageTk
 #from pymkv import MKVFile
 from ebooklib import epub
@@ -537,12 +538,12 @@ class ventana:
         start_menu_file.close()
 
         self.video_mavm_version = metadata_json["mavm_version"]
-        if not(self.video_mavm_version in ['v.2.1.0','v.2.2.0','v.3.0.0','v.3.1.0','v.3.2.0','v.3.3.0','v.3.4.0']):
-            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.3.0")
-            exit()
-        print(self.video_mavm_version)
-
         version_compatible = menus.version_formato(self.video_mavm_version)[0]
+        if version_compatible == False:
+            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.4.0")
+            exit()
+        
+        print(self.video_mavm_version)
         print(version_compatible)
 
         descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
@@ -1134,7 +1135,7 @@ class ventana:
             self.comnado_ejecutar(comandos,self.espacio_mv)
 
     def actalizar_medidas(self):
-        try:
+        #try:
             ancho_ventana = self.ventana_tk.winfo_width()
             alto_ventana = self.ventana_tk.winfo_height()
 
@@ -1147,6 +1148,33 @@ class ventana:
 
             self.bucle_boton.place(x=0,y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.bucle_boton["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.bucle_boton["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.bucle_boton.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.bucle_boton.config(font=fuente)
+            
+
             #self.atras_boton.place(x=int(ancho_ventana/2.5)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto)
 
             #self.play_boton.place(x=int(ancho_ventana/2.5)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto)
@@ -1155,38 +1183,446 @@ class ventana:
 
             self.atras_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto/2)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.atras_boton["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.atras_boton["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/(interfaz_alto/2)
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.atras_boton.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.atras_boton.config(font=fuente)
+            
+
             self.play_boton.place(x=int(ancho_ventana/2)-int(play_ancho/2),y=alto_ventana-interfaz_alto,width=play_ancho,height=interfaz_alto/2)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.play_boton["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.play_boton["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/(interfaz_alto/2)
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.play_boton.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.play_boton.config(font=fuente)
+            
 
             self.adelante_boton.place(x=int(ancho_ventana/2)+(int(play_ancho)),y=alto_ventana-interfaz_alto,width=interfaz_ancho,height=interfaz_alto/2)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.adelante_boton["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.adelante_boton["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/(interfaz_alto/2)
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.adelante_boton.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.adelante_boton.config(font=fuente)
+            
+
             self.reiniciar_boton.place(x=int(ancho_ventana/2)-(int(play_ancho*2)),y=alto_ventana-interfaz_alto/2,width=(int(ancho_ventana/2)-int(play_ancho))-interfaz_ancho,height=interfaz_alto/2)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.reiniciar_boton["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.reiniciar_boton["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = ((int(ancho_ventana/2)-int(play_ancho))-interfaz_ancho)/(interfaz_alto/2)
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.reiniciar_boton.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.reiniciar_boton.config(font=fuente)
+            
+
             self.saltear_boton.place(x=int(ancho_ventana/2),y=alto_ventana-interfaz_alto/2,width=(int(ancho_ventana/2)-int(play_ancho))-interfaz_ancho,height=interfaz_alto/2)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.saltear_boton["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.saltear_boton["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = ((int(ancho_ventana/2)-int(play_ancho))-interfaz_ancho)/(interfaz_alto/2)
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.saltear_boton.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.saltear_boton.config(font=fuente)
+            
 
             #self.volume_text.place(x=ancho_ventana-int(interfaz_ancho+int(interfaz_ancho*3/2)),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho),height=interfaz_alto)
 
             self.volume.place(x=ancho_ventana-int(interfaz_ancho*3/2),y=alto_ventana-interfaz_alto,width=int(interfaz_ancho*3/2),height=interfaz_alto)
             self.volume.config(length=int(play_ancho*3/2)) #(interfaz_alto-20)/100
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.volume["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure("100.0")
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = int(interfaz_ancho*3/2)/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/1)
+
+                fuente.configure(size=alto_pt_b)
+                self.volume.config(font=fuente)
+            else:
+                #alto_pt_b = int((interfaz_alto/texto_rt)/2)
+                alto_pt_b = int(((interfaz_alto/2)/texto_rt)/1)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.volume.config(font=fuente)
+            
+
             self.archivos_menu.place(x=0,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.archivos_menu["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.archivos_accion_name.get())
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.archivos_menu.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.archivos_menu.config(font=fuente)
+            
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.archivos_menu["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.archivos_menu["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.archivos_menu.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.archivos_menu.config(font=fuente)
+            
 
             self.editar_menu.place(x=ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.editar_menu["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.editar_accion_name.get())
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.editar_menu.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.editar_menu.config(font=fuente)
+            
+
             self.pista_subtitulos_text.place(x=2*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.pista_subtitulos_text["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.pista_subtitulos_text["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/1.5)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_subtitulos_text.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/1.5)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_subtitulos_text.config(font=fuente)
+            
+
             self.pista_subtitulos_menu.place(x=3*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.pista_subtitulos_menu["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.pista_subtitulos_name.get())
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_subtitulos_menu.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_subtitulos_menu.config(font=fuente)
+            
+
             self.pista_audio_text.place(x=4*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.pista_audio_text["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.pista_audio_text["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_audio_text.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_audio_text.config(font=fuente)
+            
+
             self.pista_audio_menu.place(x=5*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.pista_audio_menu["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.pista_audio_name.get())
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_audio_menu.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_audio_menu.config(font=fuente)
+            
 
             self.pista_video_text.place(x=6*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
 
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.pista_video_text["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.pista_video_text["text"])
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_video_text.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_video_text.config(font=fuente)
+            
+
             self.pista_video_menu.place(x=7*ancho_ventana/8,y=0,width=ancho_ventana/8,height=alto_ventana/25)
+
+            # Obtener la fuente del Label
+            fuente = tkFont.Font(font=self.pista_video_menu["font"])
+
+            # Medir el ancho en píxeles del texto
+            ancho_px = fuente.measure(self.pista_video_name.get())
+            alto_px  = fuente.metrics("linespace")
+            alto_pt  = fuente.cget("size")
+
+            texto_rx = ancho_px/alto_px
+            texto_rt = alto_px/alto_pt
+
+            objeto_r = interfaz_ancho/interfaz_alto
+            if objeto_r < texto_rx:
+                alto_px_b = (interfaz_ancho)/texto_rx
+                alto_pt_b = int((alto_px_b/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_video_menu.config(font=fuente)
+            else:
+                alto_pt_b = int((interfaz_alto/texto_rt)/2)
+
+                fuente.configure(size=alto_pt_b)
+
+                self.pista_video_menu.config(font=fuente)
+            
+
             self.reproductor.update_idletasks()
-        except Exception as e:
-            print(e)
-            pass
-        if self.menu_r:
-            self.ventana_tk.after(10, self.actalizar_medidas)
+        #except Exception as e:
+            #print(e)
+            #pass
+            if self.menu_r:
+                self.ventana_tk.after(10, self.actalizar_medidas)
 
     def menu_resize(self, menu_r_b=True):
         try:
@@ -1219,10 +1655,7 @@ class ventana:
                     if isinstance(objeto["objeto"], pygame.mixer.Sound):
                         objeto["objeto"].set_volume(self.volume.get()/100*comando[1]["volume"]/100)
                     elif "video_r" in objeto.keys():
-                        if "video_rr" in objeto.keys():
-                            cordenadas = [0,0,escala_ancho,escala_alto-int(escala_alto/10)]
-                        else:
-                            cordenadas = [0,0,escala_ancho,escala_alto]
+                        cordenadas = objeto["cordenadas"]
                         ancho_imagen=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0])
                         alto_imagen=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1])
 
@@ -1257,7 +1690,7 @@ class ventana:
                                             y=int(cordenadas[1]*diferencia_escala_espacio_mv[1]),
                                             width=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
                                             height=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1]))
-
+                        
             self.reproductor.update_idletasks()
             self.espacio_mv.update_idletasks()
         except:
@@ -1703,15 +2136,23 @@ class ventana:
                         sub = self.leer_subtitulo(subtitulo_path=os.path.join(self.carpeta_temporal_video,file_name,f"{self.pista_subtitulos_name.get()}.srt"),
                                                   time_sub_segundos=frame_num/fps)
                         self.objetos_menu[1]["objeto"].config(text=sub)
-                    
+
                     print(f"frame_num:{frame_num}\nframes_num:{frames_num}")
                     #os.path.join(
                     frame_file_path = os.path.join(self.carpeta_temporal_video,file_name,self.pista_video_name.get(),frame)
+
                     imagen_file = Image.open(frame_file_path)
+
+                    ancho, alto = imagen_file.size
+
                     imagen = ImageTk.PhotoImage(imagen_file)
                     #self.objetos_menu[vid]["objeto"].image = imagen
                     self.objetos_menu[vid]["imagen"] = imagen_file
+                    self.objetos_menu[vid]["cordenadas"] = [0,0, ancho,alto]
                     self.used_vid[file_name][1] += 1
+
+                    self.resolution_menu = [True, [ancho,int(alto+alto/10)]]
+                    self.objetos_menu[len(self.objetos_menu)-1]["cordenadas"] = [0,alto, self.resolution_menu[1][0],self.resolution_menu[1][1]]
                 except Exception as e:
                     print(e)
             else:
@@ -1736,7 +2177,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.21.1.0')
+        print('v.1.21.2.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
