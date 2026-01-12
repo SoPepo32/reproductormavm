@@ -3,18 +3,16 @@
 ## English:
 
 ### <h3>Requires</h3>
-- [MKVToolNix](https://mkvtoolnix.org/)
+- [MKVToolNix](https://mkvtoolnix.download/)
 - [FFmpeg](https://www.ffmpeg.org/)
 <h4>External Programs</h4>
 
 ## GUI (graphical user interface)
  - clear mode
-<img width="874" height="554" alt="Captura desde 2026-01-03 12-58-12" src="https://github.com/user-attachments/assets/9ceb4ba8-5541-4517-bea6-b19e36d8c3a9" />
-
+<img width="845" height="550" alt="Captura desde 2026-01-01 16-00-31" src="https://github.com/user-attachments/assets/6386c6bf-a705-412c-b03b-320b6090e851" />
 
  - dark mode
-<img width="874" height="554" alt="Captura desde 2026-01-03 12-58-08" src="https://github.com/user-attachments/assets/fd3fb104-e888-4177-bbc3-8ef676a0da7d" />
-
+<img width="845" height="550" alt="Captura desde 2026-01-01 16-00-26" src="https://github.com/user-attachments/assets/88f6b851-3fd6-480a-b216-2777c0816f85" />
 
 
 ### How to compile:
@@ -46,17 +44,16 @@ All content in this repository is under GPL-3.0.
 ## Español:
 
 ### <h3>requiere</h3>
- - [MKVToolNix](https://mkvtoolnix.org/)
+ - [MKVToolNix](https://mkvtoolnix.download/)
  - [FFmpeg](https://www.ffmpeg.org/)
 <h4>como programas externos</h4>
 
 ## GUI (interfaz gráfica de usuario)
  - modo claro
-<img width="874" height="554" alt="Captura desde 2026-01-03 12-58-12" src="https://github.com/user-attachments/assets/9ceb4ba8-5541-4517-bea6-b19e36d8c3a9" />
-
+<img width="845" height="550" alt="Captura desde 2026-01-01 16-00-31" src="https://github.com/user-attachments/assets/6386c6bf-a705-412c-b03b-320b6090e851" />
 
  - modo oscuro
-<img width="874" height="554" alt="Captura desde 2026-01-03 12-58-08" src="https://github.com/user-attachments/assets/fd3fb104-e888-4177-bbc3-8ef676a0da7d" />
+<img width="845" height="550" alt="Captura desde 2026-01-01 16-00-26" src="https://github.com/user-attachments/assets/88f6b851-3fd6-480a-b216-2777c0816f85" />
 
 
 ### Cómo compilar:
