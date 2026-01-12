@@ -885,12 +885,12 @@ class version_formato:
                 elif comando == "script":
                     scripts_name.append(parametros[1])
                 elif comando in scripts_name:
-                    lista_comandos["start"] = comando_script(parametros, lista_comandos["start"], comando)
+                    lista_comandos["start"] = self.comando_script(parametros, lista_comandos["start"], comando)
                 elif comando == menu_name:
                     if list(parametros[0].keys())[0] == "resolution":
                         lista_comandos["resolucion"] = list(parametros[0].values())[0]
                     else:
-                        lista_comandos["start"] = self.comando_menu(parametros, lista_comandos["start"])
+                        lista_comandos["start"] = self.comando_x(parametros, lista_comandos["start"])
                 elif comando == "time":
                     lista_comandos["start"].append(["time", {
                         "wait": [parametros[1],parametros[2]]
@@ -901,7 +901,9 @@ class version_formato:
                 comando   = list(comandos.keys())[0]
                 parametros = list(comandos.values())[0]
                 if comando == menu_name:
-                    lista_comandos["loop"] = self.comando_menu(parametros, lista_comandos["loop"])
+                    lista_comandos["loop"] = self.comando_x(parametros, lista_comandos["loop"])
+                elif comando in scripts_name:
+                    lista_comandos["start"] = self.comando_script(parametros, lista_comandos["start"], comando)
                 elif comando == "time":
                     lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
@@ -910,7 +912,7 @@ class version_formato:
             self.lista_comandos = lista_comandos
             self.scripts_name = scripts_name
 
-        def comando_menu(self, comandos, lista_comandos):
+        def comando_x(self, comandos, lista_comandos):
                 print(comandos)
                 try:
                     comando   = list(comandos[0].keys())[0]
@@ -971,7 +973,13 @@ class version_formato:
                     parametro_num = 0
                     while parametro_num < len(parametros):
                         parametro = parametros[parametro_num]
-                        if "coordinates" == parametro:
+                        if "create" == parametro:
+                            comando_r[1]["create"] = parametros[parametro_num+1]
+                            parametro_num += 1
+                        if "edit" == parametro:
+                            comando_r[1]["edit"] = parametros[parametro_num+1]
+                            parametro_num += 1
+                        elif "coordinates" == parametro:
                             print(f"{parametros}\n{parametro_num}")
                             comando_r[1]["coordinates"] = [
                             parametros[parametro_num+1], parametros[parametro_num+2],
@@ -1163,7 +1171,7 @@ class version_formato:
                     parametro_num += 1
                     if parametro_num >= len(parametros):
                         break
-                
+
                 parametros_command["condiciones"] = parametros_condiciones
                 parametros_command["commands"] = parametros[1]
 
@@ -1185,9 +1193,9 @@ class version_formato:
                     parametro_num += 1
                     if parametro_num >= len(parametros):
                         break
-                
+
                 parametros_command["conditions"] = conditions
-                
+
                 lista_comandos.append(["if", parametros_command])
             elif comandos == "range":
                 parametros_command = {"script": script_name}

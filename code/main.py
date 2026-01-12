@@ -721,26 +721,152 @@ class ventana:
                     value = comando[1]["content"]
                     if type(value) == type([]) and value != [] and value != [[]]:
                         variable[comando[1]["id"]] = self.calcule(value)
+                    elif value == [[]] or value == []:
+                        variable[comando[1]["id"]] = []
                     else:
                         variable[comando[1]["id"]] = value
                 elif comando[1]["id_type"] == "edit":
                     value = comando[1]["content"]
                     if type(value) == type([]) and value != [] and value != [[]]:
                         variable[comando[1]["id"]] = self.calcule(value)
+                    elif value == [[]] or value == []:
+                        variable[comando[1]["id"]] = []
                     else:
                         variable[comando[1]["id"]] = value
                 elif comando[1]["id_type"] == "insert_value":
                     t[0] = variable[comando[1]["id"]]
             elif comando[0] == "folder_contents":
-                pass
+                raiz_content = list(self.contenido_dat.keys())
+                if comando[1]["folder"] == "/":
+                    variable[comando[1]["output_variable"]] = raiz_content
+                else:
+                    value = []
+                    num_digits = len(comando[1]["folder"])
+                    for content in raiz_content:
+                        if content[:num_digits] == comando[1]["folder"]:
+                            print(content)
+                            value.append(content)
+                    variable[comando[1]["output_variable"]] = value
+            elif comando[0] == "range":
+                variable[comando[1]["output_variable"]] = range(comando[1]["starting_value"],
+                                                                comando[1]["final_value"],
+                                                                comando[1]["definition"])
+            elif comando[0] == "if":
+                if comando[1]["conditions"][1] == "==":
+                    if comando[1]["conditions"][0] == comando[1]["conditions"][2]:
+                        if comando[1]["true"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["true"]) == type([]):
+                            for command in comando[1]["true"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["true"]])
+                    else:
+                        if comando[1]["false"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["false"]) == type([]):
+                            for command in comando[1]["false"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["false"]])
+                elif comando[1]["conditions"][1] == ">":
+                    if comando[1]["conditions"][0] > comando[1]["conditions"][2]:
+                        if comando[1]["true"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["true"]) == type([]):
+                            for command in comando[1]["true"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["true"]])
+                    else:
+                        if comando[1]["false"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["false"]) == type([]):
+                            for command in comando[1]["false"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["false"]])
+                elif comando[1]["conditions"][1] == "<":
+                    if comando[1]["conditions"][0] < comando[1]["conditions"][2]:
+                        if comando[1]["true"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["true"]) == type([]):
+                            for command in comando[1]["true"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["true"]])
+                    else:
+                        if comando[1]["false"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["false"]) == type([]):
+                            for command in comando[1]["false"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["false"]])
+                elif comando[1]["conditions"][1] == "<=":
+                    if comando[1]["conditions"][0] < comando[1]["conditions"][2] or comando[1]["conditions"][0] == comando[1]["conditions"][2]:
+                        if comando[1]["true"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["true"]) == type([]):
+                            for command in comando[1]["true"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["true"]])
+                    else:
+                        if comando[1]["false"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["false"]) == type([]):
+                            for command in comando[1]["false"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["false"]])
+                elif comando[1]["conditions"][1] == ">=":
+                    if comando[1]["conditions"][0] > comando[1]["conditions"][2] or comando[1]["conditions"][0] == comando[1]["conditions"][2]:
+                        if comando[1]["true"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["true"]) == type([]):
+                            for command in comando[1]["true"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["true"]])
+                    else:
+                        if comando[1]["false"] == ["ignore"]:
+                            pass
+                        elif type(comando[1]["false"]) == type([]):
+                            for command in comando[1]["false"]:
+                                self.menu_comand(command)
+                        else:
+                            self.menu_comand([comando[1]["false"]])
+            elif comando[0] == "for":
+                for i in variable[comando[1]["condiciones"]["content_list_variable"]]:
+                    variable[comando[1]["condiciones"]["temporary_variable"]] = i
+                    if type(comando[1]["condiciones"]["commands"]) == type([]):
+                        self.menu_comand(comando[1]["condiciones"]["commands"])
+                    else:
+                        self.menu_comand([comando[1]["condiciones"]["commands"]])
             self.variable_scripts[comando[1]["script"]] = variable
         elif self.ventana_tk.winfo_viewable():
             if comando[0] == "image":
                 print(comando[1]["imagen"])
-                imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["imagen"])])
+
+                i = ""
+                if type(comando[1]["imagen"]) == type({}):
+                    i = comando_ejecutar(comando[1]["imagen"],v)[0]
+                else:
+                    i = comando[1]["imagen"]
+
+                imagen_file = Image.open(self.contenido_dat[self.path(i)])
                 imagen = ImageTk.PhotoImage(imagen_file)
                 if "create" in comando[1].keys():
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":comando[1]["coordinates"], "imagen":imagen_file})
+                    c = []
+                    for i in comando[1]["coordinates"]:
+                        if type(i) == type({}):
+                            b = comando_ejecutar(i,v)[0]
+                            c.append(b)
+                        else:
+                            c.append(i)
+
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":c, "imagen":imagen_file})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                     print(self.objetos_menu[len(self.objetos_menu)-1])
@@ -749,15 +875,29 @@ class ventana:
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
+                                c = []
+                                for i in comando[1]["coordinates"]:
+                                    if type(i) == type({}):
+                                        b = comando_ejecutar(i,v)[0]
+                                        c.append(b)
+                                    else:
+                                        c.append(i)
+
                                 print("Objeto encontrado:", self.objetos_menu[i])
-                                self.objetos_menu[i]["cordenadas"] = comando[1]["coordinates"]
+                                self.objetos_menu[i]["cordenadas"] = c
                                 self.objetos_menu[i]["imagen"] = imagen_file
                                 self.objetos_menu[i]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[i])
             elif comando[0] == "ebook":
                 print(comando[1]["epub_path"])
 
-                book = epub.read_epub(self.contenido_dat[self.path(comando[1]["epub_path"])])
+                i = ""
+                if type(comando[1]["epub_path"]) == type({}):
+                    i = comando_ejecutar(comando[1]["epub_path"],v)[0]
+                else:
+                    i = comando[1]["epub_path"]
+
+                book = epub.read_epub(self.contenido_dat[self.path(i)])
 
                 #obtener todos los documentos (capítulos/secciones)
                 items = list(book.get_items_of_type(ebooklib.ITEM_DOCUMENT))
@@ -769,11 +909,11 @@ class ventana:
 
                 #HTML(string=html_content).write_png(f"{comando[1]['epub_path']}_{comando[1]['page']}.png")
                 output_file_path = os.path.join(self.carpeta_temporal,f"{self.path(comando[1]['epub_path'])}_{comando[1]['page']}.png")
-                file_html = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),"cap_html_temp.html"), 'w')
+                file_html = open(os.path.join(self.carpeta_temporal,"cap_html_temp.html"), 'w')
                 file_html.write(html_content)
                 file_html.close()
 
-                subprocess.run(['wkhtmltoimage',f'{os.path.join(os.path.dirname(os.path.abspath(__file__)),"cap_html_temp.html")}',f'{output_file_path}'])
+                subprocess.run(['wkhtmltoimage',f'{os.path.join(self.carpeta_temporal,"cap_html_temp.html")}',f'{output_file_path}'])
                 
                 img  = Image.open(f"{output_file_path}")
                 imgb = img.convert("L")
@@ -797,35 +937,86 @@ class ventana:
 
                 imagen = ImageTk.PhotoImage(imagen_file)
                 if "create" in comando[1].keys():
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":comando[1]["coordinates"], "imagen":imagen_file})
+                    c = []
+                    for i in comando[1]["coordinates"]:
+                        if type(i) == type({}):
+                            b = comando_ejecutar(i,v)[0]
+                            c.append(b)
+                        else:
+                            c.append(i)
+
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":c, "imagen":imagen_file})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                     print(self.objetos_menu[len(self.objetos_menu)-1])
                 elif "edit" in comando[1].keys():
+                    c = []
+                    for i in comando[1]["coordinates"]:
+                        if type(i) == type({}):
+                            b = comando_ejecutar(i,v)[0]
+                            c.append(b)
+                        else:
+                            c.append(i)
+
                     print("Buscando objeto con id:", comando[1]["edit"])
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
                                 print("Objeto encontrado:", self.objetos_menu[i])
-                                self.objetos_menu[i]["cordenadas"] = comando[1]["coordinates"]
+                                self.objetos_menu[i]["cordenadas"] = c
                                 self.objetos_menu[i]["imagen"] = imagen_file
                                 self.objetos_menu[i]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[i])
             elif comando[0] == "text":
-                self.objetos_menu.append({"objeto": tk.Label(v,text=comando[1]["text"],fg="#808080"), "cordenadas":comando[1]["coordinates"]})
+                c = []
+                for i in comando[1]["coordinates"]:
+                    if type(i) == type({}):
+                        b = comando_ejecutar(i,v)[0]
+                        c.append(b)
+                    else:
+                        c.append(i)
+
+                tb = ""
+                if type(comando[1]["text"]) == type({}):
+                    tb = comando_ejecutar(comando[1]["text"],v)[0]
+                else:
+                    tb = comando[1]["text"]
+
+                if "create" in comando[1].keys():
+                    self.objetos_menu.append({"id": comando[1]["create"],"objeto": tk.Label(v,text=tb,fg="#808080"), "cordenadas":comando[1]["coordinates"]})
+                elif "edit" in comando[1].keys():
+                    for i in range(len(self.objetos_menu)-1):
+                        if "id" in self.objetos_menu[i].keys():
+                            if self.objetos_menu[i]["id"] == comando[1]["edit"]:
+                                self.objetos_menu[i]["objeto"].config(text=tb)
+                                self.objetos_menu[i]["cordenadas"] = c
             elif comando[0] == "button":
+                c = []
+                for i in comando[1]["coordinates"]:
+                    if type(i) == type({}):
+                        b = comando_ejecutar(i,v)[0]
+                        c.append(b)
+                    else:
+                        c.append(i)
+
                 if "create" in comando[1].keys():
                     if "image" in comando[1].keys():
+                        i = ""
+                        if type(comando[1]["image"]) == type({}):
+                            i = comando_ejecutar(comando[1]["image"],v)[0]
+                        else:
+                            i = comando[1]["image"]
+
                         if "command" in comando[1].keys():
-                            print(self.path(comando[1]["image"]))
-                            print(self.contenido_dat[self.path(self.path(comando[1]["image"]))])
-                            imagen_file = Image.open(self.contenido_dat[self.path(self.path(comando[1]["image"]))])
+                            print(self.path(i))
+                            print(self.contenido_dat[self.path(self.path(i))])
+                            imagen_file = Image.open(self.contenido_dat[self.path(self.path(i))])
                             imagen = ImageTk.PhotoImage(imagen_file)
 
                             print(comando[1]["coordinates"])
 
                             self.objetos_menu.append({"id":comando[1]["create"],
-                            "objeto":tk.Label(self.espacio_mv, image=imagen), "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
+                            "objeto":tk.Label(self.espacio_mv, image=imagen), "cordenadas":c,"imagen":imagen_file})
 
                             self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
                             self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd))
@@ -849,7 +1040,31 @@ class ventana:
                             self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"]))
                             self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
                     else:
-                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Button(v, text=comando[1]["title"],bg=f'#{comando[1]["color"][0]:02x}{comando[1]["color"][1]:02x}{comando[1]["color"][2]:02x}'), "cordenadas":comando[1]["coordinates"]})
+                        tb = ""
+                        if type(comando[1]["title"]) == type({}):
+                            tb = comando_ejecutar(comando[1]["title"],v)[0]
+                        else:
+                            tb = comando[1]["title"]
+
+                        r = ""
+                        if type(comando[1]["color"][0]) == type({}):
+                            r = comando_ejecutar(comando[1]["color"][0],v)[0]
+                        else:
+                            r = comando[1]["color"][0]
+
+                        g = ""
+                        if type(comando[1]["color"][1]) == type({}):
+                            g = comando_ejecutar(comando[1]["color"][1],v)[0]
+                        else:
+                            g = comando[1]["color"][1]
+
+                        b = ""
+                        if type(comando[1]["color"][2]) == type({}):
+                            b = comando_ejecutar(comando[1]["color"][2],v)[0]
+                        else:
+                            b = comando[1]["color"][2]
+
+                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Button(v, text=tb,bg=f'#{r:02x}{g:02x}{b:02x}'), "cordenadas":comando[1]["coordinates"]})
                         self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
 
                         if "command" in comando[1].keys():
@@ -864,9 +1079,9 @@ class ventana:
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
                                 if "image" in comando[1].keys():
                                     if "command" in comando[1].keys():
-                                        print(self.path(comando[1]["image"]))
-                                        print(self.contenido_dat[self.path(comando[1]["image"])])
-                                        imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
+                                        print(self.path(i))
+                                        print(self.contenido_dat[self.path(i)])
+                                        imagen_file = Image.open(self.contenido_dat[self.path(i)])
                                         imagen = ImageTk.PhotoImage(imagen_file)
 
                                         print(comando[1]["coordinates"])
@@ -904,51 +1119,121 @@ class ventana:
                                         self.objetos_menu[i]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"]))
                                         self.objetos_menu[i]["objeto"].place()
                                 else:
+                                    tb = ""
+                                    if type(comando[1]["title"]) == type({}):
+                                        tb = comando_ejecutar(comando[1]["title"],v)[0]
+                                    else:
+                                        tb = comando[1]["title"]
+
+                                    r = ""
+                                    if type(comando[1]["color"][0]) == type({}):
+                                        r = comando_ejecutar(comando[1]["color"][0],v)[0]
+                                    else:
+                                        r = comando[1]["color"][0]
+
+                                    g = ""
+                                    if type(comando[1]["color"][1]) == type({}):
+                                        g = comando_ejecutar(comando[1]["color"][1],v)[0]
+                                    else:
+                                        g = comando[1]["color"][1]
+
+                                    b = ""
+                                    if type(comando[1]["color"][2]) == type({}):
+                                        b = comando_ejecutar(comando[1]["color"][2],v)[0]
+                                    else:
+                                        b = comando[1]["color"][2]
+
                                     if "command" in comando[1].keys():
                                         self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
 
                                         self.objetos_menu[i]["objeto"].bind("<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd))
 
-                                        self.objetos_menu[i]["objeto"].config(text=comando[1]["title"])
+                                        self.objetos_menu[i]["objeto"].config(text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
                                     else:
                                         self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
 
-                                        self.objetos_menu[i]["objeto"].config(text=comando[1]["title"])
+                                        self.objetos_menu[i]["objeto"].config(text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
+                                    
                                     if "command4selection" in comando[1].keys():
                                         self.objetos_menu[i]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"]))
 
                                         self.objetos_menu[i]["objeto"].place()
+                                    
                                     if "command4no_selection" in comando[1].keys():
                                         self.objetos_menu[i]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"]))
 
                                         self.objetos_menu[i]["objeto"].place()
             elif comando[0] == "sound":
+                v = ""
+                if type(comando[1]["volume"]) == type({}):
+                    v = comando_ejecutar(comando[1]["volume"],v)[0]
+                else:
+                    v = comando[1]["volume"]
+
                 if "create" in comando[1].keys():
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":pygame.mixer.Sound(self.contenido_dat[self.path(comando[1]["sound"])])})
+                    s = ""
+                    if type(comando[1]["sound"]) == type({}):
+                        s = comando_ejecutar(comando[1]["sound"],v)[0]
+                    else:
+                        s = comando[1]["sound"]
+
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":pygame.mixer.Sound(self.contenido_dat[self.path(s)])})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].play()
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].set_volume(self.volume.get()*comando[1]["volume"]/100)
+                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].set_volume((self.volume.get()/100)*(v/100))
                     print("sonido play")
                 elif "edit" in comando[1].keys():
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
-                                self.objetos_menu[i]["objeto"].set_volume(self.volume.get()/100*comando[1]["volume"]/100)
+                                self.objetos_menu[i]["objeto"].set_volume((self.volume.get()/100)*(v/100))
             elif comando[0] == "time":
                 if "wait" in comando[1].keys():
                     tiempo = comando[1]["wait"][0]
                     unidad = comando[1]["wait"][1]
-                    if unidad == "seconds":
-                        t[1] = tiempo
-                    elif unidad == "minutes":
-                        t[1] = tiempo*60
-                    elif unidad == "hours":
-                        t[1] = iempo*3600
+                    tb = ""
+                    if type(tiempo) == type({}):
+                        tb = comando_ejecutar(tiempo,v)[0]
+                    else:
+                        tb = tiempo
+
+                    u = ""
+                    if type(unidad) == type({}):
+                        u = comando_ejecutar(unidad,v)[0]
+                    else:
+                        u = unidad
+
+                    if u == "seconds":
+                        t[1] = tb
+                    elif u == "minutes":
+                        t[1] = tb*60
+                    elif u == "hours":
+                        t[1] = tb*3600
             elif comando[0] == "teleport":
-                self.teleport(self.path(comando[1]["ubicaciones"]))
+                tb = ""
+                if type(comando[1]["ubicaciones"]) == type({}):
+                    tb = comando_ejecutar(comando[1]["ubicaciones"],v)[0]
+                else:
+                    tb = comando[1]["ubicaciones"]
+
+                self.teleport(self.path(tb))
             elif comando[0] == "video":
                 print(comando)
                 if not("restart" in comando[1].keys()):
-                    file, extension = os.path.splitext(self.path(comando[1]["video"]))
+                    vb = ""
+                    if type(comando[1]["video"]) == type({}):
+                        vb = comando_ejecutar(comando[1]["video"],v)[0]
+                    else:
+                        vb = comando[1]["video"]
+
+                    c = []
+                    for i in comando[1]["coordinates"]:
+                        if type(i) == type({}):
+                            b = comando_ejecutar(i,v)[0]
+                            c.append(b)
+                        else:
+                            c.append(i)
+
+                    file, extension = os.path.splitext(self.path(vb))
 
                     try:
                         os.makedirs(os.path.join(self.carpeta_temporal_video,file))
@@ -956,12 +1241,12 @@ class ventana:
                         shutil.rmtree(os.path.join(self.carpeta_temporal_video),file)
                         os.makedirs(os.path.join(self.carpeta_temporal_video,file))
                     
-                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[self.path(comando[1]["video"])],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_video}/{file}")
-                    subprocess.run(["ffmpeg", "-y", "-i",self.path(self.contenido_dat[self.path(self.path(comando[1]["video"]))]),"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_video}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.contenido_dat[self.path(vb)],"frame_%04d.png"], cwd=f"{self.carpeta_temporal_video}/{file}")
+                    subprocess.run(["ffmpeg", "-y", "-i",self.path(self.contenido_dat[self.path(self.path(vb))]),"-vn","-c:a","libopus",f"{file}.opus"], cwd=f"{self.carpeta_temporal_video}")
                 
                 if "create" in comando[1].keys():
                     print("create")
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.path(self.contenido_dat[self.path(comando[1]["video"])]), "video_r":file})
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":c, "video":file, "video_path":self.path(self.contenido_dat[self.path(vb)]), "video_r":file})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                     print(self.objetos_menu[len(self.objetos_menu)-1])
 
@@ -969,7 +1254,7 @@ class ventana:
 
                     fps = self.get_fps(self.objetos_menu[len(self.objetos_menu)-1]["video_path"])
 
-                    self.video_r(len(self.objetos_menu)-1, file, fps, self.contenido_dat[self.path(comando[1]["video"])])
+                    self.video_r(len(self.objetos_menu)-1, file, fps, self.contenido_dat[self.path(vb)])
                 elif "restart" in comando[1].keys():
                     for i in range(len(self.objetos_menu)):
                         if "id" in self.objetos_menu[i].keys():
@@ -986,7 +1271,7 @@ class ventana:
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
-                                self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":comando[1]["coordinates"], "video":file, "video_path":self.contenido_dat[self.path(comando[1]["video"])]})
+                                self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":c, "video":file, "video_path":self.contenido_dat[self.path(v)]})
                                 elf.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
             return t
@@ -1028,7 +1313,7 @@ class ventana:
                 if extension == ".mkv":
                     self.menu_r = True
                     self.video_repr = True
-                    self.video(self.contenido_dat[paths[0]], [], mkv_time=None)
+                    self.video(self.contenido_dat[self.path(paths[0])], [], mkv_time=None)
                     #while self.video_repr:
                      #   if not(self.video_repr):
                       #      break
@@ -1052,9 +1337,9 @@ class ventana:
                             self.menu_r = True
                             self.video_repr = True
                             if type(paths[path_num+1]) == type([]):
-                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+2:], mkv_time=paths[path_num+1])
+                                self.video(self.contenido_dat[self.path(paths[path_num])], paths[path_num+2:], mkv_time=paths[path_num+1])
                             else:
-                                self.video(self.contenido_dat[paths[path_num]], paths[path_num+1:], mkv_time=None)
+                                self.video(self.contenido_dat[self.path(paths[path_num])], paths[path_num+1:], mkv_time=None)
                             #while self.video_repr:
                             #   if not(self.video_repr):
                             #      break
@@ -1062,14 +1347,14 @@ class ventana:
                         else:
                             self.menu_r = True
                             self.video_repr = True
-                            self.video(self.contenido_dat[paths[path_num]], [])
+                            self.video(self.contenido_dat[self.path(paths[path_num])], [])
                             #while self.video_repr:
                             #   if not(self.video_repr):
                             #      break
                             break
                     elif extension == ".json":
-                        print("path_menu",self.contenido_dat[paths[path_num]])
-                        menu_f = open(self.contenido_dat[paths[path_num]])
+                        print("path_menu",self.contenido_dat[self.path(paths[path_num])])
+                        menu_f = open(self.contenido_dat[self.path(paths[path_num])])
                         menu_t = menu_f.read()
                         menu_j = json.loads(menu_t)
                         menu_f.close()
@@ -2035,7 +2320,7 @@ class ventana:
         self.objetos_menu.append({"objeto": tk.Label(self.espacio_mv,text='',bg="#000000",fg="#E6E600"), "cordenadas":[0,int(9*self.resolution_menu[1][1]/10),self.resolution_menu[1][0],self.resolution_menu[1][1]],"video_rr":1})
         
         self.video_repr = True
-        self.video_b(file_name=file_name,vid=vid,frame_num=frame_num,play=True,paths=paths,audio=audio)
+        self.video_b(video_path=video_path,file_name=file_name,vid=vid,frame_num=frame_num,play=True,paths=paths,audio=audio)
     
     def get_seconds(self, video_path):
         """Obtiene la duración del video usando ffprobe."""
@@ -2050,7 +2335,7 @@ class ventana:
         except subprocess.CalledProcessError as e:
             return None
 
-    def video_b(self,file_name,vid,frame_num,play,paths,audio):
+    def video_b(self,video_path,file_name,vid,frame_num,play,paths,audio):
         frames = sorted(os.listdir(f"{self.carpeta_temporal_video}/{file_name}/{self.pista_video_name.get()}"))
         frames_num = len(frames)-1
 
@@ -2065,7 +2350,7 @@ class ventana:
                 self.espacio_mv.update_idletasks()
 
                 pygame.mixer.music.play(start=0)
-                self.ventana_tk.after(10, lambda: self.video_b(file_name,vid,frame_num,play,paths,audio))
+                self.ventana_tk.after(10, lambda: self.video_b(video_path,file_name,vid,frame_num,play,paths,audio))
             else:
                 if self.pista_audio_name.get() != "none":
                     pygame.mixer.music.pause()
@@ -2105,7 +2390,7 @@ class ventana:
                 return
         elif self.video_repr:
             print(f"{file_name}.mkv")
-            fps = len(frames)/self.get_seconds(self.contenido_dat[f"{file_name}.mkv"])
+            fps = len(frames)/self.get_seconds(video_path)
 
             segundos_por_fotograma = 1/fps
             fotogramas_cambio = int(10*fps)
@@ -2231,7 +2516,7 @@ class ventana:
                 
             self.espacio_mv.update_idletasks()
 
-            self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(file_name,vid,frame_num,play,paths,audio))
+            self.ventana_tk.after(int(segundos_por_fotograma*1000), lambda: self.video_b(video_path,file_name,vid,frame_num,play,paths,audio))
 
 def args():
     parser = argparse.ArgumentParser(description="reproductor MaVM")
