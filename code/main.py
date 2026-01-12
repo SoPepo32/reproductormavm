@@ -591,11 +591,16 @@ class ventana:
                 widget_mv.destroy()
         
         menu_dat = menus.version_formato(self.video_mavm_version)
-        lista_comandos = menu_dat[1](menu_json).lista_comandos
+        menu_dat_content = menu_dat[1](menu_json)
+        lista_comandos = menu_dat_content.lista_comandos
         print("lc",lista_comandos)
 
         self.resolution_menu = [True, lista_comandos["resolucion"]]
         self.menu_resize()
+
+        self.variable_scripts = {}
+        for script in menu_dat_content.scripts_name:
+            self.variable_scripts[script] = {}
 
         #self.objetos_menu = 
         #comando[1]["imagen"]
@@ -630,7 +635,29 @@ class ventana:
                 if time.time() >= time_a:
                     #print("lcc", comando)
                     comando = lista_comandos[i+1]
-                    t = self.comnado_ejecutar(comando, self.espacio_mv)
+                    tb = self.comnado_ejecutar(comando, self.espacio_mv)
+                    t  = tb[1]
+                    if t == "p":
+                        pass
+                    else:
+                        if t != 0:
+                            time_a = time.time()+t
+
+                            self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                        else:
+                            time_a = None
+
+                            self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                else:
+                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+            else:
+                #print("lcc", comando)
+                comando = lista_comandos[i]
+                tb = self.comnado_ejecutar(comando, self.espacio_mv)
+                t  = tb[1]
+                if t == "p":
+                    pass
+                else:
                     if t != 0:
                         time_a = time.time()+t
 
@@ -639,20 +666,6 @@ class ventana:
                         time_a = None
 
                         self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
-                else:
-                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
-            else:
-                #print("lcc", comando)
-                comando = lista_comandos[i]
-                t = self.comnado_ejecutar(comando, self.espacio_mv)
-                if t != 0:
-                    time_a = time.time()+t
-
-                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
-                else:
-                    time_a = None
-
-                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
 
     def menu_loop(self, lista_comandos):
         if self.loop_comandos_on:
@@ -669,10 +682,59 @@ class ventana:
         
         return path
 
+    def calcule(self, values):
+        v_temp = []
+        for v_num, v in enumerate(values):
+            if type(v) == type([]):
+                v_f_temp.append(self.calcule(v))
+            else:
+                v_f_temp.append(v)
+
+        v_v   = ""
+        v_v_n = False
+        for v_num, v in enumerate(v_temp):
+            if type(v) == type(0.5) or type(v) == type(1) or v in ["+","-","*","/","**","//"]:
+                if v_v_n:
+                    v_v  += str(1/v)
+                    v_v_n = False
+                else:
+                    if v == "//":
+                        v_v  += "**"
+                        v_v_n = True
+                    else:
+                        v_v += str(v)
+            else:
+                messagebox.showerror("security problem", "An attempt to introduce malicious code has been detected. The program execution will be closed to prevent possible infections.")
+                self.ventana_tk.destroy()
+                self.ventana_tk.quit()
+
+        return eval(v_v)
+
     def comnado_ejecutar(self, comando, v):
-            #t = 16/1000
-            t = 0
-            #print("contenido comando:", comando)
+        #t = 16/1000
+        t = [None, 0]
+        #print("contenido comando:", comando)
+        if "script" in comando[1].keys() and self.ventana_tk.winfo_viewable():
+            variable = self.variable_scripts[comando[1]["script"]]
+            if comando[0] == "variable":
+                if comando[1]["id_type"] == "create":
+                    value = comando[1]["content"]
+                    if type(value) == type([]) and value != [] and value != [[]]:
+                        variable[comando[1]["id"]] = self.calcule(value)
+                    else:
+                        variable[comando[1]["id"]] = value
+                elif comando[1]["id_type"] == "edit":
+                    value = comando[1]["content"]
+                    if type(value) == type([]) and value != [] and value != [[]]:
+                        variable[comando[1]["id"]] = self.calcule(value)
+                    else:
+                        variable[comando[1]["id"]] = value
+                elif comando[1]["id_type"] == "insert_value":
+                    t[0] = variable[comando[1]["id"]]
+            elif comando[0] == "folder_contents":
+                pass
+            self.variable_scripts[comando[1]["script"]] = variable
+        elif self.ventana_tk.winfo_viewable():
             if comando[0] == "image":
                 print(comando[1]["imagen"])
                 imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["imagen"])])
@@ -876,11 +938,11 @@ class ventana:
                     tiempo = comando[1]["wait"][0]
                     unidad = comando[1]["wait"][1]
                     if unidad == "seconds":
-                        t = tiempo
+                        t[1] = tiempo
                     elif unidad == "minutes":
-                        t = tiempo*60
+                        t[1] = tiempo*60
                     elif unidad == "hours":
-                        t = iempo*3600
+                        t[1] = iempo*3600
             elif comando[0] == "teleport":
                 self.teleport(self.path(comando[1]["ubicaciones"]))
             elif comando[0] == "video":
@@ -928,6 +990,8 @@ class ventana:
                                 elf.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
             return t
+        else:
+            return [None,"p"]
 
     def _teleport(self, paths, paths_b=None):
         print("h")

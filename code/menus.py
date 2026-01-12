@@ -51,7 +51,9 @@ class version_formato:
                         lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
                             }])
+
             self.lista_comandos = lista_comandos
+            self.scripts_name = []
 
         def comando_x(self, comandos, lista_comandos):
                 print(comandos)
@@ -245,7 +247,9 @@ class version_formato:
                         lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
                             }])
+
             self.lista_comandos = lista_comandos
+            self.scripts_name = []
 
         def comando_x(self, comandos, lista_comandos):
                 print(comandos)
@@ -448,7 +452,9 @@ class version_formato:
                         lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
                             }])
+
             self.lista_comandos = lista_comandos
+            self.scripts_name = []
 
         def comando_x(self, comandos, lista_comandos):
                 print(comandos)
@@ -673,7 +679,9 @@ class version_formato:
                         lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
                             }])
+
             self.lista_comandos = lista_comandos
+            self.scripts_name = []
 
         def comando_x(self, comandos, lista_comandos):
                 print(comandos)
@@ -898,7 +906,9 @@ class version_formato:
                     lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
                             }])
+
             self.lista_comandos = lista_comandos
+            self.scripts_name = scripts_name
 
         def comando_menu(self, comandos, lista_comandos):
                 print(comandos)
@@ -1110,6 +1120,10 @@ class version_formato:
                         parametros_command["id_type"] = "edit"
                         parametros_command["id"]      = parametros[parametro_num+1]
                         parametro_num += 1
+                    elif parametros[parametro_num] == "insert_value":
+                        parametros_command["id_type"] = "insert_value"
+                        parametros_command["id"] = parametros[parametro_num+1]
+                        parametro_num += 1
                     elif parametros[parametro_num] == "content":
                         parametros_command["content"] = parametros[parametro_num+1]
                         parametro_num += 1
@@ -1133,7 +1147,7 @@ class version_formato:
                     if parametro_num >= len(parametros):
                         break
                 
-                lista_comandos.append(["variable", parametros_command])
+                lista_comandos.append(["folder_contents", parametros_command])
             elif comandos == "for":
                 parametros_command = {"script": script_name}
 
@@ -1153,7 +1167,7 @@ class version_formato:
                 parametros_command["condiciones"] = parametros_condiciones
                 parametros_command["commands"] = parametros[1]
 
-                lista_comandos.append(["variable", parametros_command])
+                lista_comandos.append(["for", parametros_command])
             elif comandos == "if":
                 parametros_command = {"script": script_name}
 
@@ -1174,7 +1188,7 @@ class version_formato:
                 
                 parametros_command["conditions"] = conditions
                 
-                lista_comandos.append(["variable", parametros_command])
+                lista_comandos.append(["if", parametros_command])
             elif comandos == "range":
                 parametros_command = {"script": script_name}
 
@@ -1197,6 +1211,6 @@ class version_formato:
                     if parametro_num >= len(parametros):
                         break
 
-                lista_comandos.append(["variable", parametros_command])
+                lista_comandos.append(["range", parametros_command])
             
             return lista_comandos
