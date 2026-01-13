@@ -880,17 +880,24 @@ class version_formato:
             for comandos in start_comandos:
                 comando    = list(comandos.keys())[0]
                 parametros = list(comandos.values())[0]
+                print("comando",comando)
+                print("scripts_name",scripts_name)
+                print("comando in scripts_name",comando in scripts_name)
                 if comando == "menu":
                     menu_name = parametros[1]
                 elif comando == "script":
                     scripts_name.append(parametros[1])
                 elif comando in scripts_name:
-                    lista_comandos["start"] = self.comando_script(parametros, lista_comandos["start"], comando)
+                    print("comandob",parametros)
+                    p = self.comando_script(parametros, [], comando, scripts_name)
+                    print("p",p)
+                    lista_comandos["start"].append(p[0])
+                    print('lista_comandos["start"][len(lista_comandos["start"])-1]',lista_comandos["start"][len(lista_comandos["start"])-1])
                 elif comando == menu_name:
                     if list(parametros[0].keys())[0] == "resolution":
                         lista_comandos["resolucion"] = list(parametros[0].values())[0]
                     else:
-                        lista_comandos["start"] = self.comando_x(parametros, lista_comandos["start"])
+                        lista_comandos["start"] = self.comando_x(parametros, lista_comandos["start"], scripts_name)
                 elif comando == "time":
                     lista_comandos["start"].append(["time", {
                         "wait": [parametros[1],parametros[2]]
@@ -900,10 +907,10 @@ class version_formato:
             for comandos in loop_comandos:
                 comando   = list(comandos.keys())[0]
                 parametros = list(comandos.values())[0]
-                if comando == menu_name:
-                    lista_comandos["loop"] = self.comando_x(parametros, lista_comandos["loop"])
-                elif comando in scripts_name:
-                    lista_comandos["start"] = self.comando_script(parametros, lista_comandos["start"], comando)
+                if comando in scripts_name:
+                    lista_comandos["loop"] = self.comando_script(parametros, lista_comandos["loop"], comando, scripts_name)
+                elif comando == menu_name:
+                    lista_comandos["loop"] = self.comando_x(parametros, lista_comandos["loop"], scripts_name)
                 elif comando == "time":
                     lista_comandos["loop"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
@@ -912,7 +919,7 @@ class version_formato:
             self.lista_comandos = lista_comandos
             self.scripts_name = scripts_name
 
-        def comando_x(self, comandos, lista_comandos):
+        def comando_x(self, comandos, lista_comandos, scripts_name):
                 print(comandos)
                 try:
                     comando   = list(comandos[0].keys())[0]
@@ -1002,9 +1009,9 @@ class version_formato:
                             if type(parametros[parametro_num+1]) == type([]):
                                 coman = []
                                 for com in parametros[parametro_num+1]:
-                                    coman.append(self.comando_x(com,[]))
+                                    coman.append(self.comando_x(com,[], scripts_name))
                             else:
-                                coman = self.comando_x([parametros[parametro_num+1]],[])
+                                coman = self.comando_x([parametros[parametro_num+1]],[], scripts_name)
                             parametro_num += 1
                             comando_r[1]["command"] = coman
                         elif "command4selection" == parametro:
@@ -1013,7 +1020,7 @@ class version_formato:
                                 for com in parametros[parametro_num+1]:
                                     coman.append(self.comando_x(com,[]))
                             else:
-                                coman = self.comando_x([parametros[parametro_num+1]],[])
+                                coman = self.comando_x([parametros[parametro_num+1]],[], scripts_name)
                             parametro_num += 1
                             comando_r[1]["command4selection"] = coman
                         elif "command4no_selection" == parametro:
@@ -1024,7 +1031,7 @@ class version_formato:
                                 for com in parametros[parametro_num+1]:
                                     coman.append(self.comando_x(com,[]))
                             else:
-                                coman = self.comando_x([parametros[parametro_num+1]],[])
+                                coman = self.comando_x([parametros[parametro_num+1]],[], scripts_name)
                             parametro_num += 1
                             comando_r[1]["command4no_selection"] = coman
                         elif "coordinates" == parametro:
@@ -1101,7 +1108,7 @@ class version_formato:
                         }])
                 return lista_comandos
 
-        def comando_script(self, comandos, lista_comandos, script_name):
+        def comando_script(self, comandos, lista_comandosb, script_name, scripts_name):
             print(comandos)
             try:
                 comando    = list(comandos[0].keys())[0]
@@ -1115,7 +1122,9 @@ class version_formato:
                     comando    = list(comandos[0][0].keys())[0]
                     parametros = list(comandos[0][0].values())[0]
 
-            if comandos == "variable":
+            lista_comandos = lista_comandosb
+
+            if comando == "variable":
                 parametros_command = {"script": script_name}
 
                 parametro_num = 0
@@ -1140,7 +1149,7 @@ class version_formato:
                         break
                 
                 lista_comandos.append(["variable", parametros_command])
-            elif comandos == "folder_contents":
+            elif comando == "folder_contents":
                 parametros_command = {"script": script_name}
 
                 parametro_num = 0
@@ -1156,37 +1165,91 @@ class version_formato:
                         break
                 
                 lista_comandos.append(["folder_contents", parametros_command])
-            elif comandos == "for":
+            elif comando == "for":
                 parametros_command = {"script": script_name}
 
                 parametro_num = 0
                 parametros_condiciones = {}
                 while parametro_num < len(parametros[0]):
-                    if parametros[parametro_num] == "temporary_variable_for_output":
-                        parametros_condiciones["temporary_variable"] = parametros[0][parametro_num+1]
+                    print("pppp")
+                    if parametros[0][parametro_num] == "temporary_variable_for_output":
+                        a = parametros[0][parametro_num+1]
+                        print('parametros_condiciones["temporary_variable"]', parametros[0][parametro_num+1])
                         parametro_num += 1
-                    elif parametros[parametro_num] == "content_list_variable":
-                        parametros_condiciones["content_list_variable"] = parametros[0][parametro_num+1]
+                    elif parametros[0][parametro_num] == "content_list_variable":
+                        b = parametros[0][parametro_num+1]
+                        print('parametros_condiciones["content_list_variable"]', parametros[0][parametro_num+1])
                         parametro_num += 1
                     parametro_num += 1
-                    if parametro_num >= len(parametros):
+                    if parametro_num >= len(parametros[0]):
                         break
 
-                parametros_command["condiciones"] = parametros_condiciones
+                parametros_command["condiciones"] = {"temporary_variable": a,
+                                                     "content_list_variable": b}
+                
+                if type(parametros[1]) == type([]):
+                    n = []
+                    for i in parametros[1]:
+                        if scripts_name == list(i.keys())[0]:
+                            n.append(self.comando_script([i], [], list(i.keys())[0], scripts_name)[0])
+                        else:
+                            n.append(self.comando_x([i], [], scripts_name))
+                else:
+                    n = []
+                    if scripts_name == list(parametros[1].keys())[0]:
+                        n.append(self.comando_script([parametros[1]], [], list(i.keys())[0], scripts_name)[0])
+                    else:
+                        n.append(self.comando_x([parametros[1]], [], scripts_name))
                 parametros_command["commands"] = parametros[1]
 
                 lista_comandos.append(["for", parametros_command])
-            elif comandos == "if":
+            elif comando == "if":
                 parametros_command = {"script": script_name}
 
                 parametro_num = 0
                 conditions    = []
                 while parametro_num < len(parametros):
                     if parametros[parametro_num] == "true":
-                        parametros_command["true"] = parametros[parametro_num+1]
+                        if type(parametros[parametro_num+1]) == type([]):
+                            if parametros[parametro_num+1] != ["ignore"]:
+                                n = []
+                                for i in parametros[parametro_num+1]:
+                                    if scripts_name == list(i.keys())[0]:
+                                        n.append(self.comando_script(parametros[parametro_num+1], [], list(i.keys())[0], scripts_name)[0])
+                                    else:
+                                        n.append(self.comando_x(parametros[parametro_num+1], [], scripts_name))
+                        else:
+                            if parametros[parametro_num+1] != ["ignore"]:
+                                n = []
+                                if scripts_name == list(parametros[parametro_num+1].keys())[0]:
+                                    n.append(self.comando_script([parametros[parametro_num+1]], [], list(i.keys())[0], scripts_name)[0])
+                                else:
+                                    n.append(self.comando_x([parametros[parametro_num+1]], [], scripts_name))
+                            else:
+                                n = ["ignore"]
+                        parametros_command["true"] = n
                         parametro_num += 1
                     elif parametros[parametro_num] == "false":
-                        parametros_command["false"] = parametros[parametro_num+1]
+                        if type(parametros[parametro_num+1]) == type([]):
+                            if parametros[parametro_num+1] != ["ignore"]:
+                                n = []
+                                for i in parametros[parametro_num+1]:
+                                    if scripts_name == list(i.keys())[0]:
+                                        n.append(self.comando_script(parametros[parametro_num+1], [], list(i.keys())[0], scripts_name)[0])
+                                    else:
+                                        n.append(self.comando_x(parametros[parametro_num+1], [], scripts_name))
+                            else:
+                                n = ["ignore"]
+                        else:
+                            if parametros[parametro_num+1] != ["ignore"]:
+                                n = []
+                                if scripts_name == list(parametros[parametro_num+1].keys())[0]:
+                                    n.append(self.comando_script([parametros[parametro_num+1]], [], list(i.keys())[0], scripts_name)[0])
+                                else:
+                                    n.append(self.comando_x([parametros[parametro_num+1]], [], scripts_name))
+                            else:
+                                n = ["ignore"]
+                        parametros_command["false"] = n
                         parametro_num += 1
                     else:
                         conditions.append(parametros[parametro_num])
@@ -1197,7 +1260,7 @@ class version_formato:
                 parametros_command["conditions"] = conditions
 
                 lista_comandos.append(["if", parametros_command])
-            elif comandos == "range":
+            elif comando == "range":
                 parametros_command = {"script": script_name}
 
                 parametro_num = 0

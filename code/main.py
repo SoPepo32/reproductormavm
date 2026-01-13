@@ -6,6 +6,7 @@ from PIL import Image,ImageTk
 #from pymkv import MKVFile
 from ebooklib import epub
 import tkinter as tk
+import numpy as np
 import subprocess
 import threading
 import argparse
@@ -592,14 +593,17 @@ class ventana:
         
         menu_dat = menus.version_formato(self.video_mavm_version)
         menu_dat_content = menu_dat[1](menu_json)
+        self.convert_command = menu_dat_content
         lista_comandos = menu_dat_content.lista_comandos
         print("lc",lista_comandos)
 
         self.resolution_menu = [True, lista_comandos["resolucion"]]
         self.menu_resize()
 
+        self.scripts_name = menu_dat_content.scripts_name
+
         self.variable_scripts = {}
-        for script in menu_dat_content.scripts_name:
+        for script in self.scripts_name:
             self.variable_scripts[script] = {}
 
         #self.objetos_menu = 
@@ -636,7 +640,11 @@ class ventana:
                     #print("lcc", comando)
                     comando = lista_comandos[i+1]
                     tb = self.comnado_ejecutar(comando, self.espacio_mv)
-                    t  = tb[1]
+                    print("tb",tb)
+                    if tb != None:
+                        t  = tb[1]
+                    else:
+                        t = 0
                     if t == "p":
                         pass
                     else:
@@ -654,7 +662,11 @@ class ventana:
                 #print("lcc", comando)
                 comando = lista_comandos[i]
                 tb = self.comnado_ejecutar(comando, self.espacio_mv)
-                t  = tb[1]
+                print("tb",tb)
+                if tb != None:
+                    t  = tb[1]
+                else:
+                    t = 0
                 if t == "p":
                     pass
                 else:
@@ -686,14 +698,14 @@ class ventana:
         v_temp = []
         for v_num, v in enumerate(values):
             if type(v) == type([]):
-                v_f_temp.append(self.calcule(v))
+                v_temp.append(self.calcule(v))
             else:
-                v_f_temp.append(v)
+                v_temp.append(v)
 
         v_v   = ""
         v_v_n = False
         for v_num, v in enumerate(v_temp):
-            if type(v) == type(0.5) or type(v) == type(1) or v in ["+","-","*","/","**","//"]:
+            if type(v) == type(0.5) or type(v) == type(1) or type(v) == type({}) or v in ["+","-","*","/","**","//"]:
                 if v_v_n:
                     v_v  += str(1/v)
                     v_v_n = False
@@ -701,6 +713,11 @@ class ventana:
                     if v == "//":
                         v_v  += "**"
                         v_v_n = True
+                    elif type(v) == type({}):
+                        script  = list(v.keys())[0]
+                        command = v[script]
+                        c = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                        v_v += str(self.comnado_ejecutar(comando=c,v=self.espacio_mv)[0])
                     else:
                         v_v += str(v)
             else:
@@ -713,7 +730,7 @@ class ventana:
     def comnado_ejecutar(self, comando, v):
         #t = 16/1000
         t = [None, 0]
-        #print("contenido comando:", comando)
+        print("contenido comando:", comando)
         if "script" in comando[1].keys() and self.ventana_tk.winfo_viewable():
             variable = self.variable_scripts[comando[1]["script"]]
             if comando[0] == "variable":
@@ -734,7 +751,7 @@ class ventana:
                     else:
                         variable[comando[1]["id"]] = value
                 elif comando[1]["id_type"] == "insert_value":
-                    t[0] = variable[comando[1]["id"]]
+                    return [variable[comando[1]["id"]],0]
             elif comando[0] == "folder_contents":
                 raiz_content = list(self.contenido_dat.keys())
                 if comando[1]["folder"] == "/":
@@ -748,12 +765,25 @@ class ventana:
                             value.append(content)
                     variable[comando[1]["output_variable"]] = value
             elif comando[0] == "range":
-                variable[comando[1]["output_variable"]] = range(comando[1]["starting_value"],
-                                                                comando[1]["final_value"],
-                                                                comando[1]["definition"])
+                variable[comando[1]["output_variable"]] = np.arange(comando[1]["starting_value"],
+                                                                    comando[1]["final_value"],
+                                                                    comando[1]["definition"]).tolist()
             elif comando[0] == "if":
+                a = ""
+                if type(comando[1]["conditions"][0]) == type({}):
+                    a = self.comando_ejecutar(comando[1]["conditions"][0],v)[0]
+                else:
+                    a = comando[1]["conditions"][0]
+
+                b = ""
+                if type(comando[1]["conditions"][2]) == type({}):
+                    b = self.comando_ejecutar(comando[1]["conditions"][2],v)[0]
+                else:
+                    b = comando[1]["conditions"][2]
+
+                print('comando[1]["conditions"][1]',comando[1]["conditions"][1])
                 if comando[1]["conditions"][1] == "==":
-                    if comando[1]["conditions"][0] == comando[1]["conditions"][2]:
+                    if a == b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
@@ -770,7 +800,7 @@ class ventana:
                         else:
                             self.menu_comand([comando[1]["false"]])
                 elif comando[1]["conditions"][1] == ">":
-                    if comando[1]["conditions"][0] > comando[1]["conditions"][2]:
+                    if a > b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
@@ -787,7 +817,7 @@ class ventana:
                         else:
                             self.menu_comand([comando[1]["false"]])
                 elif comando[1]["conditions"][1] == "<":
-                    if comando[1]["conditions"][0] < comando[1]["conditions"][2]:
+                    if a < b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
@@ -804,7 +834,7 @@ class ventana:
                         else:
                             self.menu_comand([comando[1]["false"]])
                 elif comando[1]["conditions"][1] == "<=":
-                    if comando[1]["conditions"][0] < comando[1]["conditions"][2] or comando[1]["conditions"][0] == comando[1]["conditions"][2]:
+                    if a < b or a == b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
@@ -821,7 +851,7 @@ class ventana:
                         else:
                             self.menu_comand([comando[1]["false"]])
                 elif comando[1]["conditions"][1] == ">=":
-                    if comando[1]["conditions"][0] > comando[1]["conditions"][2] or comando[1]["conditions"][0] == comando[1]["conditions"][2]:
+                    if a > b or a == b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
@@ -838,12 +868,17 @@ class ventana:
                         else:
                             self.menu_comand([comando[1]["false"]])
             elif comando[0] == "for":
+                print('comando[0] == "for"')
+                print(comando[1])
                 for i in variable[comando[1]["condiciones"]["content_list_variable"]]:
+                    print('for i in variable[comando[1]["condiciones"]["content_list_variable"]]:')
                     variable[comando[1]["condiciones"]["temporary_variable"]] = i
-                    if type(comando[1]["condiciones"]["commands"]) == type([]):
-                        self.menu_comand(comando[1]["condiciones"]["commands"])
+                    if type(comando[1]["commands"]) == type([]):
+                        self.menu_comand(comando[1]["commands"])
                     else:
-                        self.menu_comand([comando[1]["condiciones"]["commands"]])
+                        self.menu_comand([comando[1]["commands"]])
+            else:
+                print("comando[0]",comando[0])
             self.variable_scripts[comando[1]["script"]] = variable
         elif self.ventana_tk.winfo_viewable():
             if comando[0] == "image":
@@ -851,7 +886,7 @@ class ventana:
 
                 i = ""
                 if type(comando[1]["imagen"]) == type({}):
-                    i = comando_ejecutar(comando[1]["imagen"],v)[0]
+                    i = self.comando_ejecutar(comando[1]["imagen"],v)[0]
                 else:
                     i = comando[1]["imagen"]
 
@@ -861,7 +896,7 @@ class ventana:
                     c = []
                     for i in comando[1]["coordinates"]:
                         if type(i) == type({}):
-                            b = comando_ejecutar(i,v)[0]
+                            b = self.comando_ejecutar(i,v)[0]
                             c.append(b)
                         else:
                             c.append(i)
@@ -878,7 +913,7 @@ class ventana:
                                 c = []
                                 for i in comando[1]["coordinates"]:
                                     if type(i) == type({}):
-                                        b = comando_ejecutar(i,v)[0]
+                                        b = self.comando_ejecutar(i,v)[0]
                                         c.append(b)
                                     else:
                                         c.append(i)
@@ -893,7 +928,7 @@ class ventana:
 
                 i = ""
                 if type(comando[1]["epub_path"]) == type({}):
-                    i = comando_ejecutar(comando[1]["epub_path"],v)[0]
+                    i = self.comando_ejecutar(comando[1]["epub_path"],v)[0]
                 else:
                     i = comando[1]["epub_path"]
 
@@ -940,7 +975,7 @@ class ventana:
                     c = []
                     for i in comando[1]["coordinates"]:
                         if type(i) == type({}):
-                            b = comando_ejecutar(i,v)[0]
+                            b = self.comando_ejecutar(i,v)[0]
                             c.append(b)
                         else:
                             c.append(i)
@@ -953,7 +988,7 @@ class ventana:
                     c = []
                     for i in comando[1]["coordinates"]:
                         if type(i) == type({}):
-                            b = comando_ejecutar(i,v)[0]
+                            b = self.comando_ejecutar(i,v)[0]
                             c.append(b)
                         else:
                             c.append(i)
@@ -971,14 +1006,14 @@ class ventana:
                 c = []
                 for i in comando[1]["coordinates"]:
                     if type(i) == type({}):
-                        b = comando_ejecutar(i,v)[0]
+                        b = self.comando_ejecutar(i,v)[0]
                         c.append(b)
                     else:
                         c.append(i)
 
                 tb = ""
                 if type(comando[1]["text"]) == type({}):
-                    tb = comando_ejecutar(comando[1]["text"],v)[0]
+                    tb = self.comando_ejecutar(comando[1]["text"],v)[0]
                 else:
                     tb = comando[1]["text"]
 
@@ -994,7 +1029,7 @@ class ventana:
                 c = []
                 for i in comando[1]["coordinates"]:
                     if type(i) == type({}):
-                        b = comando_ejecutar(i,v)[0]
+                        b = self.comando_ejecutar(i,v)[0]
                         c.append(b)
                     else:
                         c.append(i)
@@ -1003,7 +1038,7 @@ class ventana:
                     if "image" in comando[1].keys():
                         i = ""
                         if type(comando[1]["image"]) == type({}):
-                            i = comando_ejecutar(comando[1]["image"],v)[0]
+                            i = self.comando_ejecutar(comando[1]["image"],v)[0]
                         else:
                             i = comando[1]["image"]
 
@@ -1042,25 +1077,25 @@ class ventana:
                     else:
                         tb = ""
                         if type(comando[1]["title"]) == type({}):
-                            tb = comando_ejecutar(comando[1]["title"],v)[0]
+                            tb = self.comando_ejecutar(comando[1]["title"],v)[0]
                         else:
                             tb = comando[1]["title"]
 
                         r = ""
                         if type(comando[1]["color"][0]) == type({}):
-                            r = comando_ejecutar(comando[1]["color"][0],v)[0]
+                            r = self.comando_ejecutar(comando[1]["color"][0],v)[0]
                         else:
                             r = comando[1]["color"][0]
 
                         g = ""
                         if type(comando[1]["color"][1]) == type({}):
-                            g = comando_ejecutar(comando[1]["color"][1],v)[0]
+                            g = self.comando_ejecutar(comando[1]["color"][1],v)[0]
                         else:
                             g = comando[1]["color"][1]
 
                         b = ""
                         if type(comando[1]["color"][2]) == type({}):
-                            b = comando_ejecutar(comando[1]["color"][2],v)[0]
+                            b = self.comando_ejecutar(comando[1]["color"][2],v)[0]
                         else:
                             b = comando[1]["color"][2]
 
@@ -1121,25 +1156,25 @@ class ventana:
                                 else:
                                     tb = ""
                                     if type(comando[1]["title"]) == type({}):
-                                        tb = comando_ejecutar(comando[1]["title"],v)[0]
+                                        tb = self.comando_ejecutar(comando[1]["title"],v)[0]
                                     else:
                                         tb = comando[1]["title"]
 
                                     r = ""
                                     if type(comando[1]["color"][0]) == type({}):
-                                        r = comando_ejecutar(comando[1]["color"][0],v)[0]
+                                        r = self.comando_ejecutar(comando[1]["color"][0],v)[0]
                                     else:
                                         r = comando[1]["color"][0]
 
                                     g = ""
                                     if type(comando[1]["color"][1]) == type({}):
-                                        g = comando_ejecutar(comando[1]["color"][1],v)[0]
+                                        g = self.comando_ejecutar(comando[1]["color"][1],v)[0]
                                     else:
                                         g = comando[1]["color"][1]
 
                                     b = ""
                                     if type(comando[1]["color"][2]) == type({}):
-                                        b = comando_ejecutar(comando[1]["color"][2],v)[0]
+                                        b = self.comando_ejecutar(comando[1]["color"][2],v)[0]
                                     else:
                                         b = comando[1]["color"][2]
 
@@ -1166,14 +1201,14 @@ class ventana:
             elif comando[0] == "sound":
                 v = ""
                 if type(comando[1]["volume"]) == type({}):
-                    v = comando_ejecutar(comando[1]["volume"],v)[0]
+                    v = self.comando_ejecutar(comando[1]["volume"],v)[0]
                 else:
                     v = comando[1]["volume"]
 
                 if "create" in comando[1].keys():
                     s = ""
                     if type(comando[1]["sound"]) == type({}):
-                        s = comando_ejecutar(comando[1]["sound"],v)[0]
+                        s = self.comando_ejecutar(comando[1]["sound"],v)[0]
                     else:
                         s = comando[1]["sound"]
 
@@ -1192,13 +1227,13 @@ class ventana:
                     unidad = comando[1]["wait"][1]
                     tb = ""
                     if type(tiempo) == type({}):
-                        tb = comando_ejecutar(tiempo,v)[0]
+                        tb = self.comando_ejecutar(tiempo,v)[0]
                     else:
                         tb = tiempo
 
                     u = ""
                     if type(unidad) == type({}):
-                        u = comando_ejecutar(unidad,v)[0]
+                        u = self.comando_ejecutar(unidad,v)[0]
                     else:
                         u = unidad
 
@@ -1211,7 +1246,7 @@ class ventana:
             elif comando[0] == "teleport":
                 tb = ""
                 if type(comando[1]["ubicaciones"]) == type({}):
-                    tb = comando_ejecutar(comando[1]["ubicaciones"],v)[0]
+                    tb = self.comando_ejecutar(comando[1]["ubicaciones"],v)[0]
                 else:
                     tb = comando[1]["ubicaciones"]
 
@@ -1221,14 +1256,14 @@ class ventana:
                 if not("restart" in comando[1].keys()):
                     vb = ""
                     if type(comando[1]["video"]) == type({}):
-                        vb = comando_ejecutar(comando[1]["video"],v)[0]
+                        vb = self.comando_ejecutar(comando[1]["video"],v)[0]
                     else:
                         vb = comando[1]["video"]
 
                     c = []
                     for i in comando[1]["coordinates"]:
                         if type(i) == type({}):
-                            b = comando_ejecutar(i,v)[0]
+                            b = self.comando_ejecutar(i,v)[0]
                             c.append(b)
                         else:
                             c.append(i)
@@ -1274,7 +1309,11 @@ class ventana:
                                 self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":c, "video":file, "video_path":self.contenido_dat[self.path(v)]})
                                 elf.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
-            return t
+            if t == None:
+                print("t", "None")
+                return [None, 0]
+            else:
+                return t
         else:
             return [None,"p"]
 
