@@ -611,7 +611,7 @@ class ventana:
         print("start:",lista_comandos["start"])
         #for comando in lista_comandos["start"]:
          #   print("lcc", comando)
-          #  t = self.comnado_ejecutar(comando, self.espacio_mv)
+          #  t = self.comando_ejecutar(comando, self.espacio_mv)
            # print("sleep",t)
             #for i in range(t*1000):
              #   time.sleep(1/1000)
@@ -638,30 +638,34 @@ class ventana:
                 print("time.time() >= time_a",time.time() >= time_a)
                 if time.time() >= time_a:
                     #print("lcc", comando)
-                    comando = lista_comandos[i+1]
-                    tb = self.comnado_ejecutar(comando, self.espacio_mv)
-                    print("tb",tb)
-                    if tb != None:
-                        t  = tb[1]
-                    else:
-                        t = 0
-                    if t == "p":
-                        pass
-                    else:
-                        if t != 0:
-                            time_a = time.time()+t
-
-                            self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                    if i+1 <= len(lista_comandos)-1:
+                        comando = lista_comandos[i+1]
+                        tb = self.comando_ejecutar(comando, self.espacio_mv)
+                        print("tb",tb)
+                        if tb != None:
+                            t  = tb[1]
                         else:
-                            time_a = None
+                            t = 0
+                        if t == "p":
+                            pass
+                        else:
+                            if t != 0:
+                                time_a = time.time()+t
 
-                            self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                                self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                            else:
+                                time_a = None
+
+                                self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                    else:
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
                 else:
                     self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
             else:
                 #print("lcc", comando)
                 comando = lista_comandos[i]
-                tb = self.comnado_ejecutar(comando, self.espacio_mv)
+                print("comando", comando)
+                tb = self.comando_ejecutar(comando, self.espacio_mv)
                 print("tb",tb)
                 if tb != None:
                     t  = tb[1]
@@ -707,8 +711,14 @@ class ventana:
         for v_num, v in enumerate(v_temp):
             if type(v) == type(0.5) or type(v) == type(1) or type(v) == type({}) or v in ["+","-","*","/","**","//"]:
                 if v_v_n:
-                    v_v  += str(1/v)
-                    v_v_n = False
+                    if type(v) == type({}):
+                        script  = list(v.keys())[0]
+                        command = v[script]
+                        c = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                        v_v += str(1/self.comando_ejecutar(comando=c,v=self.espacio_mv)[0])
+                    else:
+                        v_v  += str(1/v)
+                        v_v_n = False
                 else:
                     if v == "//":
                         v_v  += "**"
@@ -717,7 +727,7 @@ class ventana:
                         script  = list(v.keys())[0]
                         command = v[script]
                         c = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
-                        v_v += str(self.comnado_ejecutar(comando=c,v=self.espacio_mv)[0])
+                        v_v += str(self.comando_ejecutar(comando=c,v=self.espacio_mv)[0])
                     else:
                         v_v += str(v)
             else:
@@ -727,7 +737,7 @@ class ventana:
 
         return eval(v_v)
 
-    def comnado_ejecutar(self, comando, v):
+    def comando_ejecutar(self, comando, v):
         #t = 16/1000
         t = [None, 0]
         print("contenido comando:", comando)
@@ -788,85 +798,363 @@ class ventana:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["true"]])
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                     else:
                         if comando[1]["false"] == ["ignore"]:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["false"]])
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                 elif comando[1]["conditions"][1] == ">":
                     if a > b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["true"]])
+                            script  = list(comando[1]["true"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                     else:
                         if comando[1]["false"] == ["ignore"]:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["false"]])
+                            script  = list(comando[1]["false"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                 elif comando[1]["conditions"][1] == "<":
                     if a < b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["true"]])
+                            script  = list(comando[1]["true"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                     else:
                         if comando[1]["false"] == ["ignore"]:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["false"]])
+                            script  = list(comando[1]["false"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                 elif comando[1]["conditions"][1] == "<=":
                     if a < b or a == b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["true"]])
+                            script  = list(comando[1]["true"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                     else:
                         if comando[1]["false"] == ["ignore"]:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["false"]])
+                            script  = list(comando[1]["false"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                 elif comando[1]["conditions"][1] == ">=":
                     if a > b or a == b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["true"]])
+                            script  = list(comando[1]["true"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
                     else:
                         if comando[1]["false"] == ["ignore"]:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                self.menu_comand(command)
+                                script = list(command.keys())[0]
+                                if type(command) == type({}):
+                                    if script in self.scripts_name:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    elif script == "time":
+                                        params = command[script]
+                                        cc = ["time", {"wait": [params[1], params[2]]}]
+                                    else:
+                                        command = command[script]
+                                        cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                                else:
+                                    cc = command[script]
+
+                                self.menu_comand([cc])
                         else:
-                            self.menu_comand([comando[1]["false"]])
+                            script = list(comando[1]["false"].keys())[0]
+                            if type(command) == type({}):
+                                if script in self.scripts_name:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = command[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = command[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = command[script]
+
+                            self.menu_comand([cc])
             elif comando[0] == "for":
                 print('comando[0] == "for"')
                 print(comando[1])
@@ -874,9 +1162,39 @@ class ventana:
                     print('for i in variable[comando[1]["condiciones"]["content_list_variable"]]:')
                     variable[comando[1]["condiciones"]["temporary_variable"]] = i
                     if type(comando[1]["commands"]) == type([]):
-                        self.menu_comand(comando[1]["commands"])
+                        c = []
+                        for cb in comando[1]["commands"]:
+                            print("cb", cb)
+                            script  = list(cb.keys())[0]
+                            if type(cb) == type({}):
+                                if script in self.scripts_name:
+                                    command = cb[script]
+                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                elif script == "time":
+                                    params = cb[script]
+                                    cc = ["time", {"wait": [params[1], params[2]]}]
+                                else:
+                                    command = cb[script]
+                                    cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                            else:
+                                cc = cb[script]
+
+                            c.append(cc)
+
+                        self.menu_comand(c)
                     else:
-                        self.menu_comand([comando[1]["commands"]])
+                        script  = list(comando[1]["commands"].keys())[0]
+                        if script in self.scripts_name:
+                            command = comando[1]["commands"][script]
+                            cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                        elif script == "time":
+                            params = cb[script]
+                            cc = ["time", {"wait": [params[1], params[2]]}]
+                        else:
+                            command = comando[1]["commands"][script]
+                            cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+
+                        self.menu_comand([cc])
             else:
                 print("comando[0]",comando[0])
             self.variable_scripts[comando[1]["script"]] = variable
@@ -1006,14 +1324,21 @@ class ventana:
                 c = []
                 for i in comando[1]["coordinates"]:
                     if type(i) == type({}):
-                        b = self.comando_ejecutar(i,v)[0]
+                        script  = list(i.keys())[0]
+                        command = i[script]
+                        
+                        b = self.comando_ejecutar(self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0],v)[0]
+                        
                         c.append(b)
                     else:
                         c.append(i)
 
                 tb = ""
                 if type(comando[1]["text"]) == type({}):
-                    tb = self.comando_ejecutar(comando[1]["text"],v)[0]
+                    script  = list(comando[1]["text"].keys())[0]
+                    command = comando[1]["text"][script]
+                    print("self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]",self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0])
+                    tb = self.comando_ejecutar(self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0],v)[0]
                 else:
                     tb = comando[1]["text"]
 
@@ -1520,7 +1845,7 @@ class ventana:
                 self.ejecutar_boton(comando)
         else:
             time.sleep(16/1000)
-            self.comnado_ejecutar(comandos,self.espacio_mv)
+            self.comando_ejecutar(comandos,self.espacio_mv)
 
     def actalizar_medidas(self):
         #try:

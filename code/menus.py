@@ -920,7 +920,7 @@ class version_formato:
             self.scripts_name = scripts_name
 
         def comando_x(self, comandos, lista_comandos, scripts_name):
-                print(comandos)
+                print("comand",comandos)
                 try:
                     comando   = list(comandos[0].keys())[0]
                     parametros = list(comandos[0].values())[0]

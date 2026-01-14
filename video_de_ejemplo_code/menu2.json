@@ -11,10 +11,10 @@
         {"script1": [{"variable": ["create","files_video", "content",[]]}]},
         {"script1": [{"folder_contents": ["folder","assets.tar:video/", "output_variable","files_video"]}]},
         {"script1": [{"for": [["temporary_variable_for_output","i", "content_list_variable","files_video"],
-                              [{"script1": [{"if": [{"variable:":["insert_value", "i"]},"==","assets.tar:video/video1.mkv",
+                              [{"script1": [{"if": [{"script1":{"variable":["insert_value", "i"]}},"==","assets.tar:video/video1.mkv",
                                     "true",
                                         {"menu1": [
-                                            {"button":["create","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128], "command_click",[{"sound":["create","sound1", "sound1.opus", "volume",37]},{"teleport":[{"script1":[{"variable:":["insert_value", "i"]}]},[1,1,1], "menu1.json"]}], "command4selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,255]]}, "command4no_selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128]]}]
+                                            {"button":["create","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128], "command_click",[{"sound":["create","sound1", "sound1.opus", "volume",37]},{"teleport":[{"script1":[{"variable":["insert_value", "i"]}]},[1,1,1], "menu1.json"]}], "command4selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,255]]}, "command4no_selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128]]}]
                                         }
                                     ]},
                                     "false", [
@@ -37,7 +37,7 @@
         {"script2": [{"folder_contents": ["folder","assets.tar:video/", "output_variable","files_video"]}]},
         {"script2": [{"for": [["temporary_variable_for_output","i", "content_list_variable","num2"],
                             [
-                                {"menu1": [{"text": ["edit","t1", "coordinates",0,75,1920,75, "text",{"script2":[{"variable:":["insert_value", "i"]}]}]}]},
+                                {"menu1": [{"text": ["edit","t1", "coordinates",0,75,1920,75, "text",{"script2":[{"variable":["insert_value", "i"]}]}]}]},
                                 {"time": ["wait",1,"seconds"]}
                             ]
                         ]
