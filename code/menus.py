@@ -1190,8 +1190,10 @@ class version_formato:
                 if type(parametros[1]) == type([]):
                     n = []
                     for i in parametros[1]:
-                        if scripts_name == list(i.keys())[0]:
-                            n.append(self.comando_script([i], [], list(i.keys())[0], scripts_name)[0])
+                        if list(i.keys())[0] in scripts_name:
+                            hoola = self.comando_script([i], [], list(i.keys())[0], scripts_name)
+                            print("hoola", hoola)
+                            n.append(hoola)
                         else:
                             n.append(self.comando_x([i], [], scripts_name))
                 else:
@@ -1214,17 +1216,17 @@ class version_formato:
                             if parametros[parametro_num+1] != ["ignore"]:
                                 n = []
                                 for i in parametros[parametro_num+1]:
-                                    if scripts_name == list(i.keys())[0]:
-                                        n.append(self.comando_script(parametros[parametro_num+1], [], list(i.keys())[0], scripts_name)[0])
+                                    if list(i.keys())[0] in scripts_name:
+                                        n.append(self.comando_script(i[list(parametros[parametro_num+1].keys())[0]], [], list(i.keys()), scripts_name)[0])
                                     else:
-                                        n.append(self.comando_x(parametros[parametro_num+1], [], scripts_name))
+                                        n.append(self.comando_x(i[list(parametros[parametro_num+1].keys())[0]], [], scripts_name))
                         else:
-                            if parametros[parametro_num+1] != ["ignore"]:
+                            if parametros[parametro_num+1] != "ignore":
                                 n = []
-                                if scripts_name == list(parametros[parametro_num+1].keys())[0]:
-                                    n.append(self.comando_script([parametros[parametro_num+1]], [], list(i.keys())[0], scripts_name)[0])
+                                if list(parametros[parametro_num+1].keys())[0] in scripts_name:
+                                    n.append(self.comando_script([parametros[parametro_num+1][list(parametros[parametro_num+1].keys())[0]]], [], list(i.keys())[0], scripts_name)[0])
                                 else:
-                                    n.append(self.comando_x([parametros[parametro_num+1]], [], scripts_name))
+                                    n.append(self.comando_x([parametros[parametro_num+1][list(parametros[parametro_num+1].keys())[0]]], [], scripts_name)[0])
                             else:
                                 n = ["ignore"]
                         parametros_command["true"] = n
@@ -1234,19 +1236,19 @@ class version_formato:
                             if parametros[parametro_num+1] != ["ignore"]:
                                 n = []
                                 for i in parametros[parametro_num+1]:
-                                    if scripts_name == list(i.keys())[0]:
-                                        n.append(self.comando_script(parametros[parametro_num+1], [], list(i.keys())[0], scripts_name)[0])
+                                    if list(i.keys())[0] in scripts_name:
+                                        n.append(self.comando_script(i[list(parametros[parametro_num+1].keys())[0]], [], list(i.keys())[0], scripts_name)[0])
                                     else:
-                                        n.append(self.comando_x(parametros[parametro_num+1], [], scripts_name))
+                                        n.append(self.comando_x(i[list(parametros[parametro_num+1].keys())[0]], [], scripts_name))
                             else:
                                 n = ["ignore"]
                         else:
                             if parametros[parametro_num+1] != ["ignore"]:
                                 n = []
-                                if scripts_name == list(parametros[parametro_num+1].keys())[0]:
-                                    n.append(self.comando_script([parametros[parametro_num+1]], [], list(i.keys())[0], scripts_name)[0])
+                                if list(parametros[parametro_num+1].keys())[0] in scripts_name:
+                                    n.append(self.comando_script([parametros[parametro_num+1][list(parametros[parametro_num+1].keys())[0]]], [], list(i.keys())[0], scripts_name)[0])
                                 else:
-                                    n.append(self.comando_x([parametros[parametro_num+1]], [], scripts_name))
+                                    n.append(self.comando_x([parametros[parametro_num+1][list(parametros[parametro_num+1].keys())[0]]], [], scripts_name)[0])
                             else:
                                 n = ["ignore"]
                         parametros_command["false"] = n

@@ -5,7 +5,7 @@
         {"menu1": [{"image": ["create","img1", "coordinates",0,0,1920,1080, "background1.png"]}]},
         {"menu1": [{"button": ["create","backgroundbutton1", "coordinates",100,100,700,300, "title","background2", "color",[128,128,128], "command_click",{"image":["edit","img1", "coordinates", 0,0,1920,1080, "background2.png"]}]}]},
 
-        {"menu1": [{"text": ["create","t1", "coordinates",0,75,1920,75, "text","hola :D"]}]},
+        {"menu1": [{"text": ["create","t1", "coordinates",0,0,1920,75, "text","hola :D"]}]},
 
         {"script": ["create", "script1"]},
         {"script1": [{"variable": ["create","files_video", "content",[]]}]},
@@ -24,7 +24,7 @@
                             }]]
                         }]},
         
-        {"menu1": [{"ebook": ["create","e1", "epub_path","assets.tar:ebook1.epub", "page",0, "coordinates",[764,0,1920,1080]]}]},
+        {"menu1": [{"ebook": ["create","e1", "epub_path","assets.tar:ebook1.epub", "page",0, "coordinates",[764,75,1920,1080]]}]},
         {"menu1": [{"button_default": ["backgroundbutton1"]}]},
 
         {"script": ["create", "script2"]},

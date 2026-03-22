@@ -761,18 +761,22 @@ class ventana:
                     else:
                         variable[comando[1]["id"]] = value
                 elif comando[1]["id_type"] == "insert_value":
+                    print(variable[comando[1]["id"]])
                     return [variable[comando[1]["id"]],0]
             elif comando[0] == "folder_contents":
-                raiz_content = list(self.contenido_dat.keys())
+                raiz_content = list(self.contenido_dat_tar.keys())
                 if comando[1]["folder"] == "/":
                     variable[comando[1]["output_variable"]] = raiz_content
                 else:
                     value = []
                     num_digits = len(comando[1]["folder"])
                     for content in raiz_content:
-                        if content[:num_digits] == comando[1]["folder"]:
+                        if comando[1]["folder"] in content:
                             print(content)
                             value.append(content)
+                            print("p", content)
+                        print("q", content)
+                        print("c" ,comando[1]["folder"])
                     variable[comando[1]["output_variable"]] = value
             elif comando[0] == "range":
                 variable[comando[1]["output_variable"]] = np.arange(comando[1]["starting_value"],
@@ -781,7 +785,12 @@ class ventana:
             elif comando[0] == "if":
                 a = ""
                 if type(comando[1]["conditions"][0]) == type({}):
-                    a = self.comando_ejecutar(comando[1]["conditions"][0],v)[0]
+
+                    script  = list(comando[1]["conditions"][0].keys())[0]
+                    commandaa = comando[1]["conditions"][0][script]
+                    aa = self.convert_command.comando_script(comandos=commandaa,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                    
+                    a = self.comando_ejecutar(comando=aa,v=self.espacio_mv)[0]
                 else:
                     a = comando[1]["conditions"][0]
 
@@ -792,14 +801,16 @@ class ventana:
                     b = comando[1]["conditions"][2]
 
                 print('comando[1]["conditions"][1]',comando[1]["conditions"][1])
+                print("a", a,"\nb", b)
                 if comando[1]["conditions"][1] == "==":
                     if a == b:
                         if comando[1]["true"] == ["ignore"]:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                script = list(command.keys())[0]
+                                print(command)
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -810,7 +821,7 @@ class ventana:
                                         command = command[script]
                                         cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
                                 else:
-                                    cc = command[script]
+                                    cc = command
 
                                 self.menu_comand([cc])
                         else:
@@ -2436,14 +2447,17 @@ class ventana:
         #videos = MaVM.extrac_type_all(file=self.file, output_folder=self.carpeta_temporal, content_type="video/x-matroska")
 
         self.contenido_dat = {}
+        self.contenido_dat_tar = {}
         for path in paths:
             directorio, archivo = os.path.split(path)
             if '.tar' in archivo.lower():
                 path_b = self.contenido_tar(self.extrac_tar(path))
                 for b in path_b:
+                    self.contenido_dat_tar[f"{archivo}:{b[0]}"]                              = b[1]
                     self.contenido_dat[os.path.join(f"{os.path.splitext(archivo)[0]}",b[0])] = b[1]
             else:
-                self.contenido_dat[archivo] = path
+                self.contenido_dat_tar[archivo] = path
+                self.contenido_dat[archivo]     = path
             print(archivo)
         print(self.contenido_dat)
         self.start()
