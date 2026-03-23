@@ -82,7 +82,7 @@ except:
     os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_video'))
 
 class ventana:
-    def __init__(self, ventana_tk, file):
+    def __init__(self, ventana_tk, file, menu=None):
         #ventana
         self.ventana_tk = ventana_tk
         self.ventana_tk.title("MaVM player")
@@ -241,6 +241,10 @@ class ventana:
         self.actualizar_color()
 
         if self.file:
+            if menu:
+                self.menu_start = menu
+            else:
+                self.menu_start = None
             self.ventana_tk.after(100, self.repdorucir)
     
     def exit(self):
@@ -528,34 +532,64 @@ class ventana:
         metadata_path   = self.contenido_dat['metadata.json']
         start_menu_path = self.contenido_dat['start.json']
         
-        metadata_file = open(metadata_path, 'r')
-        metadata_text = metadata_file.read()
-        metadata_json = json.loads(metadata_text)
-        metadata_file.close()
+        if self.menu_start:
+            metadata_file = open(metadata_path, 'r')
+            metadata_text = metadata_file.read()
+            metadata_json = json.loads(metadata_text)
+            metadata_file.close()
 
-        start_menu_file = open(start_menu_path, 'r')
-        start_menu_text = start_menu_file.read()
-        start_menu_json = json.loads(start_menu_text)
-        start_menu_file.close()
+            menu_file = open(self.contenido_dat[self.menu_start], 'r')
+            menu_text = menu_file.read()
+            menu_json = json.loads(menu_text)
+            menu_file.close()
 
-        self.video_mavm_version = metadata_json["mavm_version"]
-        version_compatible = menus.version_formato(self.video_mavm_version)[0]
-        if version_compatible == False:
-            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.0.0")
-            exit()
-        
-        print(self.video_mavm_version)
-        print(version_compatible)
+            self.video_mavm_version = metadata_json["mavm_version"]
+            version_compatible = menus.version_formato(self.video_mavm_version)[0]
+            if version_compatible == False:
+                messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.0.0")
+                exit()
+            
+            print(self.video_mavm_version)
+            print(version_compatible)
 
-        descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
-        descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
-        self.reproductor.update_idletasks()
-        print(metadata_json["descripcion"]["text"])
+            descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
+            descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
+            self.reproductor.update_idletasks()
+            print(metadata_json["descripcion"]["text"])
 
-        for i in range(1,metadata_json["descripcion"]["duration"]*100):
-            time.sleep(1/100)
-        
-        self.menu(start_menu_json)
+            for i in range(1,metadata_json["descripcion"]["duration"]*100):
+                time.sleep(1/100)
+            
+            self.menu(menu_json)
+        else:
+            metadata_file = open(metadata_path, 'r')
+            metadata_text = metadata_file.read()
+            metadata_json = json.loads(metadata_text)
+            metadata_file.close()
+
+            start_menu_file = open(start_menu_path, 'r')
+            start_menu_text = start_menu_file.read()
+            start_menu_json = json.loads(start_menu_text)
+            start_menu_file.close()
+
+            self.video_mavm_version = metadata_json["mavm_version"]
+            version_compatible = menus.version_formato(self.video_mavm_version)[0]
+            if version_compatible == False:
+                messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.0.0")
+                exit()
+            
+            print(self.video_mavm_version)
+            print(version_compatible)
+
+            descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
+            descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
+            self.reproductor.update_idletasks()
+            print(metadata_json["descripcion"]["text"])
+
+            for i in range(1,metadata_json["descripcion"]["duration"]*100):
+                time.sleep(1/100)
+            
+            self.menu(start_menu_json)
 
     def menu(self, menu_json):
         try:
@@ -3052,6 +3086,7 @@ class ventana:
 def args():
     parser = argparse.ArgumentParser(description="reproductor MaVM")
     parser.add_argument("file", nargs='?', help="ruta del video .mavm")
+    parser.add_argument('--menu',"-m", nargs='?', help="menu in which to open the file")
     parser.add_argument('--version',"-v", action="store_true", help="player version number")
     
     args_var = parser.parse_args()
@@ -3066,6 +3101,11 @@ def args():
             elif not(os.path.exists(args_var.file)):
                 print("el archivo no existe")
                 exit()
+            elif args_var.menu:
+                file = os.path.abspath(args_var.file)
+                ventana_tk = tk.Tk()
+                ventana(ventana_tk=ventana_tk, file=file, menu=args_var.menu)
+                ventana_tk.mainloop()
             else:
                 file = os.path.abspath(args_var.file)
                 ventana_tk = tk.Tk()
