@@ -3092,7 +3092,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.21.2.0')
+        print('v.1.22.1.1')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
