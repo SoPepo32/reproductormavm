@@ -541,7 +541,7 @@ class ventana:
         self.video_mavm_version = metadata_json["mavm_version"]
         version_compatible = menus.version_formato(self.video_mavm_version)[0]
         if version_compatible == False:
-            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 3.4.0")
+            messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.0.0")
             exit()
         
         print(self.video_mavm_version)
@@ -627,6 +627,51 @@ class ventana:
             self.loop_comandos_on = True
             self.menu_loop(lista_comandos["loop"])
 
+    def for_comand(self, lista_comandos, time_a=None, i=0):
+        for i in variable[comando[1]["condiciones"]["content_list_variable"]]:
+            print('for i in variable[comando[1]["condiciones"]["content_list_variable"]]:')
+            variable[comando[1]["condiciones"]["temporary_variable"]] = i
+            if type(comando[1]["commands"]) == type([]):
+                c = []
+                for cb in comando[1]["commands"]:
+                    print("cb", cb)
+                    script  = list(cb.keys())[0]
+                    if type(cb) == type({}):
+                        if script in self.scripts_name:
+                            command = cb[script]
+                            cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                        elif script == "time":
+                            params = cb[script]
+                            cc = ["time", {"wait": [params[1], params[2]]}]
+                        else:
+                            command = cb[script]
+                            cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
+                    else:
+                        cc = cb[script]
+
+                    c.append(cc)
+
+                print("for-c", c)
+                if c[len(c)-1][0] == "time":
+                            c.append(["example", {"hi":"nose"}])
+                print("for-c 2", c)
+                fin = self.for_comand(c)
+                for comando in c:
+                    print("comando", comando)
+                    tb = self.comando_ejecutar(comando, self.espacio_mv)
+                    print("tb",tb)
+                    if tb != None:
+                        t  = tb[1]
+                    else:
+                        t = 0
+                    if t == "p":
+                        pass
+                    else:
+                        if t != 0:
+                            time.sleep(t)
+        else:
+            return "finish"
+
     def menu_comand(self, lista_comandos, time_a=None, i=0):
         if i <= len(lista_comandos)-1:
             print(i)
@@ -682,6 +727,8 @@ class ventana:
                         time_a = None
 
                         self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+        else:
+            return "finish"
 
     def menu_loop(self, lista_comandos):
         if self.loop_comandos_on:
@@ -750,6 +797,14 @@ class ventana:
                         variable[comando[1]["id"]] = self.calcule(value)
                     elif value == [[]] or value == []:
                         variable[comando[1]["id"]] = []
+                    elif type(value) == type({}):
+                        script  = list(value.keys())[0]
+                        commandvbb = value[script]
+                        vbb = self.convert_command.comando_script(comandos=commandvbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+
+                        variable[comando[1]["id"]] = self.comando_ejecutar(comando=vbb,v=self.espacio_mv)[0]
+
+                        print('var-create-variable[comando[1]["id"]]',variable[comando[1]["id"]])
                     else:
                         variable[comando[1]["id"]] = value
                 elif comando[1]["id_type"] == "edit":
@@ -758,6 +813,14 @@ class ventana:
                         variable[comando[1]["id"]] = self.calcule(value)
                     elif value == [[]] or value == []:
                         variable[comando[1]["id"]] = []
+                    elif type(value) == type({}):
+                        script  = list(value.keys())[0]
+                        commandvbb = value[script]
+                        vbb = self.convert_command.comando_script(comandos=commandvbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+
+                        variable[comando[1]["id"]] = self.comando_ejecutar(comando=vbb,v=self.espacio_mv)[0]
+
+                        print('var-edit-variable[comando[1]["id"]]',variable[comando[1]["id"]])
                     else:
                         variable[comando[1]["id"]] = value
                 elif comando[1]["id_type"] == "insert_value":
@@ -785,7 +848,6 @@ class ventana:
             elif comando[0] == "if":
                 a = ""
                 if type(comando[1]["conditions"][0]) == type({}):
-
                     script  = list(comando[1]["conditions"][0].keys())[0]
                     commandaa = comando[1]["conditions"][0][script]
                     aa = self.convert_command.comando_script(comandos=commandaa,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -796,7 +858,11 @@ class ventana:
 
                 b = ""
                 if type(comando[1]["conditions"][2]) == type({}):
-                    b = self.comando_ejecutar(comando[1]["conditions"][2],v)[0]
+                    script  = list(comando[1]["conditions"][0].keys())[0]
+                    commandbb = comando[1]["conditions"][0][script]
+                    bb = self.convert_command.comando_script(comandos=commandbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                    
+                    b = self.comando_ejecutar(comando=bb,v=self.espacio_mv)[0]
                 else:
                     b = comando[1]["conditions"][2]
 
@@ -844,8 +910,8 @@ class ventana:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -880,8 +946,8 @@ class ventana:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -916,8 +982,8 @@ class ventana:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -953,8 +1019,8 @@ class ventana:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -989,8 +1055,8 @@ class ventana:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -1026,8 +1092,8 @@ class ventana:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -1062,8 +1128,8 @@ class ventana:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -1099,8 +1165,8 @@ class ventana:
                             pass
                         elif type(comando[1]["true"]) == type([]):
                             for command in comando[1]["true"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -1135,8 +1201,8 @@ class ventana:
                             pass
                         elif type(comando[1]["false"]) == type([]):
                             for command in comando[1]["false"]:
-                                script = list(command.keys())[0]
                                 if type(command) == type({}):
+                                    script = list(command.keys())[0]
                                     if script in self.scripts_name:
                                         command = command[script]
                                         cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
@@ -1169,18 +1235,22 @@ class ventana:
             elif comando[0] == "for":
                 print('comando[0] == "for"')
                 print(comando[1])
+                
+                temp_var  = comando[1]["condiciones"]["temporary_variable"]
+                comands_f = comando[1]["commands"]
                 for i in variable[comando[1]["condiciones"]["content_list_variable"]]:
+                    print("for-i", i)
                     print('for i in variable[comando[1]["condiciones"]["content_list_variable"]]:')
-                    variable[comando[1]["condiciones"]["temporary_variable"]] = i
-                    if type(comando[1]["commands"]) == type([]):
+                    variable[temp_var] = i
+                    if type(comands_f) == type([]):
                         c = []
-                        for cb in comando[1]["commands"]:
+                        for cb in comands_f:
                             print("cb", cb)
                             script  = list(cb.keys())[0]
                             if type(cb) == type({}):
                                 if script in self.scripts_name:
-                                    command = cb[script]
-                                    cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                                    commandcc = cb[script]
+                                    cc = self.convert_command.comando_script(comandos=commandcc,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
                                 elif script == "time":
                                     params = cb[script]
                                     cc = ["time", {"wait": [params[1], params[2]]}]
@@ -1192,23 +1262,64 @@ class ventana:
 
                             c.append(cc)
 
-                        self.menu_comand(c)
+                        print("for-c", c)
+                        if c[len(c)-1][0] == "time":
+                            c.append(["example", {"hi":"nose"}])
+                        print("for-c 2", c)
+                        #fin = self.for_comand(c)
+                        for comando in c:
+                            print("comando", comando)
+                            tb = self.comando_ejecutar(comando, self.espacio_mv)
+                            print("tb",tb)
+                            if tb != None:
+                                t  = tb[1]
+                            else:
+                                t = 0
+                            if t == "p":
+                                pass
+                            else:
+                                if t != 0:
+                                    time.sleep(t)
+                        self.menu_resize(menu_r_b=False)
                     else:
-                        script  = list(comando[1]["commands"].keys())[0]
+                        script  = list(comands_f.keys())[0]
                         if script in self.scripts_name:
-                            command = comando[1]["commands"][script]
+                            command = comands_f[script]
                             cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
                         elif script == "time":
                             params = cb[script]
                             cc = ["time", {"wait": [params[1], params[2]]}]
                         else:
-                            command = comando[1]["commands"][script]
+                            command = comands_f[script]
                             cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
 
-                        self.menu_comand([cc])
+                        c = [cc]
+
+                        print("for-c", c)
+                        if c[len(c)-1][0] == "time":
+                            c.append(["example", {"hi":"nose"}])
+                        print("for-c 2", c)
+                        #fin = self.for_comand(c)
+                        for comando in c:
+                            print("comando", comando)
+                            tb = self.comando_ejecutar(comando, self.espacio_mv)
+                            print("tb",tb)
+                            if tb != None:
+                                t  = tb[1]
+                            else:
+                                t = 0
+                            if t == "p":
+                                pass
+                            else:
+                                if t != 0:
+                                    time.sleep(t)
             else:
                 print("comando[0]",comando[0])
-            self.variable_scripts[comando[1]["script"]] = variable
+            
+            command_b = comando[1]
+            
+            if command_b != {'hi': 'nose'}:
+                self.variable_scripts[command_b["script"]] = variable
         elif self.ventana_tk.winfo_viewable():
             if comando[0] == "image":
                 print(comando[1]["imagen"])
@@ -1335,11 +1446,11 @@ class ventana:
                 c = []
                 for i in comando[1]["coordinates"]:
                     if type(i) == type({}):
-                        script  = list(i.keys())[0]
-                        command = i[script]
+                        script  = list(comando[1]["coordinates"][0].keys())[0]
+                        commandbb = comando[1]["coordinates"][0][script]
+                        bb = self.convert_command.comando_script(comandos=commandbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
                         
-                        b = self.comando_ejecutar(self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0],v)[0]
-                        
+                        b = self.comando_ejecutar(comando=bb,v=self.espacio_mv)[0]
                         c.append(b)
                     else:
                         c.append(i)
@@ -1347,20 +1458,35 @@ class ventana:
                 tb = ""
                 if type(comando[1]["text"]) == type({}):
                     script  = list(comando[1]["text"].keys())[0]
-                    command = comando[1]["text"][script]
-                    print("self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]",self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0])
-                    tb = self.comando_ejecutar(self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0],v)[0]
+                    commandtbb = comando[1]["text"][script]
+                    tbb = self.convert_command.comando_script(comandos=commandtbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                    
+                    tb = self.comando_ejecutar(comando=tbb,v=self.espacio_mv)[0]
                 else:
                     tb = comando[1]["text"]
+                print("tb-text", tb)
 
                 if "create" in comando[1].keys():
+                    print("text-create")
                     self.objetos_menu.append({"id": comando[1]["create"],"objeto": tk.Label(v,text=tb,fg="#808080"), "cordenadas":comando[1]["coordinates"]})
                 elif "edit" in comando[1].keys():
+                    print("text-edit")
+                    print("text-id", comando[1]["edit"])
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
+                            print('self.objetos_menu[i]["id"]',self.objetos_menu[i]["id"])
+                            print('self.objetos_menu[i]["id"] == comando[1]["edit"]', self.objetos_menu[i]["id"] == comando[1]["edit"])
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
+                                print("text-edit encontrado. id", comando[1]["edit"])
+                                #self.objetos_menu[i]["objeto"].destroy()
+                                #self.objetos_menu.pop(i)
+
+                                print("tb-text 2", tb)
                                 self.objetos_menu[i]["objeto"].config(text=tb)
-                                self.objetos_menu[i]["cordenadas"] = c
+                                print('text-comando[1]["coordinates"]', comando[1]["coordinates"])
+                                
+                                self.objetos_menu[i] == {"id": comando[1]["edit"],"objeto": self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
+                                self.menu_resize(menu_r_b=False)
             elif comando[0] == "button":
                 c = []
                 for i in comando[1]["coordinates"]:
@@ -1582,7 +1708,11 @@ class ventana:
             elif comando[0] == "teleport":
                 tb = ""
                 if type(comando[1]["ubicaciones"]) == type({}):
-                    tb = self.comando_ejecutar(comando[1]["ubicaciones"],v)[0]
+                    script  = list(comando[1]["ubicaciones"][0].keys())[0]
+                    commandtbb = comando[1]["ubicaciones"][0][script]
+                    tbb = self.convert_command.comando_script(comandos=commandtbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+                    
+                    tb = self.comando_ejecutar(comando=bb,v=self.espacio_mv)[0]
                 else:
                     tb = comando[1]["ubicaciones"]
 
@@ -1706,6 +1836,20 @@ class ventana:
             else:
                 path_num = 0
                 while path_num <= len(paths)-1:
+                    print("teleport-a", paths[path_num])
+                    if type(paths[path_num]) == type({}):
+                        script  = list(paths[path_num].keys())[0]
+                        commandtbb = paths[path_num][script]
+                        tbb = self.convert_command.comando_script(comandos=commandtbb,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
+
+                        path_b = self.comando_ejecutar(comando=tbb,v=self.espacio_mv)[0]
+
+                        paths[path_num] = path_b 
+
+                        print("teleport-b", path_b)
+                    else:
+                        pass
+
                     nombre, extension = os.path.splitext(paths[path_num])
                     if extension == ".mkv":
                         if len(paths)-1>=path_num+1:
@@ -2697,6 +2841,15 @@ class ventana:
 
         self.objetos_menu.append({"objeto": tk.Label(self.espacio_mv,text='',bg="#000000",fg="#E6E600"), "cordenadas":[0,int(9*self.resolution_menu[1][1]/10),self.resolution_menu[1][0],self.resolution_menu[1][1]],"video_rr":1})
         
+        if video_path[-4:].lower() == ".mkv":
+            pass
+        else:
+            video_path += ".mkv"
+        
+        print("video-VidPath",video_path)
+
+        self.reset_botones_fun()
+
         self.video_repr = True
         self.video_b(video_path=video_path,file_name=file_name,vid=vid,frame_num=frame_num,play=True,paths=paths,audio=audio)
     

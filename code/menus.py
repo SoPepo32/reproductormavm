@@ -1217,9 +1217,9 @@ class version_formato:
                                 n = []
                                 for i in parametros[parametro_num+1]:
                                     if list(i.keys())[0] in scripts_name:
-                                        n.append(self.comando_script(i[list(parametros[parametro_num+1].keys())[0]], [], list(i.keys()), scripts_name)[0])
+                                        n.append(self.comando_script([i[list(i.keys())[0]]], [], list(i.keys())[0], scripts_name)[0])
                                     else:
-                                        n.append(self.comando_x(i[list(parametros[parametro_num+1].keys())[0]], [], scripts_name))
+                                        n.append(self.comando_x([i[list(i.keys())[0]]], [], scripts_name)[0])
                         else:
                             if parametros[parametro_num+1] != "ignore":
                                 n = []
@@ -1237,9 +1237,9 @@ class version_formato:
                                 n = []
                                 for i in parametros[parametro_num+1]:
                                     if list(i.keys())[0] in scripts_name:
-                                        n.append(self.comando_script(i[list(parametros[parametro_num+1].keys())[0]], [], list(i.keys())[0], scripts_name)[0])
+                                        n.append(self.comando_script(i[list(i.keys())[0]], [], list(i.keys())[0], scripts_name)[0])
                                     else:
-                                        n.append(self.comando_x(i[list(parametros[parametro_num+1].keys())[0]], [], scripts_name))
+                                        n.append(self.comando_x(i[list(i.keys())[0]], [], scripts_name))
                             else:
                                 n = ["ignore"]
                         else:

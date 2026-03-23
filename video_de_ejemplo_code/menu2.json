@@ -5,24 +5,7 @@
         {"menu1": [{"image": ["create","img1", "coordinates",0,0,1920,1080, "background1.png"]}]},
         {"menu1": [{"button": ["create","backgroundbutton1", "coordinates",100,100,700,300, "title","background2", "color",[128,128,128], "command_click",{"image":["edit","img1", "coordinates", 0,0,1920,1080, "background2.png"]}]}]},
 
-        {"menu1": [{"text": ["create","t1", "coordinates",0,0,1920,75, "text","hola :D"]}]},
-
-        {"script": ["create", "script1"]},
-        {"script1": [{"variable": ["create","files_video", "content",[]]}]},
-        {"script1": [{"folder_contents": ["folder","assets.tar:video/", "output_variable","files_video"]}]},
-        {"script1": [{"for": [["temporary_variable_for_output","i", "content_list_variable","files_video"],
-                              [{"script1": [{"if": [{"script1":{"variable":["insert_value", "i"]}},"==","assets.tar:video/video1.mkv",
-                                    "true",
-                                        {"menu1": [
-                                            {"button":["create","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128], "command_click",[{"sound":["create","sound1", "sound1.opus", "volume",37]},{"teleport":[{"script1":[{"variable":["insert_value", "i"]}]},[1,1,1], "menu1.json"]}], "command4selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,255]]}, "command4no_selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128]]}]
-                                        }
-                                    ]},
-                                    "false", [
-                                        "ignore"
-                                    ]]
-                                }]
-                            }]]
-                        }]},
+        {"menu1": [{"text": ["create","t1", "coordinates",0,0,1920,75, "text","hi :D"]}]},
         
         {"menu1": [{"ebook": ["create","e1", "epub_path","assets.tar:ebook1.epub", "page",0, "coordinates",[764,75,1920,1080]]}]},
         {"menu1": [{"button_default": ["backgroundbutton1"]}]},
@@ -41,7 +24,30 @@
                                 {"time": ["wait",1,"seconds"]}
                             ]
                         ]
-                    }]}
+                    }]},
+
+        {"script": ["create", "script1"]},
+        {"script1": [{"variable": ["create","files_video", "content",[]]}]},
+        {"script1": [{"folder_contents": ["folder","assets.tar:video/", "output_variable","files_video"]}]},
+        {"script1": [{"for": [["temporary_variable_for_output","i", "content_list_variable","files_video"],
+                              [{"script1": [{"if": [{"script1":{"variable":["insert_value", "i"]}},"==","assets.tar:video/video1.mkv",
+                                    "true",
+                                        [
+                                            {"script1": [
+                                                    {"variable": ["create","file_video", "content", {"script1":[{"variable":["insert_value", "i"]}]}]}
+                                                ]
+                                            },
+                                            {"menu1": [
+                                                {"button":["create","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128], "command_click",[{"sound":["create","sound1", "sound1.opus", "volume",37]},{"teleport":[{"script1":[{"variable":["insert_value", "file_video"]}]},[1,1,1], "menu1.json"]}], "command4selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,255]]}, "command4no_selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128]]}]
+                                                }
+                                            ]}
+                                        ],
+                                    "false", [
+                                        "ignore"
+                                    ]]
+                                }]
+                            }]]
+                        }]}
     ],
 
     "loop": [
