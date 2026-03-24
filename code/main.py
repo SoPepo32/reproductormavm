@@ -3062,9 +3062,14 @@ def args():
     parser.add_argument('--version',"-v", action="store_true", help="player version number")
     
     args_var = parser.parse_args()
-    
+
+    # title
+    print("\nMaVMPlayer\n")
+
     if args_var.version:
-        print('v.1.22.2.0')
+        print('program version: \nv.1.22.3.0',
+              "\n",
+            "\nsupported versions of MaVM: \nv.2.1.0 to v.4.1.0")
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
