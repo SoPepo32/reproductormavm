@@ -546,9 +546,9 @@ class ventana:
             self.video_mavm_version = metadata_json["mavm_version"]
             version_compatible = menus.version_formato(self.video_mavm_version)[0]
             if version_compatible == False:
-                messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.0.0")
+                messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.1.0")
                 exit()
-            
+
             print(self.video_mavm_version)
             print(version_compatible)
 
@@ -629,6 +629,7 @@ class ventana:
         menu_dat_content = menu_dat[1](menu_json)
         self.convert_command = menu_dat_content
         lista_comandos = menu_dat_content.lista_comandos
+        self.lista_comandos = lista_comandos
         print("lc",lista_comandos)
 
         self.resolution_menu = [True, lista_comandos["resolucion"]]
@@ -660,51 +661,6 @@ class ventana:
             print("loop:",lista_comandos["loop"])
             self.loop_comandos_on = True
             self.menu_loop(lista_comandos["loop"])
-
-    def for_comand(self, lista_comandos, time_a=None, i=0):
-        for i in variable[comando[1]["condiciones"]["content_list_variable"]]:
-            print('for i in variable[comando[1]["condiciones"]["content_list_variable"]]:')
-            variable[comando[1]["condiciones"]["temporary_variable"]] = i
-            if type(comando[1]["commands"]) == type([]):
-                c = []
-                for cb in comando[1]["commands"]:
-                    print("cb", cb)
-                    script  = list(cb.keys())[0]
-                    if type(cb) == type({}):
-                        if script in self.scripts_name:
-                            command = cb[script]
-                            cc = self.convert_command.comando_script(comandos=command,lista_comandosb=[],script_name=script, scripts_name=self.scripts_name)[0]
-                        elif script == "time":
-                            params = cb[script]
-                            cc = ["time", {"wait": [params[1], params[2]]}]
-                        else:
-                            command = cb[script]
-                            cc = self.convert_command.comando_x(comandos=command,lista_comandos=[], scripts_name=self.scripts_name)[0]
-                    else:
-                        cc = cb[script]
-
-                    c.append(cc)
-
-                print("for-c", c)
-                if c[len(c)-1][0] == "time":
-                            c.append(["example", {"hi":"nose"}])
-                print("for-c 2", c)
-                fin = self.for_comand(c)
-                for comando in c:
-                    print("comando", comando)
-                    tb = self.comando_ejecutar(comando, self.espacio_mv)
-                    print("tb",tb)
-                    if tb != None:
-                        t  = tb[1]
-                    else:
-                        t = 0
-                    if t == "p":
-                        pass
-                    else:
-                        if t != 0:
-                            time.sleep(t)
-        else:
-            return "finish"
 
     def menu_comand(self, lista_comandos, time_a=None, i=0):
         if i <= len(lista_comandos)-1:
@@ -822,7 +778,9 @@ class ventana:
         #t = 16/1000
         t = [None, 0]
         print("contenido comando:", comando)
-        if "script" in comando[1].keys() and self.ventana_tk.winfo_viewable():
+        if type(comando[0]) == type([]):
+            pass
+        elif "script" in comando[1].keys() and self.ventana_tk.winfo_viewable():
             variable = self.variable_scripts[comando[1]["script"]]
             if comando[0] == "variable":
                 if comando[1]["id_type"] == "create":
@@ -1809,6 +1767,15 @@ class ventana:
                                 self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":c, "video":file, "video_path":self.contenido_dat[self.path(v)]})
                                 elf.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
+            elif comando[0] == "function":
+                id_function = comando[1]["id"]
+
+                #self.function(id_function)
+
+                function_commands = self.lista_comandos["functions"][id_function]
+
+                self.menu_comand(lista_comandos=function_commands)
+
             if t == None:
                 print("t", "None")
                 return [None, 0]
@@ -1816,6 +1783,11 @@ class ventana:
                 return t
         else:
             return [None,"p"]
+
+    def function(self, id_function):
+        function_commands = self.lista_comandos["functions"][id_function]
+
+        self.menu_comand(lista_comandos=function_commands)
 
     def _teleport(self, paths, paths_b=None):
         print("h")
@@ -3092,7 +3064,7 @@ def args():
     args_var = parser.parse_args()
     
     if args_var.version:
-        print('v.1.22.1.1')
+        print('v.1.22.2.0')
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
