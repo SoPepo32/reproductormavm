@@ -469,15 +469,15 @@ class ventana:
             config = json.dumps(config_json)
             print(config)
 
-        if os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")):
-            print('os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")))
+        if os.path.exists(os.path.join(os.path.expanduser("~"), ".mavmplayer")):
+            print('os.path.exists(os.path.join(os.path.expanduser("~"), ".mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), ".mavmplayer")))
             config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'w')
             config_file.write(config)
             config_file.close()
         else:
-            print('os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")))
+            print('os.path.exists(os.path.join(os.path.expanduser("~"), ".mavmplayer"))',os.path.exists(os.path.join(os.path.expanduser("~"), ".mavmplayer")))
                 
-            os.mkdir(os.path.join(os.path.expanduser("~"), "mavmplayer"))
+            os.mkdir(os.path.join(os.path.expanduser("~"), ".mavmplayer"))
 
             config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'w')
             config_file.write(config)
@@ -485,14 +485,14 @@ class ventana:
 
     def load_settings(self):
         try:
-            if os.path.exists(os.path.join(os.path.expanduser("~"), "mavmplayer")):
-                config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'r')
+            if os.path.exists(os.path.join(os.path.expanduser("~"), ".mavmplayer")):
+                config_file = open(os.path.join(os.path.expanduser("~"), ".mavmplayer", 'config.json'),'r')
                 config_txt = config_file.read()
                 config_file.close()
             else:
-                os.mkdir(os.path.join(os.path.expanduser("~"), "mavmplayer"))
+                os.mkdir(os.path.join(os.path.expanduser("~"), ".mavmplayer"))
 
-                config_file = open(os.path.join(os.path.expanduser("~"), "mavmplayer", 'config.json'),'r')
+                config_file = open(os.path.join(os.path.expanduser("~"), ".mavmplayer", 'config.json'),'r')
                 config_txt = config_file.read()
                 config_file.close()
 
@@ -532,6 +532,8 @@ class ventana:
         metadata_path   = self.contenido_dat['metadata.json']
         start_menu_path = self.contenido_dat['start.json']
         
+        error_message_version = "The file version is not supported. This program only supports versions 2.1.0 to 4.1.1"
+
         if self.menu_start:
             metadata_file = open(metadata_path, 'r')
             metadata_text = metadata_file.read()
@@ -546,21 +548,21 @@ class ventana:
             self.video_mavm_version = metadata_json["mavm_version"]
             version_compatible = menus.version_formato(self.video_mavm_version)[0]
             if version_compatible == False:
-                messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.1.0")
+                messagebox.showerror("File version error", error_message_version)
                 exit()
+            else:
+                print(self.video_mavm_version)
+                print(version_compatible)
 
-            print(self.video_mavm_version)
-            print(version_compatible)
+                descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
+                descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
+                self.reproductor.update_idletasks()
+                print(metadata_json["descripcion"]["text"])
 
-            descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
-            descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
-            self.reproductor.update_idletasks()
-            print(metadata_json["descripcion"]["text"])
-
-            for i in range(1,metadata_json["descripcion"]["duration"]*100):
-                time.sleep(1/100)
-            
-            self.menu(menu_json)
+                for i in range(1,metadata_json["descripcion"]["duration"]*100):
+                    time.sleep(1/100)
+                
+                self.menu(menu_json)
         else:
             metadata_file = open(metadata_path, 'r')
             metadata_text = metadata_file.read()
@@ -575,21 +577,21 @@ class ventana:
             self.video_mavm_version = metadata_json["mavm_version"]
             version_compatible = menus.version_formato(self.video_mavm_version)[0]
             if version_compatible == False:
-                messagebox.showerror("File version error", "The file version is not supported. This program only supports versions 2.1.0 to 4.0.0")
+                messagebox.showerror("File version error", error_message_version)
                 exit()
-            
-            print(self.video_mavm_version)
-            print(version_compatible)
+            else:
+                print(self.video_mavm_version)
+                print(version_compatible)
 
-            descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
-            descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
-            self.reproductor.update_idletasks()
-            print(metadata_json["descripcion"]["text"])
+                descripcion = tk.Label(self.reproductor,text=metadata_json["descripcion"]["text"],fg="#ffffff",background="black")
+                descripcion.place(x=self.reproductor.winfo_width()//2-4*len(metadata_json["descripcion"]["text"]),y=self.reproductor.winfo_height()//2)
+                self.reproductor.update_idletasks()
+                print(metadata_json["descripcion"]["text"])
 
-            for i in range(1,metadata_json["descripcion"]["duration"]*100):
-                time.sleep(1/100)
-            
-            self.menu(start_menu_json)
+                for i in range(1,metadata_json["descripcion"]["duration"]*100):
+                    time.sleep(1/100)
+                
+                self.menu(start_menu_json)
 
     def menu(self, menu_json):
         try:
@@ -3067,9 +3069,8 @@ def args():
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print('program version: \nv.1.22.3.0',
-              "\n",
-            "\nsupported versions of MaVM: \nv.2.1.0 to v.4.1.0")
+        print("program version:\nv.1.23.0.0",
+          "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.1.1")
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):

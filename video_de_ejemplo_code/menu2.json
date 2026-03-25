@@ -1,7 +1,6 @@
 {
     "functions": {
         "video_button": [
-            {"script": ["create", "script1"]},
             {"script1": [{"variable": ["create","files_video", "content",[]]}]},
             {"script1": [{"folder_contents": ["folder","assets.tar:video/", "output_variable","files_video"]}]},
             {"script1": [{"for": [["temporary_variable_for_output","i", "content_list_variable","files_video"],
@@ -33,7 +32,7 @@
 
         {"menu1": [{"text": ["create","t1", "coordinates",0,0,1920,75, "text","hi :D"]}]},
         
-        {"menu1": [{"ebook": ["create","e1", "epub_path","assets.tar:ebook1.epub", "page",0, "coordinates",[764,75,1920,1080]]}]},
+        {"menu1": [{"ebook": ["create","e1", "epub_path","assets.tar:ebook1.epub", "chapter",0, "coordinates",[764,75,1920,1080]]}]},
         {"menu1": [{"button_default": ["backgroundbutton1"]}]},
 
         {"script": ["create", "script2"]},
@@ -52,7 +51,11 @@
                         ]
                     }]},
         
-        {"function": ["video_button"]}
+        {"script": ["create", "script1"]},
+
+        {"function": ["video_button"]},
+
+        {"menu1": [{"text": ["create","t3", "coordinates",0,1005,764,1080, "text",{"script1":[{"variable":["insert_value", "file_video"]}]}]}]}
     ],
     "loop": [
 
