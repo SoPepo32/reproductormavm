@@ -3,8 +3,9 @@
 ## English:
 
 ### <h3>Requires</h3>
-- [MKVToolNix](https://mkvtoolnix.download/)
-- [FFmpeg](https://www.ffmpeg.org/)
+ - [MKVToolNix](https://mkvtoolnix.download/)
+ - [FFmpeg](https://www.ffmpeg.org/)
+ - [wkhtmltopdf](https://wkhtmltopdf.org/)
 <h4>External Programs</h4>
 
 ## GUI (graphical user interface)
@@ -48,6 +49,7 @@ All content in this repository is under GPL-3.0.
 ### <h3>requiere</h3>
  - [MKVToolNix](https://mkvtoolnix.download/)
  - [FFmpeg](https://www.ffmpeg.org/)
+ - [wkhtmltopdf](https://wkhtmltopdf.org/)
 <h4>como programas externos</h4>
 
 ## GUI (interfaz gráfica de usuario)
