@@ -3069,15 +3069,15 @@ def args():
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.23.0.0",
+        print("program version:\nv.1.23.1.0",
           "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.1.1")
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
-                print("el archivo debe ser .mavm")
+                print("The file must be .mavm")
                 exit()
             elif not(os.path.exists(args_var.file)):
-                print("el archivo no existe")
+                print("The file does not exist.")
                 exit()
             elif args_var.menu:
                 file = os.path.abspath(args_var.file)
