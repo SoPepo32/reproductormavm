@@ -85,7 +85,7 @@ class ventana:
     def __init__(self, ventana_tk, file, menu=None):
         #ventana
         self.ventana_tk = ventana_tk
-        self.ventana_tk.title("MaVM player")
+        self.ventana_tk.title("MaVM Player")
         self.ventana_tk.geometry("800x450")
         self.ventana_tk.minsize(800,450)
         self.ventana_tk.config(bg="#404040")
@@ -521,7 +521,7 @@ class ventana:
             self.config_json = {"bucle":"0","modo_color":[1,0,0,0],"volume":37.0,"save_volume_value":0}
 
     def archivos_ventana(self):
-        self.file = filedialog.askopenfilename(title='buscar video MaVM', filetypes=(('video MaVM', '*.mavm'),('todos los archivos', '*.*')))
+        self.file = filedialog.askopenfilename(title='search for MaVM video', filetypes=(('video MaVM', '*.mavm'),('all files', '*.*')))
         print(self.file)
         self.repdorucir()
 
@@ -3069,7 +3069,7 @@ def args():
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.23.1.0",
+        print("program version:\nv.1.23.2.0",
           "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.1.1")
     else:
         if args_var.file:
