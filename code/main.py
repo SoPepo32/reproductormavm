@@ -532,7 +532,7 @@ class ventana:
         metadata_path   = self.contenido_dat['metadata.json']
         start_menu_path = self.contenido_dat['start.json']
         
-        error_message_version = "The file version is not supported. This program only supports versions 2.1.0 to 4.1.1"
+        error_message_version = "The file version is not supported. This program only supports versions v.2.1.0 to v.4.2.0"
 
         if self.menu_start:
             metadata_file = open(metadata_path, 'r')
@@ -3069,8 +3069,8 @@ def args():
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.23.2.0",
-          "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.1.1")
+        print("program version:\nv.1.24.0.0_beta_0001",
+          "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.2.0")
     else:
         if args_var.file:
             if not('.mavm' in args_var.file.lower()):
@@ -3093,7 +3093,6 @@ def args():
             ventana_tk = tk.Tk()
             ventana(ventana_tk, None)
             ventana_tk.mainloop()
-
 
 if not(exit_):
     args()

@@ -1,28 +1,7 @@
 {
+    "type": "menu",
     "functions": {
-        "video_button": [
-            {"script1": [{"variable": ["create","files_video", "content",[]]}]},
-            {"script1": [{"folder_contents": ["folder","assets.tar:video/", "output_variable","files_video"]}]},
-            {"script1": [{"for": [["temporary_variable_for_output","i", "content_list_variable","files_video"],
-                                [{"script1": [{"if": [{"script1":{"variable":["insert_value", "i"]}},"==","assets.tar:video/video1.mkv",
-                                        "true",
-                                            [
-                                                {"script1": [
-                                                        {"variable": ["create","file_video", "content", {"script1":[{"variable":["insert_value", "i"]}]}]}
-                                                    ]
-                                                },
-                                                {"menu1": [
-                                                    {"button":["create","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128], "command_click",[{"sound":["create","sound1", "sound1.opus", "volume",37]},{"teleport":[{"script1":[{"variable":["insert_value", "file_video"]}]},[1,1,1], "menu1.json"]}], "command4selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,255]]}, "command4no_selection",{"button": ["edit","videobutton1", "coordinates",100,300,700,500, "title","video1", "color",[128,128,128]]}]
-                                                    }
-                                                ]}
-                                            ],
-                                        "false", [
-                                            "ignore"
-                                        ]]
-                                    }]
-                                }]]
-                            }]}
-        ]
+
     },
     "start": [
         {"menu": ["create", "menu1"]},
@@ -51,9 +30,9 @@
                         ]
                     }]},
         
-        {"script": ["create", "script1"]},
 
-        {"function": ["video_button"]},
+        {"import": ["lib1.json;video_button_lib"]},
+        {"function": ["run","video_button_lib:video_button", "scripts2extract",["script1"]]},
 
         {"menu1": [{"text": ["create","t3", "coordinates",0,1005,764,1080, "text",{"script1":[{"variable":["insert_value", "file_video"]}]}]}]}
     ],

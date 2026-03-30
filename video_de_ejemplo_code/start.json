@@ -1,4 +1,5 @@
 {
+    "type": "menu",
     "start": [
         {"menu": ["create", "menu1"]},
         {"menu1": [{"resolution": [1920,1080]}]},
