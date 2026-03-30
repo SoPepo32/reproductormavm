@@ -642,6 +642,10 @@ class ventana:
         self.variable_scripts = {}
         for script in self.scripts_name:
             self.variable_scripts[script] = {}
+        
+        self.variable_scripts_libs = {}
+
+        self.lista_comandos_lib = {}
 
         #self.objetos_menu = 
         #comando[1]["imagen"]
@@ -677,7 +681,7 @@ class ventana:
                     #print("lcc", comando)
                     if i+1 <= len(lista_comandos)-1:
                         comando = lista_comandos[i+1]
-                        tb = self.comando_ejecutar(comando, self.espacio_mv)
+                        tb = self.comando_ejecutar(comando, self.espacio_mv, self.scripts_name)
                         print("tb",tb)
                         if tb != None:
                             t  = tb[1]
@@ -702,7 +706,7 @@ class ventana:
                 #print("lcc", comando)
                 comando = lista_comandos[i]
                 print("comando", comando)
-                tb = self.comando_ejecutar(comando, self.espacio_mv)
+                tb = self.comando_ejecutar(comando, self.espacio_mv, self.scripts_name)
                 print("tb",tb)
                 if tb != None:
                     t  = tb[1]
@@ -714,11 +718,11 @@ class ventana:
                     if t != 0:
                         time_a = time.time()+t
 
-                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i, self.scripts_name))
                     else:
                         time_a = None
 
-                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1, self.scripts_name))
         else:
             return "finish"
 
@@ -776,7 +780,7 @@ class ventana:
 
         return eval(v_v)
 
-    def comando_ejecutar(self, comando, v):
+    def comando_ejecutar(self, comando, v, script_var):
         #t = 16/1000
         t = [None, 0]
         print("contenido comando:", comando)
@@ -1772,11 +1776,32 @@ class ventana:
             elif comando[0] == "function":
                 id_function = comando[1]["id"]
 
+                if ":" in id_function:
+                    id_function = id_function.split(":")
+
+                    function_commands = self.lista_comandos_lib[id_function[0]][id_function[1]]
+
+                    self.menu_comand_lib(lista_comandos=function_commands, lib_id=id_function[1])
+
+                    if "scripts2extract" in list(comando[1].keys()):
+                        self.variable_scripts[comando[1]["scripts2extract"]] = self.variable_scripts_libs[id_function[0]][comando[1]["scripts2extract"]]
+                else:
+                    #self.function(id_function)
+
+                    function_commands = self.lista_comandos["functions"][id_function]
+
+                    self.menu_comand(lista_comandos=function_commands)
+            elif comando[0] == "import":
+                id_import = comando[1]["id"].split(";")
+
                 #self.function(id_function)
 
-                function_commands = self.lista_comandos["functions"][id_function]
+                lib_file = open(id_import[0], 'r')
+                lib_text = lib_menu_file.read()
+                lib_json = json.loads(lib_menu_text)
+                lib_file.close()
 
-                self.menu_comand(lista_comandos=function_commands)
+                self.lib(lib_json, id_import[1])
 
             if t == None:
                 print("t", "None")
@@ -1790,6 +1815,79 @@ class ventana:
         function_commands = self.lista_comandos["functions"][id_function]
 
         self.menu_comand(lista_comandos=function_commands)
+
+    def lib(self, menu_json, lib_id):
+        menu_dat = menus.version_formato(self.video_mavm_version)
+        menu_dat_content = menu_dat[1](menu_json)
+        self.convert_command = menu_dat_content
+        lista_comandos = menu_dat_content.lista_comandos
+
+        self.scripts_name_lib = menu_dat_content.scripts_name
+
+        self.variable_scripts_libs[lib_id] = {}
+        for script in self.scripts_name_lib:
+            self.variable_scripts_libs[lib_id][script] = {}
+        
+        for function_name, function in lista_comandos["functions"].items():
+            self.lista_comandos_lib[lib_id][function_name] = function
+
+    def menu_comand_lib(self, lista_comandos, time_a=None, i=0):
+        if i <= len(lista_comandos)-1:
+            print(i)
+            #if time_a != None:
+            print(time_a)
+            if time_a:
+                print("time_a",time_a)
+                print("time.time()",time.time())
+                print("time.time() >= time_a",time.time() >= time_a)
+                if time.time() >= time_a:
+                    #print("lcc", comando)
+                    if i+1 <= len(lista_comandos)-1:
+                        comando = lista_comandos[i+1]
+                        tb = self.comando_ejecutar(comando, self.espacio_mv, self.scripts_name_lib)
+                        print("tb",tb)
+                        if tb != None:
+                            t  = tb[1]
+                        else:
+                            t = 0
+                        if t == "p":
+                            pass
+                        else:
+                            if t != 0:
+                                time_a = time.time()+t
+
+                                self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+                            else:
+                                time_a = None
+
+                                self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                    else:
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1))
+                else:
+                    self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i))
+            else:
+                #print("lcc", comando)
+                comando = lista_comandos[i]
+                print("comando", comando)
+                tb = self.comando_ejecutar(comando, self.espacio_mv, self.scripts_name_lib)
+                print("tb",tb)
+                if tb != None:
+                    t  = tb[1]
+                else:
+                    t = 0
+                if t == "p":
+                    pass
+                else:
+                    if t != 0:
+                        time_a = time.time()+t
+
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i, self.scripts_name_lib))
+                    else:
+                        time_a = None
+
+                        self.ventana_tk.after(10, lambda: self.menu_comand(lista_comandos, time_a, i+1, self.scripts_name_lib))
+        else:
+            return "finish"
 
     def _teleport(self, paths, paths_b=None):
         print("h")
@@ -3062,14 +3160,14 @@ def args():
     parser.add_argument("file", nargs='?', help="ruta del video .mavm")
     parser.add_argument('--menu',"-m", nargs='?', help="menu in which to open the file")
     parser.add_argument('--version',"-v", action="store_true", help="player version number")
-    
+
     args_var = parser.parse_args()
 
     # title
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.24.0.0_beta_0001",
+        print("program version:\nv.1.24.0.0_beta_0002",
           "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.2.0")
     else:
         if args_var.file:

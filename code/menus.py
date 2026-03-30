@@ -1834,16 +1834,18 @@ class version_formato:
                                 "wait": [parametros[1],parametros[2]]
                                 }])
                         elif comando == "function":
-                            try:
-                                lista_comandos["start"].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": parametros[3]
-                                        }])
-                            except:
-                                lista_comandos["start"].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": []
-                                        }])
+                            comando_r = ["function", {}]
+                            parametro_num = 0
+                            while parametro_num < len(parametros):
+                                parametro = parametros[parametro_num]
+                                if "run" == parametro:
+                                    comando_r[1]["id"] = parametros[parametro_num+1]
+                                    parametro_num += 1
+                                elif "scripts2extract" == parametro:
+                                    comando_r[1]["scripts2extract"] = parametros[parametro_num+1]
+                                    parametro_num += 1
+                                parametro_num += 1
+                            lista_comandos["start"].append(comando_r)
                         elif comando == "import":
                                 lista_comandos["start"].append(["import", {
                                     "id": parametros[0]
@@ -1862,16 +1864,18 @@ class version_formato:
                                     "wait": [parametros[1],parametros[2]]
                                     }])
                         elif comando == "function":
-                            try:
-                                lista_comandos["loop"].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": parametros[3]
-                                        }])
-                            except:
-                                lista_comandos["loop"].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": []
-                                        }])
+                            comando_r = ["function", {}]
+                            parametro_num = 0
+                            while parametro_num < len(parametros):
+                                parametro = parametros[parametro_num]
+                                if "run" == parametro:
+                                    comando_r[1]["id"] = parametros[parametro_num+1]
+                                    parametro_num += 1
+                                elif "scripts2extract" == parametro:
+                                    comando_r[1]["scripts2extract"] = parametros[parametro_num+1]
+                                    parametro_num += 1
+                                parametro_num += 1
+                            lista_comandos["loop"].append(comando_r)
                         elif comando == "import":
                                 lista_comandos["loop"].append(["import", {
                                     "id": parametros[0]
@@ -1894,16 +1898,18 @@ class version_formato:
                                         "wait": [parametros[1],parametros[2]]
                                         }])
                             elif comando == "function":
-                                try:
-                                    lista_comandos["functions"][function_name].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": parametros[3]
-                                        }])
-                                except:
-                                    lista_comandos["functions"][function_name].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": []
-                                        }])
+                                comando_r = ["function", {}]
+                                parametro_num = 0
+                                while parametro_num < len(parametros):
+                                    parametro = parametros[parametro_num]
+                                    if "run" == parametro:
+                                        comando_r[1]["id"] = parametros[parametro_num+1]
+                                        parametro_num += 1
+                                    elif "scripts2extract" == parametro:
+                                        comando_r[1]["scripts2extract"] = parametros[parametro_num+1]
+                                        parametro_num += 1
+                                    parametro_num += 1
+                                lista_comandos["functions"][function_name].append(comando_r)
                             elif comando == "import":
                                 lista_comandos["functions"][function_name].append(["import", {
                                     "id": parametros[0]
@@ -1934,16 +1940,18 @@ class version_formato:
                                         "wait": [parametros[1],parametros[2]]
                                         }])
                             elif comando == "function":
-                                try:
-                                    lista_comandos["functions"][function_name].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": parametros[3]
-                                        }])
-                                except:
-                                    lista_comandos["functions"][function_name].append(["function", {
-                                        "id": parametros[1],
-                                        "scripts2extract": []
-                                        }])
+                                comando_r = ["function", {}]
+                                parametro_num = 0
+                                while parametro_num < len(parametros):
+                                    parametro = parametros[parametro_num]
+                                    if "run" == parametro:
+                                        comando_r[1]["id"] = parametros[parametro_num+1]
+                                        parametro_num += 1
+                                    elif "scripts2extract" == parametro:
+                                        comando_r[1]["scripts2extract"] = parametros[parametro_num+1]
+                                        parametro_num += 1
+                                    parametro_num += 1
+                                lista_comandos["functions"][function_name].append(comando_r)
                             elif comando == "import":
                                 lista_comandos["functions"][function_name].append(["import", {
                                     "id": parametros[0]
@@ -1986,6 +1994,19 @@ class version_formato:
                         lista_comandos["start"].append(["time", {
                             "wait": [parametros[1],parametros[2]]
                             }])
+                    elif comando == "function":
+                        comando_r = ["function", {}]
+                        parametro_num = 0
+                        while parametro_num < len(parametros):
+                            parametro = parametros[parametro_num]
+                            if "run" == parametro:
+                                comando_r[1]["id"] = parametros[parametro_num+1]
+                                parametro_num += 1
+                            elif "scripts2extract" == parametro:
+                                comando_r[1]["scripts2extract"] = parametros[parametro_num+1]
+                                parametro_num += 1
+                            parametro_num += 1
+                        lista_comandos["start"].append(comando_r)
 
                 loop_comandos = menu["loop"]
                 for comandos in loop_comandos:
@@ -1999,6 +2020,19 @@ class version_formato:
                         lista_comandos["loop"].append(["time", {
                                 "wait": [parametros[1],parametros[2]]
                                 }])
+                    elif comando == "function":
+                        comando_r = ["function", {}]
+                        parametro_num = 0
+                        while parametro_num < len(parametros):
+                            parametro = parametros[parametro_num]
+                            if "run" == parametro:
+                                comando_r[1]["id"] = parametros[parametro_num+1]
+                                parametro_num += 1
+                            elif "scripts2extract" == parametro:
+                                comando_r[1]["scripts2extract"] = parametros[parametro_num+1]
+                                parametro_num += 1
+                            parametro_num += 1
+                        lista_comandos["loop"].append(comando_r)
 
                 self.lista_comandos = lista_comandos
                 self.scripts_name = scripts_name
