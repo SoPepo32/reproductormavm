@@ -1923,6 +1923,7 @@ class version_formato:
                         "functions": {}
                         }
                     m = []
+                    scripts_name = []
                     functions_data  = menu["functions"]
                     for function_name, function_commands in functions_data.items():
                         lista_comandos["functions"][function_name] = []
