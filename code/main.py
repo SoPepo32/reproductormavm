@@ -1265,30 +1265,24 @@ class ventana:
 
                             print(comando[1]["coordinates"])
 
-                            self.objetos_menu.append({"id":comando[1]["create"],
-                            "objeto":tk.Label(self.espacio_mv, image=imagen), "cordenadas":c,"imagen":imagen_file})
+                            canva = v.create_image(0, 0, image=imgen, anchor="nw")
 
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
+                            v.tag_bind(canva, "<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
 
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
                         else:
                             print(self.path(comando[1]["image"]))
                             print(self.contenido_dat[self.path(comando[1]["image"])])
                             imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
                             imagen = ImageTk.PhotoImage(imagen_file)
 
-                            self.objetos_menu.append({"id":comando[1]["create"],
-                            "objeto":tk.Label(self.espacio_mv, image=imagen), "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
-
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
+                            canva = v.create_image(0, 0, image=imgen, anchor="nw")
 
                         if "command4selection" in comando[1].keys():
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
+                            v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
                         if "command4no_selection" in comando[1].keys():
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var), lib)
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
+                            v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
+
+                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
                     else:
                         tb = ""
                         if type(comando[1]["title"]) == type({}):
@@ -1314,15 +1308,18 @@ class ventana:
                         else:
                             b = comando[1]["color"][2]
 
-                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Button(v, text=tb,bg=f'#{r:02x}{g:02x}{b:02x}'), "cordenadas":comando[1]["coordinates"]})
-                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
-
+                        button = tk.Button(v, text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
+                        
                         if "command" in comando[1].keys():
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].config(command=lambda: self.ejecutar_boton(comando[1]["command"], script_var, lib))
+                            button.config(command=lambda: self.ejecutar_boton(comando[1]["command"], script_var, lib))
                         if "command4selection" in comando[1].keys():
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+                            button.bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
                         if "command4no_selection" in comando[1].keys():
-                            self.objetos_menu[len(self.objetos_menu)-1]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
+                            button.bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
+
+                        canva = v.create_window(0,0, window=button)
+
+                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":button,"canva":canva, "cordenadas":comando[1]["coordinates"]})
                 elif "edit" in comando[1].keys():
                     for i in range(len(self.objetos_menu)):
                         if "id" in self.objetos_menu[i].keys():
@@ -1336,12 +1333,9 @@ class ventana:
 
                                         print(comando[1]["coordinates"])
 
-                                        self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"],"imagen":imagen_file}
+                                        canva = v.create_image(0, 0, image=imgen, anchor="nw")
 
-                                        self.objetos_menu[i]["objeto"].image = imagen
-                                        self.objetos_menu[i]["objeto"].bind("<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var))
-
-                                        self.objetos_menu[i]["objeto"].place()
+                                        v.tag_bind(canva, "<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
                                     else:
                                         print(self.path(comando[1]["image"]))
                                         print(self.contenido_dat[self.path(comando[1]["image"])])
@@ -1358,16 +1352,14 @@ class ventana:
                                         imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
                                         imagen = ImageTk.PhotoImage(imagen_file)
 
-                                        self.objetos_menu.append({"id":comando[1]["create"],
-                                        "objeto":tk.Label(self.espacio_mv, image=imagen), "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
+                                        canva = v.create_image(0, 0, image=imgen, anchor="nw")
 
-                                        self.objetos_menu[i]["objeto"].place()
                                     if "command4selection" in comando[1].keys():
-                                        self.objetos_menu[i]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var))
-                                        self.objetos_menu[i]["objeto"].place()
+                                        v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
                                     if "command4no_selection" in comando[1].keys():
-                                        self.objetos_menu[i]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var))
-                                        self.objetos_menu[i]["objeto"].place()
+                                        v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
+
+                                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
                                 else:
                                     tb = ""
                                     if type(comando[1]["title"]) == type({}):
@@ -1393,26 +1385,18 @@ class ventana:
                                     else:
                                         b = comando[1]["color"][2]
 
+                                    button = tk.Button(v, text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
+
                                     if "command" in comando[1].keys():
-                                        self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
-
-                                        self.objetos_menu[i]["objeto"].bind("<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var))
-
-                                        self.objetos_menu[i]["objeto"].config(text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
-                                    else:
-                                        self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
-
-                                        self.objetos_menu[i]["objeto"].config(text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
-                                    
+                                        button.config(command=lambda: self.ejecutar_boton(comando[1]["command"], script_var, lib))
                                     if "command4selection" in comando[1].keys():
-                                        self.objetos_menu[i]["objeto"].bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var))
-
-                                        self.objetos_menu[i]["objeto"].place()
-                                    
+                                        button.bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
                                     if "command4no_selection" in comando[1].keys():
-                                        self.objetos_menu[i]["objeto"].bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var))
+                                        button.bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
 
-                                        self.objetos_menu[i]["objeto"].place()
+                                    canva = v.create_window(0,0, window=button)
+
+                                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":button,"canva":canva, "cordenadas":comando[1]["coordinates"]})
             elif comando[0] == "sound":
                 v = ""
                 if type(comando[1]["volume"]) == type({}):
@@ -1557,7 +1541,67 @@ class ventana:
                 lib_file.close()
 
                 self.lib(lib_json, id_import[1])
+            elif comando[0] =="polygon":
+                if "create" in list(comando[1].keys()):
+                    r = ""
+                    if type(comando[1]["color"][0]) == type({}):
+                        r = self.comando_ejecutar(comando[1]["color"][0],v, scripts_name=script_var)[0]
+                    else:
+                        r = comando[1]["color"][0]
 
+                    g = ""
+                    if type(comando[1]["color"][1]) == type({}):
+                        g = self.comando_ejecutar(comando[1]["color"][1],v, scripts_name=script_var)[0]
+                    else:
+                        g = comando[1]["color"][1]
+
+                    b = ""
+                    if type(comando[1]["color"][2]) == type({}):
+                        b = self.comando_ejecutar(comando[1]["color"][2],v, scripts_name=script_var)[0]
+                    else:
+                        b = comando[1]["color"][2]
+
+
+                    points_list = []
+                    for point in comando[1]["coordinates"]:
+                        points_list.append(point[0])
+                        points_list.append(point[1])
+                    
+                    poligono = v.create_polygon(*points_list, fill=f"#{r:02x}{g:02x}{b:02x}")
+
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":poligono, "cordenadas":points_list, "polygon_color":comando[1]["color"]})
+                elif "edit" in list(comando[1].keys()):
+                    for i in range(len(self.objetos_menu)-1):
+                        if "id" in self.objetos_menu[i].keys():
+                            if self.objetos_menu[i]["id"] == comando[1]["edit"]:
+                                v.delete(self.objetos_menu[i]["objeto"])
+                                r = ""
+                                if type(comando[1]["color"][0]) == type({}):
+                                    r = self.comando_ejecutar(comando[1]["color"][0],v, scripts_name=script_var)[0]
+                                else:
+                                    r = comando[1]["color"][0]
+
+                                g = ""
+                                if type(comando[1]["color"][1]) == type({}):
+                                    g = self.comando_ejecutar(comando[1]["color"][1],v, scripts_name=script_var)[0]
+                                else:
+                                    g = comando[1]["color"][1]
+
+                                b = ""
+                                if type(comando[1]["color"][2]) == type({}):
+                                    b = self.comando_ejecutar(comando[1]["color"][2],v, scripts_name=script_var)[0]
+                                else:
+                                    b = comando[1]["color"][2]
+
+
+                                points_list = []
+                                for point in comando[1]["coordinates"]:
+                                    points_list.append(point[0])
+                                    points_list.append(point[1])
+
+                                poligono = v.create_polygon(*points_list, fill=f"#{r:02x}{g:02x}{b:02x}")
+
+                                self.objetos_menu.append({"id":comando[1]["create"],"objeto":poligono, "cordenadas":points_list, "polygon_color":comando[1]["color"]})
             if t == None:
                 print("t", "None")
                 return [None, 0]
@@ -2900,7 +2944,7 @@ def args():
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.24.0.0",
+        print("program version:\nv.1.25.0.0_beta_0001",
           "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.2.0")
     else:
         if args_var.file:
