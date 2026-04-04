@@ -1094,9 +1094,9 @@ class ventana:
                         else:
                             c.append(i)
 
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":c, "imagen":imagen_file})
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
+                    canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":canva, "cordenadas":c, "imagen":imagen_file})
                     print(self.objetos_menu[len(self.objetos_menu)-1])
                 elif "edit" in comando[1].keys():
                     print("Buscando objeto con id:", comando[1]["edit"])
@@ -1112,9 +1112,11 @@ class ventana:
                                         c.append(i)
 
                                 print("Objeto encontrado:", self.objetos_menu[i])
-                                self.objetos_menu[i]["cordenadas"] = c
-                                self.objetos_menu[i]["imagen"] = imagen_file
-                                self.objetos_menu[i]["objeto"].place(x=0,y=0)
+                                
+                                canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                                self.objetos_menu[i] = {"id":comando[1]["create"],"objeto":canva, "cordenadas":c, "imagen":imagen_file}
+
                                 print(self.objetos_menu[i])
             elif comando[0] == "ebook":
                 print(comando[1]["epub_path"])
@@ -1173,9 +1175,9 @@ class ventana:
                         else:
                             c.append(i)
 
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v, image=imagen), "cordenadas":c, "imagen":imagen_file})
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].image = imagen
-                    self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
+                    canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":canva, "cordenadas":c, "imagen":imagen_file})
                     print(self.objetos_menu[len(self.objetos_menu)-1])
                 elif "edit" in comando[1].keys():
                     c = []
@@ -1191,9 +1193,11 @@ class ventana:
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
                                 print("Objeto encontrado:", self.objetos_menu[i])
-                                self.objetos_menu[i]["cordenadas"] = c
-                                self.objetos_menu[i]["imagen"] = imagen_file
-                                self.objetos_menu[i]["objeto"].place(x=0,y=0)
+                                
+                                canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                                self.objetos_menu[i] = {"id":comando[1]["create"],"objeto":canva, "cordenadas":c, "imagen":imagen_file}
+                                
                                 print(self.objetos_menu[i])
             elif comando[0] == "text":
                 c = []
@@ -1221,7 +1225,8 @@ class ventana:
 
                 if "create" in comando[1].keys():
                     print("text-create")
-                    self.objetos_menu.append({"id": comando[1]["create"],"objeto": tk.Label(v,text=tb,fg="#808080"), "cordenadas":comando[1]["coordinates"]})
+                    objet = v.create_text(0, 0, text=f"{tb}")
+                    self.objetos_menu.append({"id": comando[1]["create"],"objeto": objet, "cordenadas":comando[1]["coordinates"], "texto": f"{tb}"})
                 elif "edit" in comando[1].keys():
                     print("text-edit")
                     print("text-id", comando[1]["edit"])
@@ -1231,14 +1236,14 @@ class ventana:
                             print('self.objetos_menu[i]["id"] == comando[1]["edit"]', self.objetos_menu[i]["id"] == comando[1]["edit"])
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
                                 print("text-edit encontrado. id", comando[1]["edit"])
-                                #self.objetos_menu[i]["objeto"].destroy()
-                                #self.objetos_menu.pop(i)
+                                v.delete(self.objetos_menu[i]["objeto"])
+                                self.objetos_menu.pop(i)
 
-                                print("tb-text 2", tb)
-                                self.objetos_menu[i]["objeto"].config(text=tb)
                                 print('text-comando[1]["coordinates"]', comando[1]["coordinates"])
+                                print("tb-text 2", tb)
                                 
-                                self.objetos_menu[i] == {"id": comando[1]["edit"],"objeto": self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"]}
+                                objet = v.create_text(0, 0, text=f"{tb}")
+                                self.objetos_menu.append({"id": comando[1]["create"],"objeto": objet, "cordenadas":comando[1]["coordinates"], "texto": f"{tb}"})
                                 self.menu_resize(menu_r_b=False)
             elif comando[0] == "button":
                 c = []
@@ -1324,6 +1329,9 @@ class ventana:
                     for i in range(len(self.objetos_menu)):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
+                                v.delete(self.objetos_menu[i]["objeto"])
+                                self.objetos_menu.pop(i)
+
                                 if "image" in comando[1].keys():
                                     if "command" in comando[1].keys():
                                         print(self.path(i))
@@ -1484,7 +1492,7 @@ class ventana:
                 
                 if "create" in comando[1].keys():
                     print("create")
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":c, "video":file, "video_path":self.path(self.contenido_dat[self.path(vb)]), "video_r":file})
+                    self.objetos_menu.append({"id":comando[1]["create"], "cordenadas":c, "video":file, "video_path":self.path(self.contenido_dat[self.path(vb)]), "video_r":file})
                     self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                     print(self.objetos_menu[len(self.objetos_menu)-1])
 
@@ -1509,7 +1517,7 @@ class ventana:
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
                             if self.objetos_menu[i]["id"] == comando[1]["edit"]:
-                                self.objetos_menu[i].append({"id":comando[1]["create"],"objeto":tk.Label(v), "cordenadas":c, "video":file, "video_path":self.contenido_dat[self.path(v)]})
+                                self.objetos_menu[i].append({"id":comando[1]["create"], "cordenadas":c, "video":file, "video_path":self.contenido_dat[self.path(v)]})
                                 elf.objetos_menu[len(self.objetos_menu)-1]["objeto"].place(x=0,y=0)
                                 print(self.objetos_menu[len(self.objetos_menu)-1])
             elif comando[0] == "function":
@@ -1830,7 +1838,11 @@ class ventana:
                     imagen_file = Image.open(frame_file)
                     imagen = ImageTk.PhotoImage(imagen_file)
                     #self.objetos_menu[vid]["objeto"].image = imagen
-                    self.objetos_menu[vid]["imagen"] = imagen_file
+
+                    canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                    self.objetos_menu[vid] = {"id":comando[1]["create"],"objeto":canva, "cordenadas":c, "imagen":imagen_file}
+
                     self.used_vid[file_name][1] += 1
                     time.sleep(1/fps)
                     print(frame)
@@ -2944,7 +2956,7 @@ def args():
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.25.0.0_beta_0001",
+        print("program version:\nv.1.25.0.0_beta_0002",
           "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.2.0")
     else:
         if args_var.file:
