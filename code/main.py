@@ -627,6 +627,9 @@ class ventana:
             for widget_mv in self.espacio_mv.winfo_children():
                 widget_mv.destroy()
         
+        self.espacio_m = tk.Canvas(self.espacio_mv, bg="white")
+        self.espacio_m.place(x=0,y=0)
+        
         menu_dat = menus.version_formato(self.video_mavm_version)
         menu_dat_content = menu_dat[1](menu_json)
         self.convert_command = menu_dat_content
@@ -1262,32 +1265,31 @@ class ventana:
                         else:
                             i = comando[1]["image"]
 
+                        print(self.path(i))
+                        print(self.contenido_dat[self.path(self.path(i))])
+                        imagen_file = Image.open(self.contenido_dat[self.path(self.path(i))])
+                        imagen = ImageTk.PhotoImage(imagen_file)
+
+                        print(comando[1]["coordinates"])
+
+                        canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                        obj = {"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"],"imagen":imagen_file, "button":"button"}
+
                         if "command" in comando[1].keys():
-                            print(self.path(i))
-                            print(self.contenido_dat[self.path(self.path(i))])
-                            imagen_file = Image.open(self.contenido_dat[self.path(self.path(i))])
-                            imagen = ImageTk.PhotoImage(imagen_file)
-
-                            print(comando[1]["coordinates"])
-
-                            canva = v.create_image(0, 0, image=imgen, anchor="nw")
-
                             v.tag_bind(canva, "<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
 
-                        else:
-                            print(self.path(comando[1]["image"]))
-                            print(self.contenido_dat[self.path(comando[1]["image"])])
-                            imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
-                            imagen = ImageTk.PhotoImage(imagen_file)
-
-                            canva = v.create_image(0, 0, image=imgen, anchor="nw")
-
+                            obj["command"] = lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib)
                         if "command4selection" in comando[1].keys():
                             v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+
+                            obj["command4selection"] = lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib)
                         if "command4no_selection" in comando[1].keys():
                             v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
 
-                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
+                            obj["command4no_selection"] = lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib)
+
+                        self.objetos_menu.append(obj)
                     else:
                         tb = ""
                         if type(comando[1]["title"]) == type({}):
@@ -1315,16 +1317,24 @@ class ventana:
 
                         button = tk.Button(v, text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
                         
+                        canva = v.create_window(0,0, window=button, anchor="nw")
+
+                        obj = {"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"], "button":button, "color": f'#{r:02x}{g:02x}{b:02x}'}
+
                         if "command" in comando[1].keys():
-                            button.config(command=lambda: self.ejecutar_boton(comando[1]["command"], script_var, lib))
+                            v.tag_bind(canva, "<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
+
+                            obj["command"] = lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib)
                         if "command4selection" in comando[1].keys():
-                            button.bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+                            v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+
+                            obj["command4selection"] = lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib)
                         if "command4no_selection" in comando[1].keys():
-                            button.bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
+                            v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
 
-                        canva = v.create_window(0,0, window=button)
+                            obj["command4no_selection"] = lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib)
 
-                        self.objetos_menu.append({"id":comando[1]["create"],"objeto":button,"canva":canva, "cordenadas":comando[1]["coordinates"]})
+                        self.objetos_menu.append(obj)
                 elif "edit" in comando[1].keys():
                     for i in range(len(self.objetos_menu)):
                         if "id" in self.objetos_menu[i].keys():
@@ -1333,41 +1343,38 @@ class ventana:
                                 self.objetos_menu.pop(i)
 
                                 if "image" in comando[1].keys():
+                                    print(self.path(comando[1]["image"]))
+                                    print(self.contenido_dat[self.path(comando[1]["image"])])
+                                    imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
+                                    imagen = ImageTk.PhotoImage(imagen_file)
+
+                                    print(comando[1]["coordinates"])
+
+                                    self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"],"imagen":imagen_file}
+
+                                    print(self.path(comando[1]["image"]))
+                                    print(self.contenido_dat[self.path(comando[1]["image"])])
+                                    imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
+                                    imagen = ImageTk.PhotoImage(imagen_file)
+
+                                    canva = v.create_image(0, 0, image=imagen, anchor="nw")
+
+                                    obj = {"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"],"imagen":imagen_file, "button":"button"}
+
                                     if "command" in comando[1].keys():
-                                        print(self.path(i))
-                                        print(self.contenido_dat[self.path(i)])
-                                        imagen_file = Image.open(self.contenido_dat[self.path(i)])
-                                        imagen = ImageTk.PhotoImage(imagen_file)
-
-                                        print(comando[1]["coordinates"])
-
-                                        canva = v.create_image(0, 0, image=imgen, anchor="nw")
-
                                         v.tag_bind(canva, "<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
-                                    else:
-                                        print(self.path(comando[1]["image"]))
-                                        print(self.contenido_dat[self.path(comando[1]["image"])])
-                                        imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
-                                        imagen = ImageTk.PhotoImage(imagen_file)
 
-                                        print(comando[1]["coordinates"])
-
-                                        self.objetos_menu[i] = {"id":comando[1]["edit"],"objeto":self.objetos_menu[i]["objeto"], "cordenadas":comando[1]["coordinates"],"imagen":imagen_file}
-
-                                        self.objetos_menu[len(self.objetos_menu)-1]["objeto"].place()
-                                        print(self.path(comando[1]["image"]))
-                                        print(self.contenido_dat[self.path(comando[1]["image"])])
-                                        imagen_file = Image.open(self.contenido_dat[self.path(comando[1]["image"])])
-                                        imagen = ImageTk.PhotoImage(imagen_file)
-
-                                        canva = v.create_image(0, 0, image=imgen, anchor="nw")
-
+                                        obj["command"] = lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib)
                                     if "command4selection" in comando[1].keys():
                                         v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+
+                                        obj["command4selection"] = lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib)
                                     if "command4no_selection" in comando[1].keys():
                                         v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
 
-                                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"],"imagen":imagen_file})
+                                        obj["command4no_selection"] = lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib)
+
+                                    self.objetos_menu[i] = obj
                                 else:
                                     tb = ""
                                     if type(comando[1]["title"]) == type({}):
@@ -1395,16 +1402,24 @@ class ventana:
 
                                     button = tk.Button(v, text=tb,bg=f'#{r:02x}{g:02x}{b:02x}')
 
+                                    canva = v.create_window(0,0, window=button, anchor="nw")
+
+                                    obj = {"id":comando[1]["create"],"objeto":canva, "cordenadas":comando[1]["coordinates"], "button":button, "color": f'#{r:02x}{g:02x}{b:02x}'}
+
                                     if "command" in comando[1].keys():
-                                        button.config(command=lambda: self.ejecutar_boton(comando[1]["command"], script_var, lib))
+                                        v.tag_bind(canva, "<Button-1>", lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib))
+
+                                        obj["command"] = lambda event, cmd=comando[1]["command"]: self.ejecutar_boton(cmd, script_var, lib)
                                     if "command4selection" in comando[1].keys():
-                                        button.bind("<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+                                        v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib))
+
+                                        obj["command4selection"] = lambda e: self.ejecutar_boton(comando[1]["command4selection"], script_var, lib)
                                     if "command4no_selection" in comando[1].keys():
-                                        button.bind("<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
+                                        v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib))
 
-                                    canva = v.create_window(0,0, window=button)
+                                        obj["command4no_selection"] = lambda e: self.ejecutar_boton(comando[1]["command4no_selection"], script_var, lib)
 
-                                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":button,"canva":canva, "cordenadas":comando[1]["coordinates"]})
+                                    self.objetos_menu[i] = obj
             elif comando[0] == "sound":
                 v = ""
                 if type(comando[1]["volume"]) == type({}):
@@ -1577,7 +1592,7 @@ class ventana:
                     
                     poligono = v.create_polygon(*points_list, fill=f"#{r:02x}{g:02x}{b:02x}")
 
-                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":poligono, "cordenadas":points_list, "polygon_color":comando[1]["color"]})
+                    self.objetos_menu.append({"id":comando[1]["create"],"objeto":poligono, "cordenadas":points_list, "polygon_color":f"#{r:02x}{g:02x}{b:02x}"})
                 elif "edit" in list(comando[1].keys()):
                     for i in range(len(self.objetos_menu)-1):
                         if "id" in self.objetos_menu[i].keys():
@@ -2412,6 +2427,8 @@ class ventana:
                 
                 self.espacio_mv.place(x=espacio_mv_x,y=espacio_mv_y,width=espacio_mv_ancho,height=espacio_mv_alto)
 
+                self.espacio_m.place(x=espacio_mv_x,y=espacio_mv_y,width=espacio_mv_ancho,height=espacio_mv_alto)
+
                 diferencia_escala_espacio_mv = [espacio_mv_ancho/escala_ancho,espacio_mv_alto/escala_alto]
                 
                 for objeto_num, objeto in enumerate(self.objetos_menu):
@@ -2424,28 +2441,76 @@ class ventana:
 
                         imagen =  ImageTk.PhotoImage(objeto["imagen"].resize((ancho_imagen,alto_imagen), Image.Resampling.LANCZOS))
 
-                        objeto["objeto"].config(image=imagen)
-                        objeto["objeto"].image = imagen
+                        objeto["objeto"] = poligon
 
                         objeto["objeto"].place(x=int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
                                             y=int(cordenadas[1]*diferencia_escala_espacio_mv[1]),
                                             width=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
                                             height=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1]))
+                    elif "button" in objeto.keys():
+                        if "imagen" in objeto.keys():
+                            cordenadas = objeto["cordenadas"]
+
+                            ancho_imagen=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0])
+                            alto_imagen=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1])
+
+                            imagen = ImageTk.PhotoImage(objeto["imagen"].resize((ancho_imagen,alto_imagen), Image.Resampling.LANCZOS))
+
+
+                            canva = v.create_image(int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
+                                                int(cordenadas[1]*diferencia_escala_espacio_mv[1]), image=imagen, anchor="nw")
+
+
+                            if "command" in objeto.keys():
+                                v.tag_bind(canva, "<Button-1>", lambda e: self.ejecutar_boton(objeto["command"], script_var, lib))
+                            if "command4selection" in objeto.keys():
+                                v.tag_bind(canva, "<Enter>", lambda e: self.ejecutar_boton(objeto["command4selection"], script_var, lib))
+                            if "command4no_selection" in objeto.keys():
+                                v.tag_bind(canva, "<Leave>", lambda e: self.ejecutar_boton(objeto["command4no_selection"], script_var, lib))
+
+                            objeto["objeto"] = canva
+                        else:
+                            cordenadas = objeto["cordenadas"]
+
+                            ancho=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0])
+                            alto=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1])
+
+                            button = objeto["button"]
+                            button.configure(width=ancho, height=alto)
+
+                            if "command" in objeto.keys():
+                                button.bind("<Button-1>", lambda e: self.ejecutar_boton(objeto["command"], script_var, lib))
+                            if "command4selection" in objeto.keys():
+                                button.bind("<Enter>", lambda e: self.ejecutar_boton(objeto["command4selection"], script_var, lib))
+                            if "command4no_selection" in objeto.keys():
+                                button.bind("<Leave>", lambda e: self.ejecutar_boton(objeto["command4no_selection"], script_var, lib))
+
+                            canva = v.create_window(int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
+                                                    int(cordenadas[1]*diferencia_escala_espacio_mv[1]), window=button, anchor="nw")
+
+                            objeto["objeto"] = canva
                     elif "imagen" in objeto.keys():
                         cordenadas = objeto["cordenadas"]
 
                         ancho_imagen=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0])
                         alto_imagen=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1])
 
-                        imagen =  ImageTk.PhotoImage(objeto["imagen"].resize((ancho_imagen,alto_imagen), Image.Resampling.LANCZOS))
+                        imagen = ImageTk.PhotoImage(objeto["imagen"].resize((ancho_imagen,alto_imagen), Image.Resampling.LANCZOS))
 
-                        objeto["objeto"].config(image=imagen)
-                        objeto["objeto"].image = imagen
 
-                        objeto["objeto"].place(x=int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
-                                            y=int(cordenadas[1]*diferencia_escala_espacio_mv[1]),
-                                            width=int(cordenadas[2]*diferencia_escala_espacio_mv[0])-int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
-                                            height=int(cordenadas[3]*diferencia_escala_espacio_mv[1])-int(cordenadas[1]*diferencia_escala_espacio_mv[1]))
+                        canva = v.create_image(int(cordenadas[0]*diferencia_escala_espacio_mv[0]),
+                                               int(cordenadas[1]*diferencia_escala_espacio_mv[1]), image=imagen, anchor="nw")
+
+                        objeto["objeto"] = canva
+                    elif "polygon_color" in objeto.keys():
+                        cordenadas = objeto["cordenadas"]
+
+                        vert = []
+                        for vert_num in range(0,(len(cordenadas)-1)/2):
+                            vert.append(objeto["cordenadas"][vert_num*2-1]*diferencia_escala_espacio_mv[0])
+                            vert.append(objeto["cordenadas"][vert_num*2]*diferencia_escala_espacio_mv[1])
+
+                        poligono = v.create_polygon(*objeto["cordenadas"], fill=objeto["color"])
                     else:
                         cordenadas = objeto["cordenadas"]
 
@@ -2952,11 +3017,11 @@ def args():
 
     args_var = parser.parse_args()
 
-    # title
+    #title
     print("\nMaVMPlayer\n")
 
     if args_var.version:
-        print("program version:\nv.1.25.0.0_beta_0002",
+        print("program version:\nv.1.25.0.0_beta_0003",
           "\n\nsupported versions of MaVM:\nv.2.1.0 to v.4.2.0")
     else:
         if args_var.file:
