@@ -2,6 +2,8 @@
 
 ## English:
 
+### ATTENTION! THIS PLAYER IS DISCONTINUED! IT WILL NO LONGER BE UPDATED!
+
 ### <h3>Requires</h3>
  - [MKVToolNix](https://mkvtoolnix.download/)
  - [FFmpeg](https://www.ffmpeg.org/)
@@ -45,6 +47,8 @@ Double-click on "compiler.bat"
 All content in this repository is under GPL-3.0.
 
 ## Español:
+
+### ¡ATENCIÓN! ¡ESTE REPRODUCTOR ESTÁ DESCONTINUADO! ¡YA NO SE ACTUALIZARÁ!
 
 ### <h3>requiere</h3>
  - [MKVToolNix](https://mkvtoolnix.download/)
